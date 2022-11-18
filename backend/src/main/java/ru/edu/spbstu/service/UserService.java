@@ -1,15 +1,18 @@
 package ru.edu.spbstu.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.google.common.collect.Lists;
+
 import lombok.AllArgsConstructor;
+
 import org.springframework.stereotype.Service;
+
 import ru.edu.spbstu.dao.UserRepository;
 import ru.edu.spbstu.model.User;
 import ru.edu.spbstu.model.converter.JpaToModelConverter;
 import ru.edu.spbstu.model.jpa.UserJpa;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor

@@ -41,7 +41,6 @@ public class SecurityConfig {
                 .rememberMe()
                     .userDetailsService(applicationUserService)
                     .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(30))
-                    .key("some-key")
                     .rememberMeParameter("remember-me")
                     .tokenRepository(tokenRepository())
                 .and()

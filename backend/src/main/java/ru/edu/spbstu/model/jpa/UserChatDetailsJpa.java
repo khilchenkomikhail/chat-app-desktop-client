@@ -1,12 +1,21 @@
 package ru.edu.spbstu.model.jpa;
 
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.edu.spbstu.model.ChatRole;
 
-import javax.persistence.*;
+import ru.edu.spbstu.model.ChatRole;
 
 @Getter
 @Setter

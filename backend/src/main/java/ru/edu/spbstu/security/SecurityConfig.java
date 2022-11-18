@@ -1,6 +1,11 @@
 package ru.edu.spbstu.security;
 
+import java.util.concurrent.TimeUnit;
+
+import javax.sql.DataSource;
+
 import lombok.AllArgsConstructor;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,9 +18,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
-import javax.sql.DataSource;
-import java.util.concurrent.TimeUnit;
-
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
@@ -23,24 +25,24 @@ public class SecurityConfig {
 
     private final ApplicationUserService applicationUserService;
     private final PasswordEncoder passwordEncoder;
-
     private final DataSource dataSource;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                .headers().frameOptions().disable().and()
-                .authorizeRequests()
-                .antMatchers("/sign-up").permitAll()
-                .anyRequest()
-                .authenticated()
+                .headers().frameOptions().disable()
+                .and()
+                    .authorizeRequests()
+                    .antMatchers("/sign-up").permitAll()
+                    .anyRequest()
+                    .authenticated()
                 .and()
                 .rememberMe()
-                .userDetailsService(applicationUserService)
-                .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(30))
-                .key("some-key")
-                .rememberMeParameter("remember-me")
+                    .userDetailsService(applicationUserService)
+                    .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(30))
+                    .rememberMeParameter("remember-me")
+                    .tokenRepository(tokenRepository())
                 .and()
                 .httpBasic();
         return http.build();

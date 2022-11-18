@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
 import ru.edu.spbstu.model.jpa.ChatJpa;
 import ru.edu.spbstu.model.jpa.UserChatDetailsJpa;
 import ru.edu.spbstu.model.jpa.UserJpa;
@@ -17,6 +18,7 @@ public interface UserChatDetailsRepository extends CrudRepository<UserChatDetail
     @Query("select ucd from UserChatDetailsJpa ucd where ucd.chat.id = :chatId")
     List<UserChatDetailsJpa> getChatMembers(@Param("chatId") Long chatId);
 
+    @Modifying
     void deleteByChatAndUser(ChatJpa chat, UserJpa user);
 
     @Modifying

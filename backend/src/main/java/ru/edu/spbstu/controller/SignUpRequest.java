@@ -1,12 +1,14 @@
 package ru.edu.spbstu.controller;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@NoArgsConstructor
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class SignUpRequest {
     private String login;
     private String password;

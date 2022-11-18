@@ -4,12 +4,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @NoArgsConstructor
 @Setter
-public class SignUpRequest {
-    private String login;
-    private String password;
-    private String email;
-    private String image;
+public class ChatUpdateRequest {
+    private Long chat_id;
+    private List<String> user_logins;
 }

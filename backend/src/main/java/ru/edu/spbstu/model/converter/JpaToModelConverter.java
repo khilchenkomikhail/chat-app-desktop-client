@@ -1,15 +1,14 @@
 package ru.edu.spbstu.model.converter;
 
 import org.springframework.stereotype.Service;
+
 import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.model.Message;
 import ru.edu.spbstu.model.User;
 import ru.edu.spbstu.model.UserChatDetails;
-import ru.edu.spbstu.model.UserDevice;
 import ru.edu.spbstu.model.jpa.ChatJpa;
 import ru.edu.spbstu.model.jpa.MessageJpa;
 import ru.edu.spbstu.model.jpa.UserChatDetailsJpa;
-import ru.edu.spbstu.model.jpa.UserDeviceJpa;
 import ru.edu.spbstu.model.jpa.UserJpa;
 
 @Service
@@ -48,15 +47,5 @@ public class JpaToModelConverter {
         userChatDetails.setChat_id(userChatDetailsJpa.getChat().getId());
         userChatDetails.setUser_id(userChatDetailsJpa.getUser().getId());
         return userChatDetails;
-    }
-
-    public UserDevice convertUserDeviceJpaToUserDevice(UserDeviceJpa userDeviceJpa) {
-        UserDevice userDevice = new UserDevice();
-        userDevice.setId(userDeviceJpa.getId());
-        userDevice.setDeviceIp(userDeviceJpa.getDeviceIp());
-        userDevice.setToken(userDeviceJpa.getToken());
-        userDevice.setLastSignIn(userDeviceJpa.getLastSignIn());
-        userDevice.setUser_id(userDeviceJpa.getUser().getId());
-        return userDevice;
     }
 }

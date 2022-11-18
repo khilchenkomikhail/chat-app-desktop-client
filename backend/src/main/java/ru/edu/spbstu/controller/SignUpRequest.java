@@ -2,12 +2,16 @@ package ru.edu.spbstu.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class SignUpRequest {
-    private final String login;
-    private final String password;
-    private final String email;
-    private final String image;
+    private String login;
+    private String password;
+    private String email;
+    private String image;
 }

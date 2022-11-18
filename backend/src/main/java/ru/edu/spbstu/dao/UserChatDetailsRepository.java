@@ -2,8 +2,9 @@ package ru.edu.spbstu.dao;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import ru.edu.spbstu.model.jpa.UserDeviceJpa;
+
+import ru.edu.spbstu.model.jpa.UserChatDetailsJpa;
 
 @Repository
-public interface UserDeviceRepository extends CrudRepository<UserDeviceJpa, Long> {
+public interface UserChatDetailsRepository extends CrudRepository<UserChatDetailsJpa, Long> {
 }

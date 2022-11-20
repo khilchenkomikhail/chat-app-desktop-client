@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.edu.spbstu.model.User;
-import ru.edu.spbstu.service.ChatService;
 import ru.edu.spbstu.service.UserService;
 
 @RestController
@@ -20,7 +19,6 @@ import ru.edu.spbstu.service.UserService;
 public class BasicController {
 
     private final UserService userService;
-    private final ChatService chatService;
 
     @GetMapping("/get-user")
     public User getUser(@PathVariable("id") Long id) {

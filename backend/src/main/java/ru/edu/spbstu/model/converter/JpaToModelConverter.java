@@ -1,11 +1,7 @@
 package ru.edu.spbstu.model.converter;
 
 import org.springframework.stereotype.Service;
-
-import ru.edu.spbstu.model.Chat;
-import ru.edu.spbstu.model.Message;
-import ru.edu.spbstu.model.User;
-import ru.edu.spbstu.model.UserChatDetails;
+import ru.edu.spbstu.model.*;
 import ru.edu.spbstu.model.jpa.ChatJpa;
 import ru.edu.spbstu.model.jpa.MessageJpa;
 import ru.edu.spbstu.model.jpa.UserChatDetailsJpa;
@@ -43,9 +39,16 @@ public class JpaToModelConverter {
     public UserChatDetails convertUserChatDetailsJpaToUserChatDetails(UserChatDetailsJpa userChatDetailsJpa) {
         UserChatDetails userChatDetails = new UserChatDetails();
         userChatDetails.setUser_chat_id(userChatDetailsJpa.getId());
-        userChatDetails.setChatRole(userChatDetailsJpa.getChatRole());
+        userChatDetails.setChat_role(userChatDetailsJpa.getChatRole());
         userChatDetails.setChat_id(userChatDetailsJpa.getChat().getId());
         userChatDetails.setUser_id(userChatDetailsJpa.getUser().getId());
         return userChatDetails;
+    }
+
+    public ChatUser convertUserChatDetailsJpaToChatUser(UserChatDetailsJpa userChatDetailsJpa) {
+        ChatUser chatUser = new ChatUser();
+        chatUser.setLogin(userChatDetailsJpa.getUser().getLogin());
+        chatUser.setIs_admin(userChatDetailsJpa.getChatRole().equals(ChatRole.ADMIN));
+        return chatUser;
     }
 }

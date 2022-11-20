@@ -9,5 +9,5 @@ import lombok.*;
 @ToString
 public class ChatUser {
     private String login;
-    private Boolean isAdmin;
+    private Boolean is_admin;
 }

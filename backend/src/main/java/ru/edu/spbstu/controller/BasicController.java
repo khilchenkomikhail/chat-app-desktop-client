@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.model.User;
-import ru.edu.spbstu.model.UserChatDetails;
 import ru.edu.spbstu.service.ChatService;
 import ru.edu.spbstu.service.UserService;
 
@@ -37,15 +35,5 @@ public class BasicController {
     @GetMapping("/get-all-users")
     public List<User> getAllUsers() {
         return userService.getAllUser();
-    }
-
-    @GetMapping("/get-all-chats")
-    public List<Chat> getAllChats() {
-        return chatService.getAllChats();
-    }
-
-    @GetMapping("/get-all-chat-details")
-    public List<UserChatDetails> getAllChatDetails() {
-        return chatService.getAllChatDetails();
     }
 }

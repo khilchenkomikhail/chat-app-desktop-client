@@ -15,5 +15,5 @@ public class UserChatDetails {
     private Long user_chat_id;
     private Long user_id;
     private Long chat_id;
-    private ChatRole chatRole;
+    private ChatRole chat_role;
 }

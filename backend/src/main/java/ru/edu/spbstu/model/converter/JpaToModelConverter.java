@@ -39,7 +39,7 @@ public class JpaToModelConverter {
     public UserChatDetails convertUserChatDetailsJpaToUserChatDetails(UserChatDetailsJpa userChatDetailsJpa) {
         UserChatDetails userChatDetails = new UserChatDetails();
         userChatDetails.setUser_chat_id(userChatDetailsJpa.getId());
-        userChatDetails.setChatRole(userChatDetailsJpa.getChatRole());
+        userChatDetails.setChat_role(userChatDetailsJpa.getChatRole());
         userChatDetails.setChat_id(userChatDetailsJpa.getChat().getId());
         userChatDetails.setUser_id(userChatDetailsJpa.getUser().getId());
         return userChatDetails;
@@ -48,7 +48,7 @@ public class JpaToModelConverter {
     public ChatUser convertUserChatDetailsJpaToChatUser(UserChatDetailsJpa userChatDetailsJpa) {
         ChatUser chatUser = new ChatUser();
         chatUser.setLogin(userChatDetailsJpa.getUser().getLogin());
-        chatUser.setIsAdmin(userChatDetailsJpa.getChatRole().equals(ChatRole.ADMIN));
+        chatUser.setIs_admin(userChatDetailsJpa.getChatRole().equals(ChatRole.ADMIN));
         return chatUser;
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import ru.edu.spbstu.controller.request.SignUpRequest;
 import ru.edu.spbstu.dao.UserRepository;
 import ru.edu.spbstu.model.jpa.UserJpa;
 

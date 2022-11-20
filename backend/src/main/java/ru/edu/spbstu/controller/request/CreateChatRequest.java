@@ -1,4 +1,4 @@
-package ru.edu.spbstu.controller;
+package ru.edu.spbstu.controller.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +9,8 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Setter
-public class ChatUpdateRequest {
-    private Long chat_id;
+public class CreateChatRequest {
+    private String chat_name;
     private List<String> user_logins;
+    private String admin_login;
 }

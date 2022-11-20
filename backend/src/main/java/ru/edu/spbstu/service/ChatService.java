@@ -1,10 +1,9 @@
 package ru.edu.spbstu.service;
 
-import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.edu.spbstu.controller.ChatUpdateRequest;
-import ru.edu.spbstu.controller.CreateChatRequest;
+import ru.edu.spbstu.controller.request.ChatUpdateRequest;
+import ru.edu.spbstu.controller.request.CreateChatRequest;
 import ru.edu.spbstu.dao.ChatRepository;
 import ru.edu.spbstu.dao.UserChatDetailsRepository;
 import ru.edu.spbstu.dao.UserRepository;
@@ -13,7 +12,6 @@ import ru.edu.spbstu.exception.ResourceNotFound;
 import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.model.ChatRole;
 import ru.edu.spbstu.model.ChatUser;
-import ru.edu.spbstu.model.UserChatDetails;
 import ru.edu.spbstu.model.converter.JpaToModelConverter;
 import ru.edu.spbstu.model.jpa.ChatJpa;
 import ru.edu.spbstu.model.jpa.UserChatDetailsJpa;
@@ -33,24 +31,10 @@ public class ChatService {
     private final UserChatDetailsRepository userChatDetailsRepository;
     private final UserRepository userRepository;
 
-    public List<Chat> getAllChats() {
-        List<ChatJpa> all = Lists.newArrayList(chatRepository.findAll());
-        return all.stream()
-                .map(converter::convertChatJpaToChat)
-                .collect(Collectors.toList());
-    }
-
-    public List<UserChatDetails> getAllChatDetails() {
-        List<UserChatDetailsJpa> all = Lists.newArrayList(userChatDetailsRepository.findAll());
-        return all.stream()
-                .map(converter::convertUserChatDetailsJpaToUserChatDetails)
-                .collect(Collectors.toList());
-    }
-
     public List<Chat> getChats(String login, Integer pageNumber) {
         Optional<UserJpa> userJpa = userRepository.getByLogin(login);
         if (userJpa.isEmpty()) {
-            throw new ResourceNotFound("User with login '" + login + "' was not found");
+            throw new ResourceNotFound("User with login '" + login + "' was not found.");
         }
         List<ChatJpa> userChats = chatRepository.getChatsByUserId(userJpa.get().getId());
         return getChatListByPage(userChats, pageNumber);
@@ -151,7 +135,7 @@ public class ChatService {
     }
 
     private List<Chat> getChatListByPage(List<ChatJpa> chatJpaList, Integer pageNumber) {
-        int pageCapacity = 50;
+        int pageCapacity = 20;
         if (chatJpaList.size() <= pageCapacity * (pageNumber - 1)) {
             throw new InvalidRequestParameter("There are no chats on page " + pageNumber);
         }

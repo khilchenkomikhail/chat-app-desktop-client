@@ -1,4 +1,4 @@
-package controller;
+package ru.edu.spbstu.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
@@ -13,7 +13,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
-import ru.edu.spbstu.controller.ChatController;
 import ru.edu.spbstu.controller.request.ChatUpdateRequest;
 import ru.edu.spbstu.controller.request.CreateChatRequest;
 import ru.edu.spbstu.exception.InvalidRequestParameter;

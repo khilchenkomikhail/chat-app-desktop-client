@@ -84,11 +84,11 @@ class ChatRepositoryTest {
         userJpa = userRepository.save(userJpa);
 
         ChatJpa rightChatJpa1 = new ChatJpa();
-        rightChatJpa1.setName("someChat");
+        rightChatJpa1.setName("someChat2");
         rightChatJpa1 = chatRepository.save(rightChatJpa1);
 
         ChatJpa rightChatJpa2 = new ChatJpa();
-        rightChatJpa2.setName("someChat2");
+        rightChatJpa2.setName("someChat");
         rightChatJpa2 = chatRepository.save(rightChatJpa2);
 
         ChatJpa wrongChatJpa1 = new ChatJpa();
@@ -128,6 +128,6 @@ class ChatRepositoryTest {
 
         chatsBySearch = chatRepository.getChatsBySearch(userJpa.getId(), "some");
         Assertions.assertEquals(2, chatsBySearch.size());
-        Assertions.assertEquals(Arrays.asList(rightChatJpa1, rightChatJpa2), chatsBySearch);
+        Assertions.assertEquals(Arrays.asList(rightChatJpa2, rightChatJpa1), chatsBySearch);
     }
 }

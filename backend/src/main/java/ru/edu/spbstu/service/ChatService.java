@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.edu.spbstu.controller.request.ChatUpdateRequest;
 import ru.edu.spbstu.controller.request.CreateChatRequest;
+import ru.edu.spbstu.controller.request.SendMessageRequest;
 import ru.edu.spbstu.dao.ChatRepository;
 import ru.edu.spbstu.dao.UserChatDetailsRepository;
 import ru.edu.spbstu.dao.UserRepository;
@@ -12,6 +13,7 @@ import ru.edu.spbstu.exception.ResourceNotFound;
 import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.model.ChatRole;
 import ru.edu.spbstu.model.ChatUser;
+import ru.edu.spbstu.model.comparator.ChatComparator;
 import ru.edu.spbstu.model.converter.JpaToModelConverter;
 import ru.edu.spbstu.model.jpa.ChatJpa;
 import ru.edu.spbstu.model.jpa.UserChatDetailsJpa;
@@ -19,7 +21,6 @@ import ru.edu.spbstu.model.jpa.UserJpa;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,29 +31,26 @@ public class ChatService {
     private final ChatRepository chatRepository;
     private final UserChatDetailsRepository userChatDetailsRepository;
     private final UserRepository userRepository;
+    private final MessageService messageService;
+    private final ChatComparator chatComparator;
 
     public List<Chat> getChats(String login, Integer pageNumber) {
-        Optional<UserJpa> userJpa = userRepository.getByLogin(login);
-        if (userJpa.isEmpty()) {
-            throw new ResourceNotFound("User with login '" + login + "' was not found.");
-        }
-        List<ChatJpa> userChats = chatRepository.getChatsByUserId(userJpa.get().getId());
+        UserJpa userJpa = userRepository.getByLogin(login)
+                .orElseThrow(() -> new ResourceNotFound("User with login '" + login + "' was not found"));
+        List<ChatJpa> userChats = chatRepository.getChatsByUserId(userJpa.getId());
         return getChatListByPage(userChats, pageNumber);
     }
 
     public List<Chat> getChatsBySearch(String login, String begin, Integer pageNumber) {
-        Optional<UserJpa> userJpa = userRepository.getByLogin(login);
-        if (userJpa.isEmpty()) {
-            throw new ResourceNotFound("User with login '" + login + "' was not found");
-        }
-        List<ChatJpa> userChats = chatRepository.getChatsBySearch(userJpa.get().getId(), begin);
+        UserJpa userJpa = userRepository.getByLogin(login)
+                .orElseThrow(() -> new ResourceNotFound("User with login '" + login + "' was not found"));
+        List<ChatJpa> userChats = chatRepository.getChatsBySearch(userJpa.getId(), begin);
         return getChatListByPage(userChats, pageNumber);
     }
 
     public List<ChatUser> getChatMembers(Long chatId) {
-        if (chatRepository.getById(chatId).isEmpty()) {
-            throw new ResourceNotFound("Chat with id '" + chatId + "' was not found");
-        }
+        chatRepository.getById(chatId)
+                .orElseThrow(() -> new ResourceNotFound("Chat with id '" + chatId + "' was not found"));
         List<UserChatDetailsJpa> userChatDetailsJpaList = userChatDetailsRepository.getChatMembers(chatId);
         return userChatDetailsJpaList.stream().map(converter::convertUserChatDetailsJpaToChatUser)
                 .collect(Collectors.toList());
@@ -65,55 +63,49 @@ public class ChatService {
         ChatJpa savedChatJpa = chatRepository.save(chatJpa);
         for (String login: request.getUser_logins()) {
             UserChatDetailsJpa userChatDetailsJpa = new UserChatDetailsJpa();
-            Optional<UserJpa> userJpa = userRepository.getByLogin(login);
-            if (userJpa.isEmpty()) {
-                throw new ResourceNotFound("User with login '" + login + "' was not found");
-            }
+            UserJpa userJpa = userRepository.getByLogin(login)
+                    .orElseThrow(() -> new ResourceNotFound("User with login '" + login + "' was not found"));
             userChatDetailsJpa.setChat(savedChatJpa);
-            userChatDetailsJpa.setUser(userJpa.get());
+            userChatDetailsJpa.setUser(userJpa);
             userChatDetailsJpa.setChatRole(ChatRole.USER);
             userChatDetailsRepository.save(userChatDetailsJpa);
         }
         UserChatDetailsJpa userChatDetailsJpa = new UserChatDetailsJpa();
-        Optional<UserJpa> userJpa = userRepository.getByLogin(request.getAdmin_login());
-        if (userJpa.isEmpty()) {
-            throw new ResourceNotFound("User with login '" + request.getAdmin_login() + "' was not found");
-        }
+        UserJpa userJpa = userRepository.getByLogin(request.getAdmin_login())
+                .orElseThrow(() -> new ResourceNotFound("User with login '" + request.getAdmin_login() + "' was not found"));
         userChatDetailsJpa.setChat(savedChatJpa);
-        userChatDetailsJpa.setUser(userJpa.get());
+        userChatDetailsJpa.setUser(userJpa);
         userChatDetailsJpa.setChatRole(ChatRole.ADMIN);
         userChatDetailsRepository.save(userChatDetailsJpa);
+        SendMessageRequest sendMessageRequest = new SendMessageRequest();
+        sendMessageRequest.setSender_login(request.getAdmin_login());
+        sendMessageRequest.setAuthor_login(request.getAdmin_login());
+        sendMessageRequest.setChat_id(savedChatJpa.getId());
+        sendMessageRequest.setContent("Создан новый чат");
+        messageService.sendMessage(sendMessageRequest);
     }
 
     @Transactional
     public void deleteUsersFromChat(ChatUpdateRequest request) {
-        Optional<ChatJpa> chatJpa = chatRepository.getById(request.getChat_id());
-        if (chatJpa.isEmpty()) {
-            throw new ResourceNotFound("Chat with id '" + request.getChat_id() + "' was not found");
-        }
+        ChatJpa chatJpa = chatRepository.getById(request.getChat_id())
+                .orElseThrow(() -> new ResourceNotFound("Chat with id '" + request.getChat_id() + "' was not found"));
         for (String login: request.getUser_logins()) {
-            Optional<UserJpa> userJpa = userRepository.getByLogin(login);
-            if (userJpa.isEmpty()) {
-                throw new ResourceNotFound("User with login '" + login + "' was not found");
-            }
-            userChatDetailsRepository.deleteByChatAndUser(chatJpa.get(), userJpa.get());
+            UserJpa userJpa = userRepository.getByLogin(login)
+                    .orElseThrow(() -> new ResourceNotFound("User with login '" + login + "' was not found"));
+            userChatDetailsRepository.deleteByChatAndUser(chatJpa, userJpa);
         }
     }
 
     @Transactional
     public void addUsersToChat(ChatUpdateRequest request) {
-        Optional<ChatJpa> chatJpa = chatRepository.getById(request.getChat_id());
-        if (chatJpa.isEmpty()) {
-            throw new ResourceNotFound("Chat with id '" + request.getChat_id() + "' was not found");
-        }
+        ChatJpa chatJpa = chatRepository.getById(request.getChat_id())
+                .orElseThrow(() -> new ResourceNotFound("Chat with id '" + request.getChat_id() + "' was not found"));
         for (String login: request.getUser_logins()) {
             UserChatDetailsJpa userChatDetailsJpa = new UserChatDetailsJpa();
-            Optional<UserJpa> userJpa = userRepository.getByLogin(login);
-            if (userJpa.isEmpty()) {
-                throw new ResourceNotFound("User with login '" + login + "' was not found");
-            }
-            userChatDetailsJpa.setChat(chatJpa.get());
-            userChatDetailsJpa.setUser(userJpa.get());
+            UserJpa userJpa = userRepository.getByLogin(login)
+                    .orElseThrow(() -> new ResourceNotFound("User with login '" + login + "' was not found"));
+            userChatDetailsJpa.setChat(chatJpa);
+            userChatDetailsJpa.setUser(userJpa);
             userChatDetailsJpa.setChatRole(ChatRole.USER);
             userChatDetailsRepository.save(userChatDetailsJpa);
         }
@@ -121,16 +113,12 @@ public class ChatService {
 
     @Transactional
     public void makeUsersAdmins(ChatUpdateRequest request) {
-        Optional<ChatJpa> chatJpa = chatRepository.getById(request.getChat_id());
-        if (chatJpa.isEmpty()) {
-            throw new ResourceNotFound("Chat with id '" + request.getChat_id() + "' was not found");
-        }
+        ChatJpa chatJpa = chatRepository.getById(request.getChat_id())
+                .orElseThrow(() -> new ResourceNotFound("Chat with id '" + request.getChat_id() + "' was not found"));
         for (String login: request.getUser_logins()) {
-            Optional<UserJpa> userJpa = userRepository.getByLogin(login);
-            if (userJpa.isEmpty()) {
-                throw new ResourceNotFound("User with login '" + login + "' was not found");
-            }
-            userChatDetailsRepository.makeUsersAdmins(chatJpa.get().getId(), userJpa.get().getId());
+            UserJpa userJpa = userRepository.getByLogin(login)
+                    .orElseThrow(() -> new ResourceNotFound("User with login '" + login + "' was not found"));
+            userChatDetailsRepository.makeUsersAdmins(chatJpa.getId(), userJpa.getId());
         }
     }
 
@@ -142,10 +130,13 @@ public class ChatService {
         else if (chatJpaList.size() < pageCapacity * pageNumber) {
             return chatJpaList.subList(pageCapacity * (pageNumber - 1), chatJpaList.size()).stream()
                     .map(converter::convertChatJpaToChat)
+                    .sorted(chatComparator)
                     .collect(Collectors.toList());
         }
         return chatJpaList.subList(pageCapacity * (pageNumber - 1), pageCapacity * pageNumber).stream()
                 .map(converter::convertChatJpaToChat)
+                .sorted(chatComparator)
                 .collect(Collectors.toList());
     }
+
 }

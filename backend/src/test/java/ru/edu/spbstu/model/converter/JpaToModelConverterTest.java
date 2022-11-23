@@ -2,11 +2,7 @@ package ru.edu.spbstu.model.converter;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import ru.edu.spbstu.model.Chat;
-import ru.edu.spbstu.model.ChatRole;
-import ru.edu.spbstu.model.Message;
-import ru.edu.spbstu.model.User;
-import ru.edu.spbstu.model.UserChatDetails;
+import ru.edu.spbstu.model.*;
 import ru.edu.spbstu.model.jpa.ChatJpa;
 import ru.edu.spbstu.model.jpa.MessageJpa;
 import ru.edu.spbstu.model.jpa.UserChatDetailsJpa;
@@ -86,21 +82,31 @@ class JpaToModelConverterTest {
 
         Message expectedMessage = new Message(
                 1L,
-                1L,
-                1L,
+                "login",
+                "login",
                 1L,
                 date,
-                "message"
+                "message",
+                Boolean.TRUE,
+                Boolean.TRUE,
+                Boolean.TRUE
         );
         Message actualMessage = jpaToModelConverter.convertMessageJpaToMessage(messageJpa);
         Assertions.assertEquals(expectedMessage, actualMessage);
     }
 
     @Test
-    void convertUserChatDetailsJpaToUserChatDetails() {
-        UserJpa userJpa = new UserJpa(
+    void convertUserChatDetailsJpaToChatUser() {
+        UserJpa userJpa1 = new UserJpa(
                 1L,
-                "login",
+                "login1",
+                "password",
+                "email@mail.org",
+                "image"
+        );
+        UserJpa userJpa2 = new UserJpa(
+                2L,
+                "login2",
                 "password",
                 "email@mail.org",
                 "image"
@@ -111,20 +117,31 @@ class JpaToModelConverterTest {
                 "chatName"
         );
 
-        UserChatDetailsJpa userChatDetailsJpa = new UserChatDetailsJpa(
+        UserChatDetailsJpa userChatDetailsJpa1 = new UserChatDetailsJpa(
                 1L,
-                userJpa,
+                userJpa1,
                 chatJpa,
                 ChatRole.USER
         );
-        UserChatDetails expectedUserChatDetails = new UserChatDetails(
-                1L,
-                1L,
-                1L,
-                ChatRole.USER
+        UserChatDetailsJpa userChatDetailsJpa2 = new UserChatDetailsJpa(
+                2L,
+                userJpa2,
+                chatJpa,
+                ChatRole.ADMIN
         );
-        UserChatDetails actualUserChatDetails
-                = jpaToModelConverter.convertUserChatDetailsJpaToUserChatDetails(userChatDetailsJpa);
-        Assertions.assertEquals(expectedUserChatDetails, actualUserChatDetails);
+
+        ChatUser expectedChatUser1 = new ChatUser(
+                "login1",
+                Boolean.FALSE
+        );
+        ChatUser expectedChatUser2 = new ChatUser(
+                "login2",
+                Boolean.TRUE
+        );
+
+        ChatUser actualChatUser1 = jpaToModelConverter.convertUserChatDetailsJpaToChatUser(userChatDetailsJpa1);
+        ChatUser actualChatUser2 = jpaToModelConverter.convertUserChatDetailsJpaToChatUser(userChatDetailsJpa2);
+        Assertions.assertEquals(expectedChatUser1, actualChatUser1);
+        Assertions.assertEquals(expectedChatUser2, actualChatUser2);
     }
 }

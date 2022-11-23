@@ -32,18 +32,12 @@ public class JpaToModelConverter {
         message.setDate(messageJpa.getDate());
         message.setContent(messageJpa.getContent());
         message.setChat_id(messageJpa.getChat().getId());
-        message.setSender_id(messageJpa.getSender().getId());
-        message.setAuthor_id(messageJpa.getAuthor().getId());
+        message.setSender_login(messageJpa.getSender().getLogin());
+        message.setAuthor_login(messageJpa.getAuthor().getLogin());
+        message.setIs_deleted(messageJpa.getIsDeleted());
+        message.setIs_edited(messageJpa.getIsEdited());
+        message.setIs_forwarded(messageJpa.getIsForwarded());
         return message;
-    }
-
-    public UserChatDetails convertUserChatDetailsJpaToUserChatDetails(UserChatDetailsJpa userChatDetailsJpa) {
-        UserChatDetails userChatDetails = new UserChatDetails();
-        userChatDetails.setUser_chat_id(userChatDetailsJpa.getId());
-        userChatDetails.setChat_role(userChatDetailsJpa.getChatRole());
-        userChatDetails.setChat_id(userChatDetailsJpa.getChat().getId());
-        userChatDetails.setUser_id(userChatDetailsJpa.getUser().getId());
-        return userChatDetails;
     }
 
     public ChatUser convertUserChatDetailsJpaToChatUser(UserChatDetailsJpa userChatDetailsJpa) {

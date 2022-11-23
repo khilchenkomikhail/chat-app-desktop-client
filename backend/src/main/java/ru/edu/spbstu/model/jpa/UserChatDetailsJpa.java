@@ -11,6 +11,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,6 +24,7 @@ import ru.edu.spbstu.model.ChatRole;
 @NoArgsConstructor
 @Entity
 @Table(name = "user_chat_details")
+@EqualsAndHashCode
 public class UserChatDetailsJpa {
 
     @Id

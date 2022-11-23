@@ -11,6 +11,7 @@ import ru.edu.spbstu.model.jpa.UserJpa;
 public class JpaToModelConverter {
     public User convertUserJpaToUser(UserJpa userJpa) {
         User user = new User();
+        user.setId(userJpa.getId());
         user.setLogin(userJpa.getLogin());
         user.setEmail(userJpa.getEmail());
         user.setImage(userJpa.getImage());
@@ -27,7 +28,7 @@ public class JpaToModelConverter {
 
     public Message convertMessageJpaToMessage(MessageJpa messageJpa) {
         Message message = new Message();
-        message.setId(message.getId());
+        message.setId(messageJpa.getId());
         message.setDate(messageJpa.getDate());
         message.setContent(messageJpa.getContent());
         message.setChat_id(messageJpa.getChat().getId());

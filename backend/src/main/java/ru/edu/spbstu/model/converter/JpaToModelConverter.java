@@ -27,12 +27,15 @@ public class JpaToModelConverter {
 
     public Message convertMessageJpaToMessage(MessageJpa messageJpa) {
         Message message = new Message();
-        message.setId(message.getId());
+        message.setId(messageJpa.getId());
         message.setDate(messageJpa.getDate());
         message.setContent(messageJpa.getContent());
         message.setChat_id(messageJpa.getChat().getId());
-        message.setSender_id(messageJpa.getSender().getId());
-        message.setAuthor_id(messageJpa.getAuthor().getId());
+        message.setSender_login(messageJpa.getSender().getLogin());
+        message.setAuthor_login(messageJpa.getAuthor().getLogin());
+        message.setIs_deleted(messageJpa.getIsDeleted());
+        message.setIs_edited(messageJpa.getIsEdited());
+        message.setIs_forwarded(messageJpa.getIsForwarded());
         return message;
     }
 

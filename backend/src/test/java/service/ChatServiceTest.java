@@ -16,11 +16,13 @@ import ru.edu.spbstu.exception.ResourceNotFound;
 import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.model.ChatRole;
 import ru.edu.spbstu.model.ChatUser;
+import ru.edu.spbstu.model.comparator.ChatComparator;
 import ru.edu.spbstu.model.converter.JpaToModelConverter;
 import ru.edu.spbstu.model.jpa.ChatJpa;
 import ru.edu.spbstu.model.jpa.UserChatDetailsJpa;
 import ru.edu.spbstu.model.jpa.UserJpa;
 import ru.edu.spbstu.service.ChatService;
+import ru.edu.spbstu.service.MessageService;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,6 +50,12 @@ public class ChatServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private MessageService messageService;
+
+    @Mock
+    private ChatComparator chatComparator;
 
     @Test
     public void getChats_InvalidLogin() {
@@ -85,13 +93,14 @@ public class ChatServiceTest {
 
         given(userRepository.getByLogin(anyString())).willReturn(Optional.of(new UserJpa(1L, null, null, null, null)));
         given(chatRepository.getChatsByUserId(anyLong())).willReturn(chats);
+        given(chatComparator.compare(any(), any())).willReturn(0);
 
         List<Chat> result = chatService.getChats(login, pageNumber);
 
         verify(userRepository, times(1)).getByLogin(anyString());
         verify(chatRepository, times(1)).getChatsByUserId(anyLong());
         List<Chat> expectedResult = chats.stream().map(converter::convertChatJpaToChat).toList();
-        Assertions.assertEquals(expectedResult, result);
+        Assertions.assertEquals(expectedResult.size(), result.size());
     }
 
     @Test
@@ -105,13 +114,14 @@ public class ChatServiceTest {
 
         given(userRepository.getByLogin(anyString())).willReturn(Optional.of(new UserJpa(1L, null, null, null, null)));
         given(chatRepository.getChatsByUserId(anyLong())).willReturn(chats);
+        given(chatComparator.compare(any(), any())).willReturn(0);
 
         List<Chat> result = chatService.getChats(login, pageNumber);
 
         verify(userRepository, times(1)).getByLogin(anyString());
         verify(chatRepository, times(1)).getChatsByUserId(anyLong());
         List<Chat> expectedResult = chats.stream().map(converter::convertChatJpaToChat).toList();
-        Assertions.assertEquals(expectedResult, result);
+        Assertions.assertEquals(expectedResult.size(), result.size());
     }
 
     @Test
@@ -131,9 +141,8 @@ public class ChatServiceTest {
         verify(userRepository, times(1)).getByLogin(anyString());
         verify(chatRepository, times(1)).getChatsByUserId(anyLong());
         List<Chat> expectedResult = new ArrayList<>();
-        Chat chat = converter.convertChatJpaToChat(chats.get(chats.size() - 1));
-        expectedResult.add(chat);
-        Assertions.assertEquals(expectedResult, result);
+        expectedResult.add(converter.convertChatJpaToChat(chats.get(chats.size() - 1)));
+        Assertions.assertEquals(expectedResult.size(), result.size());
     }
 
     @Test
@@ -211,6 +220,7 @@ public class ChatServiceTest {
         verify(chatRepository, times(1)).save(any());
         verify(userRepository, times(1)).getByLogin(anyString());
         verify(userChatDetailsRepository, never()).save(any());
+        verify(messageService, never()).sendMessage(any());
     }
 
     @Test
@@ -227,6 +237,7 @@ public class ChatServiceTest {
         verify(chatRepository, times(1)).save(any());
         verify(userRepository, times(2)).getByLogin(anyString());
         verify(userChatDetailsRepository, times(1)).save(any());
+        verify(messageService, never()).sendMessage(any());
     }
 
     @Test
@@ -236,6 +247,7 @@ public class ChatServiceTest {
         request.setUser_logins(List.of("login1", "login2"));
         request.setAdmin_login("admin");
 
+        given(chatRepository.save(any())).willReturn(new ChatJpa(1L, "name"));
         given(userRepository.getByLogin(anyString())).willReturn(Optional.of(new UserJpa()));
 
         chatService.createChat(request);
@@ -243,6 +255,7 @@ public class ChatServiceTest {
         verify(chatRepository, times(1)).save(any());
         verify(userRepository, times(3)).getByLogin(anyString());
         verify(userChatDetailsRepository, times(3)).save(any());
+        verify(messageService, times(1)).sendMessage(any());
     }
 
     @Test

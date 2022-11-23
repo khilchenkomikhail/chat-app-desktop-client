@@ -26,7 +26,4 @@ public interface MessageRepository extends CrudRepository<MessageJpa, Long> {
     @Modifying
     @Query("update MessageJpa m set m.content = :newContent, m.isEdited = true where m.id = :messageId")
     void editMessage(@Param("messageId") Long messageId, @Param("newContent") String newContent);
-
-    @Query("select m from MessageJpa m where m.chat.id = :chatId order by m.date desc")
-    List<MessageJpa> getNewestMessageByChatId(@Param("chatId") Long chatId);
 }

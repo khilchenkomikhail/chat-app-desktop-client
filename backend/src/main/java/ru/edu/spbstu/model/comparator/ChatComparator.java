@@ -16,8 +16,8 @@ public class ChatComparator implements Comparator<Chat> {
 
     @Override
     public int compare(Chat o1, Chat o2) {
-        MessageJpa message1 = messageRepository.getNewestMessageByChatId(o1.getId()).get(0);
-        MessageJpa message2 = messageRepository.getNewestMessageByChatId(o2.getId()).get(0);
+        MessageJpa message1 = messageRepository.getMessagesByChatId(o1.getId()).get(0);
+        MessageJpa message2 = messageRepository.getMessagesByChatId(o2.getId()).get(0);
         if (message1.getDate().before(message2.getDate())) {
             return 1;
         }

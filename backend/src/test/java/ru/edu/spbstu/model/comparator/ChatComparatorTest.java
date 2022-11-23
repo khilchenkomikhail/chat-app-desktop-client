@@ -1,4 +1,4 @@
-package model.comparator;
+package ru.edu.spbstu.model.comparator;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.edu.spbstu.dao.MessageRepository;
 import ru.edu.spbstu.model.Chat;
-import ru.edu.spbstu.model.comparator.ChatComparator;
 import ru.edu.spbstu.model.jpa.MessageJpa;
 
 import java.util.Date;
@@ -37,9 +36,9 @@ public class ChatComparatorTest {
         MessageJpa messageJpa2 = new MessageJpa();
         messageJpa2.setDate(date2);
 
-        given(messageRepository.getNewestMessageByChatId(chat1.getId())).willReturn(List.of(messageJpa1));
-        given(messageRepository.getNewestMessageByChatId(chat2.getId())).willReturn(List.of(messageJpa2));
-        given(messageRepository.getNewestMessageByChatId(chat3.getId())).willReturn(List.of(messageJpa1));
+        given(messageRepository.getMessagesByChatId(chat1.getId())).willReturn(List.of(messageJpa1));
+        given(messageRepository.getMessagesByChatId(chat2.getId())).willReturn(List.of(messageJpa2));
+        given(messageRepository.getMessagesByChatId(chat3.getId())).willReturn(List.of(messageJpa1));
 
         Assertions.assertEquals(1, chatComparator.compare(chat1, chat2));
         Assertions.assertEquals(0, chatComparator.compare(chat1, chat3));

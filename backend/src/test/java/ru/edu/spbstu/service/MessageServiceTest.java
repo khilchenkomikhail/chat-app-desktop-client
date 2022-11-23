@@ -1,4 +1,4 @@
-package service;
+package ru.edu.spbstu.service;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,6 @@ import ru.edu.spbstu.model.converter.JpaToModelConverter;
 import ru.edu.spbstu.model.jpa.ChatJpa;
 import ru.edu.spbstu.model.jpa.MessageJpa;
 import ru.edu.spbstu.model.jpa.UserJpa;
-import ru.edu.spbstu.service.MessageService;
 
 import java.util.*;
 

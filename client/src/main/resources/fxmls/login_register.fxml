@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import ru.edu.spbstu.clientComponents.PasswordTextField?>
 
 <AnchorPane prefHeight="248.0" prefWidth="537.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.edu.spbstu.client.controllers.LoginFormController">
    <children>
@@ -43,13 +44,12 @@
                                     <Insets right="20.0" />
                                  </padding>
                               </Label>
-                              <TextField prefHeight="25.0" prefWidth="221.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-                              <TextField GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="1" />
-                              <Button mnemonicParsing="false" onMouseClicked="#leftMouseClick" prefHeight="25.0" prefWidth="139.0" text="Войти" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
+                              <TextField fx:id="loginTextBox" onKeyTyped="#updateLogin" prefHeight="25.0" prefWidth="221.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                              <Button fx:id="logInButton" mnemonicParsing="false" onMouseClicked="#logInButtonLeftMouseClick" prefHeight="25.0" prefWidth="139.0" text="Войти" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
                                  <GridPane.margin>
                                     <Insets left="5.0" right="5.0" />
                                  </GridPane.margin></Button>
-                              <Button fx:id="forgetPasswordButton" mnemonicParsing="false" onMouseEntered="#leftMouseDrageEnter" onMouseExited="#leftMouseExit" prefHeight="25.0" prefWidth="139.0" text="Забыли пароль?" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
+                              <Button fx:id="forgetPasswordButton" mnemonicParsing="false" onMouseClicked="#forgotPasswordButtonClick" prefHeight="25.0" prefWidth="139.0" text="Забыли пароль?" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
                                  <opaqueInsets>
                                     <Insets />
                                  </opaqueInsets>
@@ -61,6 +61,7 @@
                                     <Insets right="20.0" />
                                  </padding>
                               </CheckBox>
+                              <PasswordTextField fx:id="passwordTextBox" onKeyTyped="#updateLogin" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="1" />
                            </children>
                            <padding>
                               <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -102,10 +103,10 @@
                                     <Insets right="20.0" />
                                  </padding>
                               </Label>
-                              <TextField prefWidth="433.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-                              <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                              <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="139.0" text="Зарегистрироваться" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="TOP" />
+                              <TextField fx:id="regLoginTextBox" onKeyTyped="#updateRegisterButton" prefWidth="433.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                              <TextField fx:id="emailTextBox" onKeyTyped="#updateRegisterButton" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Button fx:id="registerButton" mnemonicParsing="false" onMouseClicked="#registerButtonMouseClick" prefHeight="25.0" prefWidth="139.0" text="Зарегистрироваться" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="TOP" />
+                              <PasswordTextField fx:id="regPasswordTextBox" onKeyTyped="#updateRegisterButton" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                            </children>
                            <padding>
                               <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />

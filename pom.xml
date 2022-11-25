@@ -11,6 +11,7 @@
 
     <modules>
         <module>backend</module>
+        <module>clientComponents</module>
         <module>client</module>
         <module>model</module>
     </modules>

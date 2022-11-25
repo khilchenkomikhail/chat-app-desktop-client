@@ -44,7 +44,7 @@ public class ConsoleTestClient {
         UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(login, password);
         provider.setCredentials(AuthScope.ANY, credentials);
 
-        int reqStatusCreateChat = createChat(provider, "chat1", Collections.singletonList(login), login);
+        int reqStatusCreateChat = createChat(provider, "chat1", Collections.emptyList(), login);
         System.out.println(reqStatusCreateChat);
 
         if (reqStatusCreateChat != 200) {

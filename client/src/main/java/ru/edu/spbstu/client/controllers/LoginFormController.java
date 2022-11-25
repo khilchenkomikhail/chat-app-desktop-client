@@ -1,4 +1,4 @@
-package ru.edu.spbstu.client.contollers;
+package ru.edu.spbstu.client.controllers;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
@@ -7,7 +7,6 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.input.MouseEvent;
 
-import java.awt.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class LoginFormController {
@@ -59,15 +58,15 @@ public class LoginFormController {
         System.out.println("Some action with menuItem1");
     }
 
-    public void leftMouseExit(MouseEvent mouseEvent) throws AWTException {
+    public void leftMouseExit(MouseEvent mouseEvent) {
         //TODO uncomment to make mouse follow the button
         //Scene scene = forgetPasswordButton.getScene();
         //doublea a=new Robot().mouseMove(;
-        //Bounds boundsInScreen = forgetPasswordButton.localToScreen(forgetPasswordButton.getBoundsInLocal());
-       // new Robot().mouseMove((int)(boundsInScreen.getCenterX()), (int)(boundsInScreen.getCenterY()));
-
-       // scene.
+        // Bounds boundsInScreen = forgetPasswordButton.localToScreen(forgetPasswordButton.getBoundsInLocal());
+        //GlassRobot robot = com.sun.glass.ui.Application.GetApplication().createRobot();
+        //new Robot().mouseMove((int)(boundsInScreen.getCenterX()), (int)(boundsInScreen.getCenterY()));
+        //robot.mouseMove((int)(boundsInScreen.getCenterX()), (int)(boundsInScreen.getCenterY()));
         //forgetPasswordButton.setTranslateX(0);
-        //forgetPasswordButton.setTranslateY(0);
+        // forgetPasswordButton.setTranslateY(0);
     }
 }

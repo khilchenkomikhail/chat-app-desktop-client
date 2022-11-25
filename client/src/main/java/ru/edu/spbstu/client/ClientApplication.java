@@ -16,8 +16,7 @@ public class ClientApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        URL fxmlUrl = this.getClass().getClassLoader()
-                .getResource("fxmls/login_register.fxml");
+        URL fxmlUrl = getClass().getResource("/fxmls/login_register.fxml");
         if(fxmlUrl==null)
         {
             System.out.println("Not found");
@@ -31,8 +30,4 @@ public class ClientApplication extends Application {
 
     }
 }
-
-
-
-
 

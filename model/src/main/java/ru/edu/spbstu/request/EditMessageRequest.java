@@ -1,4 +1,4 @@
-package ru.edu.spbstu.controller.request;
+package ru.edu.spbstu.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -19,6 +19,6 @@ public interface ChatRepository extends CrudRepository<ChatJpa, Long> {
     List<ChatJpa> getChatsByUserId(@Param("userId") Long userId);
 
     @Query("select ucd.chat from UserChatDetailsJpa ucd where ucd.user.id = :userId " +
-            "and lower(ucd.chat.name) like concat(:begin, '%')")
+            "and lower(ucd.chat.name) like concat(:begin, '%') order by ucd.chat.name")
     List<ChatJpa> getChatsBySearch(@Param("userId") Long userId, @Param("begin")String begin);
 }

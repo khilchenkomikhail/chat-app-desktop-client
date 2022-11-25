@@ -2,9 +2,9 @@ package ru.edu.spbstu.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.edu.spbstu.controller.request.ChatUpdateRequest;
-import ru.edu.spbstu.controller.request.CreateChatRequest;
-import ru.edu.spbstu.controller.request.SendMessageRequest;
+import ru.edu.spbstu.request.ChatUpdateRequest;
+import ru.edu.spbstu.request.CreateChatRequest;
+import ru.edu.spbstu.request.SendMessageRequest;
 import ru.edu.spbstu.dao.ChatRepository;
 import ru.edu.spbstu.dao.UserChatDetailsRepository;
 import ru.edu.spbstu.dao.UserRepository;

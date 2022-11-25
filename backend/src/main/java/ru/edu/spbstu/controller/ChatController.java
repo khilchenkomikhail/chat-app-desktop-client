@@ -2,8 +2,8 @@ package ru.edu.spbstu.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.edu.spbstu.controller.request.ChatUpdateRequest;
-import ru.edu.spbstu.controller.request.CreateChatRequest;
+import ru.edu.spbstu.request.ChatUpdateRequest;
+import ru.edu.spbstu.request.CreateChatRequest;
 import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.model.ChatUser;
 import ru.edu.spbstu.service.ChatService;

@@ -2,8 +2,8 @@ package ru.edu.spbstu.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.edu.spbstu.controller.request.EditMessageRequest;
-import ru.edu.spbstu.controller.request.SendMessageRequest;
+import ru.edu.spbstu.request.EditMessageRequest;
+import ru.edu.spbstu.request.SendMessageRequest;
 import ru.edu.spbstu.model.Message;
 import ru.edu.spbstu.service.MessageService;
 

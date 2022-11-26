@@ -25,7 +25,7 @@ public class ClientApplication extends Application {
         }
         //launch scene
         Parent root = FXMLLoader.load(fxmlUrl);
-        primaryStage.setTitle("Running button demo");
+        primaryStage.setTitle("FirstFormDemo");
         primaryStage.setScene(new Scene(root, 600, 450));
         primaryStage.show();
 

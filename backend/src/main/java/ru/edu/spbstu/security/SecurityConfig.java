@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .headers().frameOptions().disable()
                 .and()
                     .authorizeRequests()
-                    .antMatchers("/sign-up").permitAll()
+                    .antMatchers("/sign-up", "/send-tmp-password").permitAll()
                     .anyRequest()
                     .authenticated()
                 .and()

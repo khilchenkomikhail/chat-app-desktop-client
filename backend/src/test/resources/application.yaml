@@ -8,5 +8,20 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     defer-datasource-initialization: true
     generate-ddl: true
-  hibernate:
-    ddl-auto: create-drop
+  mail:
+    host: localhost
+    port: 3025
+    username: hellotest
+    password: hellotest
+
+    properties:
+      mail:
+        smtp:
+          ssl:
+            trust: "*"
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000

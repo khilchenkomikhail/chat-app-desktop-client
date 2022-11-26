@@ -75,8 +75,8 @@ public class LoginFormController {
             e.printStackTrace();
         }*/
 
-        URL fxmlUrl = this.getClass().getClassLoader()
-                .getResource("fxmls/forgot_password.fxml");
+        URL fxmlUrl = this.getClass()
+                .getResource("/fxmls/forgot_password.fxml");
         if(fxmlUrl==null)
         {
             System.out.println("Not found2");

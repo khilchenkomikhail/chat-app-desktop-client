@@ -16,8 +16,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
-import ru.edu.spbstu.controller.request.CreateChatRequest;
-import ru.edu.spbstu.controller.request.SignUpRequest;
+import ru.edu.spbstu.request.CreateChatRequest;
+import ru.edu.spbstu.request.SignUpRequest;
 import ru.edu.spbstu.model.Chat;
 
 

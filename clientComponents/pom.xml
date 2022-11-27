@@ -9,28 +9,6 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <!--<build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <release>15</release>
-                </configuration>
-            </plugin>
-            <plugin>
-
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.8</version>
-                <configuration>
-                    <mainClass>ru.edu.spbstu.client.ClientApplication</mainClass>
-                </configuration>
-
-            </plugin>
-        </plugins>
-    </build>-->
 
 
     <artifactId>clientComponents</artifactId>

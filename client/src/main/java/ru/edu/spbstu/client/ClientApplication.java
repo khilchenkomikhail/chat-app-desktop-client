@@ -16,8 +16,8 @@ public class ClientApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        URL fxmlUrl = this.getClass().getClassLoader()
-                .getResource("fxmls/login_register.fxml");
+        URL fxmlUrl = this.getClass()
+                .getResource("/fxmls/login_register.fxml");
         if(fxmlUrl==null)
         {
             System.out.println("Not found");
@@ -25,7 +25,7 @@ public class ClientApplication extends Application {
         }
         //launch scene
         Parent root = FXMLLoader.load(fxmlUrl);
-        primaryStage.setTitle("Running button demo");
+        primaryStage.setTitle("FirstFormDemo");
         primaryStage.setScene(new Scene(root, 600, 450));
         primaryStage.show();
 

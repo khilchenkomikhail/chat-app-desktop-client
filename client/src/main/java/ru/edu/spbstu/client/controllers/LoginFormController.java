@@ -7,7 +7,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import ru.edu.spbstu.clientComponents.PasswordTextField;
 
@@ -21,7 +20,7 @@ import java.util.regex.Pattern;
 //import ru.edu.spbstu.request.SignUpRequest;
 import ru.edu.spbstu.client.services.LogInService;
 public class LoginFormController {
-    public CheckBox s;
+    public CheckBox rememberMeCheckBox;
     public Button forgetPasswordButton;
     public TextField loginTextBox;
     public PasswordTextField passwordTextBox;
@@ -103,7 +102,7 @@ public class LoginFormController {
         Stage stage=new Stage();
      //  stage.setScene(new Scene(root));
         stage.setScene(new Scene(root, 600, 450));
-        forgotPasswordFormController.setLogin(loginTextBox.getText());//TODO это костыль, я хочу передать логин в форму для забывания парол
+        ForgotPasswordFormController.setLogin(loginTextBox.getText());//TODO это костыль, я хочу передать логин в форму для забывания парол
         //Чтобы потом, проверить почту, но сейчас я  это могу сделать только через статический метод, что не очень
 
 

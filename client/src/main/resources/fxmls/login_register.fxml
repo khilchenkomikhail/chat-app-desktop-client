@@ -56,7 +56,7 @@
                                  <GridPane.margin>
                                     <Insets left="5.0" right="5.0" />
                                  </GridPane.margin></Button>
-                              <CheckBox fx:id="s" mnemonicParsing="false" text="Запомнить меня" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
+                              <CheckBox fx:id="rememberMeCheckBox" mnemonicParsing="false" text="Запомнить меня" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
                                  <padding>
                                     <Insets right="20.0" />
                                  </padding>

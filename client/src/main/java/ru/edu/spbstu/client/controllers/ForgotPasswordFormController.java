@@ -1,7 +1,6 @@
 package ru.edu.spbstu.client.controllers;
 
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -12,7 +11,7 @@ import javafx.stage.Stage;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class forgotPasswordFormController {
+public class ForgotPasswordFormController {
     private static String login;
     @FXML
     private Button changePasswordButton;

@@ -45,11 +45,13 @@
                                  </padding>
                               </Label>
                               <TextField fx:id="loginTextBox" onKeyTyped="#updateLogin" prefHeight="25.0" prefWidth="221.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-                              <Button fx:id="logInButton" mnemonicParsing="false" onMouseClicked="#logInButtonLeftMouseClick" prefHeight="25.0" prefWidth="139.0" text="Войти" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
+                              <Button fx:id="logInButton" mnemonicParsing="false" onMouseClicked="#logInButtonPress" prefHeight="25.0" prefWidth="139.0" text="Войти" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
                                  <GridPane.margin>
                                     <Insets left="5.0" right="5.0" />
                                  </GridPane.margin></Button>
-                              <Button fx:id="forgetPasswordButton" mnemonicParsing="false" onMouseClicked="#forgotPasswordButtonClick" prefHeight="25.0" prefWidth="139.0" text="Забыли пароль?" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
+                              <Button fx:id="forgetPasswordButton" mnemonicParsing="false"
+                                      onMouseClicked="#forgotPasswordButtonPress" prefHeight="25.0" prefWidth="139.0"
+                                      text="Забыли пароль?" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
                                  <opaqueInsets>
                                     <Insets />
                                  </opaqueInsets>
@@ -105,7 +107,7 @@
                               </Label>
                               <TextField fx:id="regLoginTextBox" onKeyTyped="#updateRegisterButton" prefWidth="433.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
                               <TextField fx:id="emailTextBox" onKeyTyped="#updateRegisterButton" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <Button fx:id="registerButton" mnemonicParsing="false" onMouseClicked="#registerButtonMouseClick" prefHeight="25.0" prefWidth="139.0" text="Зарегистрироваться" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="TOP" />
+                              <Button fx:id="registerButton" mnemonicParsing="false" onMouseClicked="#registerButtonPress" prefHeight="25.0" prefWidth="139.0" text="Зарегистрироваться" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="TOP" />
                               <PasswordTextField fx:id="regPasswordTextBox" onKeyTyped="#updateRegisterButton" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                            </children>
                            <padding>

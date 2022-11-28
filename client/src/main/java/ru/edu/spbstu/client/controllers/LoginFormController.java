@@ -7,18 +7,20 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import ru.edu.spbstu.client.ClientApplication;
 import ru.edu.spbstu.clientComponents.PasswordTextField;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
-//import ru.edu.spbstu.backend.
-//import ru.edu.spbstu.request.SignUpRequest;
+
+
 import ru.edu.spbstu.client.services.LogInService;
+
+import static ru.edu.spbstu.client.utils.Verificators.isEmail;
+
 public class LoginFormController {
     public CheckBox rememberMeCheckBox;
     public Button forgetPasswordButton;
@@ -29,8 +31,12 @@ public class LoginFormController {
     public PasswordTextField regPasswordTextBox;
     public Button logInButton;
     public Button registerButton;
-    private LogInService service;
 
+    private LogInService service;
+    private ForgotPasswordFormController conF;
+   // private Scene scene;
+    private ChatFormController conC;
+    private Stage stage;
 
 
     void showError(String errorText)
@@ -44,104 +50,81 @@ public class LoginFormController {
     void initialize() {
         service=new LogInService();
         logInButton.setDisable(true);
-        registerButton.setDisable(true);
+        //registerButton.setDisable(true);
+        forgetPasswordButton.setDisable(true);
+        regLoginTextBox.setText("olegoleg");
+        emailTextBox.setText("olegoleg@gmail.com");
+        regPasswordTextBox.setText("olegoleg");
+        stage= ClientApplication.getStage();
 
     }
 
 
-    public void logInButtonPress(ActionEvent actionEvent) {
+    public void logInButtonPress(ActionEvent actionEvent) throws IOException {
         if(passwordTextBox.getText().length()<8)
         {
             showError("Поле пароль должно содержать не менее 8 символов");
             return;
         }
-
-
-        try {
-            service.logIn(loginTextBox.getText(),passwordTextBox.getText());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //TODO здесь надо открыть следующую форму и пеhедать туда credentials provider
-
+        service.logIn(loginTextBox.getText(),passwordTextBox.getText());
+        openChatForm(loginTextBox);
     }
 
-    public void forgotPasswordButtonPress(ActionEvent actionEvent) {
-
-        /*try {//ToDO пример миши с реистрацией пользователя и созданием для него чатов
-            service.init();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-
-        URL fxmlUrl = this.getClass()
-                .getResource("/fxmls/forgot_password.fxml");
-        if(fxmlUrl==null)
-        {
-            System.out.println("Not found2");
-            return;
-        }
-        //launch scene
-        //Stage stage=new Stage();
-       // Parent root = null;
-        /*try {
-            root = FXMLLoader.load(fxmlUrl);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-        //stage.setTitle("ForgotPassword");
-        //stage.setScene(new Scene(root, 600, 450));
-
-        FXMLLoader loader = new FXMLLoader(fxmlUrl);
-        Parent root = null;
-        try {
-            root = loader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Stage stage=new Stage();
-     //  stage.setScene(new Scene(root));
-        stage.setScene(new Scene(root, 600, 450));
-        ForgotPasswordFormController.setLogin(loginTextBox.getText());//TODO это костыль, я хочу передать логин в форму для забывания парол
-        //Чтобы потом, проверить почту, но сейчас я  это могу сделать только через статический метод, что не очень
-
-
+    public void forgotPasswordButtonPress(ActionEvent actionEvent) throws IOException {
+        FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/forgot_password.fxml"));
+        Parent window = (Pane) fmxlLoader.load();
+        conF = fmxlLoader.<ForgotPasswordFormController>getController();
+        Scene scene = new Scene(window);
+        conF.setLogin(loginTextBox.getText());
+        Stage stage= new Stage();
+        stage.setScene(scene);
         stage.show();
-        System.out.println("forgot "+loginTextBox.getText());
     }
 
-    public void registerButtonPress(ActionEvent actionEvent) {
+    public void registerButtonPress(ActionEvent actionEvent) throws IOException {
         if(regPasswordTextBox.getText().length()<8)
         {
             showError("Поле пароль должно содержать не менее 8 символов");
             return;
         }
-         final String EMAIL_PATTERN =
-                "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
-                        + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
-        Pattern pattern = Pattern.compile(EMAIL_PATTERN);
-        Matcher m=pattern.matcher(emailTextBox.getText());
-        if(!m.matches())
+
+        if(!isEmail(emailTextBox.getText()))
         {
-            showError("Содержиоме поля email не соотвествует стандарту!");
+            showError("Содержимое поля email не соотвествует стандарту!");
             return;
         }
+        service.register(regLoginTextBox.getText(),regPasswordTextBox.getText(),emailTextBox.getText());
+        openChatForm(regLoginTextBox);
+        stage.hide();
 
-        try {
-            service.register(loginTextBox.getText(),passwordTextBox.getText(),emailTextBox.getText());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //TODO здесь надо открыть следующую форму и передать туда credentials provider
+    }
 
+    private void openChatForm(TextField regLoginTextBox) throws IOException {
+        FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/chat_form.fxml"));
+        Parent window = (Pane) fmxlLoader.load();
+        conC = fmxlLoader.<ChatFormController>getController();
+        Scene scene = new Scene(window,800,600);
+
+        conC.setCredentials(this.service.getProvider(), regLoginTextBox.getText());
+        conC.init();
+
+        Stage nstage= new Stage();
+        nstage.setScene(scene);
+        nstage.setTitle("Chats");
+        conC.setCurrStage(nstage);
+        conC.setPrimaryStage(this.stage);
+
+        nstage.show();
     }
 
     public void updateLogin(KeyEvent keyEvent) {
         if(loginTextBox.getText().length()==0)
         {
             logInButton.setDisable(true);
+            forgetPasswordButton.setDisable(true);
             return;
         }
+        forgetPasswordButton.setDisable(false);
         if(passwordTextBox.getText().length()==0)
         {
             logInButton.setDisable(true);
@@ -169,5 +152,9 @@ public class LoginFormController {
         }
 
         registerButton.setDisable(false);
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
     }
 }

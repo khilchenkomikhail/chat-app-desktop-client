@@ -11,12 +11,14 @@ import javafx.stage.Stage;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static ru.edu.spbstu.client.utils.Verificators.isEmail;
+
 public class ForgotPasswordFormController {
-    private static String login;
+    private  String login;
     @FXML
     private Button changePasswordButton;
     public TextField emailTextBox;
-    public static void setLogin(String llog)
+    public  void setLogin(String llog)
     {
         login=llog;
     }
@@ -32,18 +34,13 @@ public class ForgotPasswordFormController {
 
 
     public void changePasswordButtonClick(MouseEvent mouseEvent) {
-        final String EMAIL_PATTERN =
-                "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
-                        + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
-        Pattern pattern = Pattern.compile(EMAIL_PATTERN);
-        Matcher m=pattern.matcher(emailTextBox.getText());
-        if(!m.matches())
+        if(isEmail(emailTextBox.getText()))
         {
             showError("Содержиоме поля email не соотвествует стандарту!");
             return;
         }
 
-        //todo проерить что email совпадает с email учётки
+        //todo проверить что email совпадает с email учётки
         boolean isValid=true;
         if(isValid) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -51,16 +48,15 @@ public class ForgotPasswordFormController {
             alert.showAndWait().ifPresent(rs -> {
                 if (rs == ButtonType.OK) {
                     Stage stage = (Stage) changePasswordButton.getScene().getWindow();
-                    //Stage stage  = (Stage) source.getScene().getWindow();
                     stage.close();
                 }
             });
         }
         else
         {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Почта введена неверно попробуйте повторить запрос!");
-            emailTextBox.setText("");
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка!");
+            emailTextBox.setText("попробуйте повторить запрос!");
             alert.show();
         }
     }

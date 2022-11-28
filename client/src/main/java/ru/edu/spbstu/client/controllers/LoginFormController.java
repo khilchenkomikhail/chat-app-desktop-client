@@ -1,5 +1,6 @@
 package ru.edu.spbstu.client.controllers;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,7 +17,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-import ru.edu.spbstu.model.Chat;
 //import ru.edu.spbstu.backend.
 //import ru.edu.spbstu.request.SignUpRequest;
 import ru.edu.spbstu.client.services.LogInService;
@@ -50,7 +50,7 @@ public class LoginFormController {
     }
 
 
-    public void logInButtonLeftMouseClick(MouseEvent mouseEvent) {
+    public void logInButtonPress(ActionEvent actionEvent) {
         if(passwordTextBox.getText().length()<8)
         {
             showError("Поле пароль должно содержать не менее 8 символов");
@@ -67,7 +67,7 @@ public class LoginFormController {
 
     }
 
-    public void forgotPasswordButtonClick(MouseEvent mouseEvent) {
+    public void forgotPasswordButtonPress(ActionEvent actionEvent) {
 
         /*try {//ToDO пример миши с реистрацией пользователя и созданием для него чатов
             service.init();
@@ -111,7 +111,7 @@ public class LoginFormController {
         System.out.println("forgot "+loginTextBox.getText());
     }
 
-    public void registerButtonMouseClick(MouseEvent mouseEvent) {
+    public void registerButtonPress(ActionEvent actionEvent) {
         if(regPasswordTextBox.getText().length()<8)
         {
             showError("Поле пароль должно содержать не менее 8 символов");

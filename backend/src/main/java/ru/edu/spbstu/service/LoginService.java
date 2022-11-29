@@ -1,6 +1,7 @@
 package ru.edu.spbstu.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.edu.spbstu.dao.UserRepository;
 import ru.edu.spbstu.exception.ResourceNotFound;
@@ -16,14 +17,14 @@ public class LoginService {
 
     private final UserRepository userRepository;
     private final EmailSender emailSender;
-
+    private final PasswordEncoder passwordEncoder;
     @Transactional
     public void sendTemporaryPassword(String login) {
         UserJpa user = userRepository.getByLogin(login)
                 .orElseThrow(() -> new ResourceNotFound("User with login '" + login + "' was not found"));
 
         String tempPassword = UUID.randomUUID().toString().substring(0, 16);
-        user.setPassword(tempPassword);
+        user.setPassword(passwordEncoder.encode(tempPassword));
         userRepository.save(user);
         emailSender.send(user.getEmail(), buildEmail(login, tempPassword));
     }

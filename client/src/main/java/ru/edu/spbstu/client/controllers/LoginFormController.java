@@ -42,9 +42,6 @@ public class LoginFormController {
     public Button registerButton;
 
     private LogInService service;
-    private ForgotPasswordFormController conF;
-   // private Scene scene;
-    private ChatFormController conC;
     private Stage stage;
 
 
@@ -59,7 +56,7 @@ public class LoginFormController {
     void initialize() {
         service=new LogInService();
         logInButton.setDisable(true);
-       // registerButton.setDisable(true);
+        registerButton.setDisable(true);
         forgetPasswordButton.setDisable(true);
         regLoginTextBox.setText("olegoleg");
         emailTextBox.setText("вставь свой email");
@@ -75,24 +72,36 @@ public class LoginFormController {
             showError("Поле пароль должно содержать не менее 8 символов");
             return;
         }
-        service.logIn(loginTextBox.getText(),passwordTextBox.getText());
+
         try {
-            openChatForm(loginTextBox);
+            service.logIn(loginTextBox.getText(),passwordTextBox.getText());
+
+
         } catch (IOException e) {
             showError("Учётной записи с данным логином и паролем не существует");
             return;
         }
+        try {
+            openChatForm(loginTextBox);
+
+        } catch (IOException e) {
+            showError("Ошибка при открытии 2-й формы");
+            return;
+        }
+
 
     }
+
 
     public void forgotPasswordButtonPress(ActionEvent actionEvent) throws IOException {
         FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/forgot_password.fxml"));
         Parent window = (Pane) fmxlLoader.load();
-        conF = fmxlLoader.<ForgotPasswordFormController>getController();
+        ForgotPasswordFormController conF = fmxlLoader.<ForgotPasswordFormController>getController();
         Scene scene = new Scene(window);
         conF.setLogin(loginTextBox.getText());
         Stage stage= new Stage();
         stage.setScene(scene);
+
         stage.show();
     }
 
@@ -117,7 +126,8 @@ public class LoginFormController {
     private void openChatForm(TextField regLoginTextBox) throws IOException {
         FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/chat_form.fxml"));
         Parent window = (Pane) fmxlLoader.load();
-        conC = fmxlLoader.<ChatFormController>getController();
+        // private Scene scene;
+        ChatFormController conC = fmxlLoader.<ChatFormController>getController();
         Scene scene = new Scene(window,700,700);
 
         conC.setCredentials(this.service.getProvider(), regLoginTextBox.getText());

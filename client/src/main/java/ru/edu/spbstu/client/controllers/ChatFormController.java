@@ -13,6 +13,7 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import ru.edu.spbstu.client.services.ChatFormService;
 import ru.edu.spbstu.client.services.LogInService;
@@ -45,31 +46,42 @@ public class ChatFormController {
     {
         this.service.setCredentialsProvider(prov,login);
     }
+    void showError(String errorText)
+    {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setHeaderText(errorText);
+        alert.show();
+    }
 
     @FXML
     void initialize() throws IOException {
 
 
     }
-    void init()  {
-       /* for (Integer i=0;i<10;i++)
-        {
-            service.addChat("chat"+i.toString());
-        }*/
+    void init() {
         try {
-            chatList=service.getChats(1);
-        } catch (IOException e) {
-            chatList=new ArrayList<>(0);
+            chatList = service.getChats(1);
         }
+        catch (HttpResponseException e)
+        {
+            showError(e.getReasonPhrase());
+            logOutAction();
+        } catch (IOException e) {
+            showError("Internal server error!");
+        }
+
         chatsListView.setItems(FXCollections.observableArrayList(chatList));
 
     }
 
 
-
-    public void logOutMouseClick(ActionEvent actionEvent) {
+    private void logOutAction()
+    {
         currStage.close();
         primaryStage.show();
+    }
+    public void logOutMouseClick(ActionEvent actionEvent) {
+        logOutAction();
     }
 
     public void setPrimaryStage(Stage primaryStage) {

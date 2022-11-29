@@ -43,7 +43,7 @@
                   <Insets bottom="30.0" left="20.0" right="20.0" />
                </GridPane.margin>
             </ListView>
-            <Button fx:id="createChatButton" mnemonicParsing="false" onAction="#createChatButtonClick" text="Добавить пользователя" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="BOTTOM" />
+            <Button fx:id="createChatButton" mnemonicParsing="false" onAction="#createChatButtonClick" text="СоздатьЧат" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="BOTTOM" />
          </children>
       </GridPane>
    </children>

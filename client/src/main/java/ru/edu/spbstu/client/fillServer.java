@@ -75,7 +75,6 @@ public class fillServer {
     }
     public void start() throws IOException {
 
-        //List<String> emails=loggins.forEach( elem->{return elem+"@gmail.com";});
         ArrayList<String>emails=new ArrayList<>(0);
         for(var elem:loggins)
         {
@@ -87,12 +86,12 @@ public class fillServer {
             register(loggins.get(i),paswwords.get(i),emails.get(i));
         }
         logIn(loggins.get(0),paswwords.get(0));
-        List<String> temp1=loggins;
+        List<String> temp1=loggins.subList(1,loggins.size());
         addChat("AllInChat",temp1);
 
         for (Integer i=1;i<loggins.size()-1;i++)
         {
-            temp1=loggins.subList(0,loggins.size()-i);
+            temp1=loggins.subList(1,loggins.size()-i);
             addChat("chat"+i.toString(),temp1);
         }
         //Todo add some messages

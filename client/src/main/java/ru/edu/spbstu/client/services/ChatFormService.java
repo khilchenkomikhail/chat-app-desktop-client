@@ -16,6 +16,7 @@ import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.request.CreateChatRequest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -41,7 +42,6 @@ public class ChatFormService {
         this.login=login;
     }
     public List<Chat> getChats(Integer page) throws IOException {
-        //getAllChats(prov, login, page).forEach(chat -> System.out.println(chat.getName()))
         return getAllChats(prov, login, page);
     }
     public void addChat(String chatName, List<String>users) throws IOException {
@@ -70,6 +70,13 @@ public class ChatFormService {
             HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, login, page));
             CloseableHttpResponse re = client.execute(httpGet);
             String json = EntityUtils.toString(re.getEntity());
+            if(re.getStatusLine().getStatusCode()!=200)
+            {
+                if(re.getStatusLine().getStatusCode()==400) {
+                    return new ArrayList<>(0);
+                }
+                throw new HttpResponseException(re.getStatusLine().getStatusCode(),"HttpCode");
+            }
             return jsonMapper.readValue(json, new TypeReference<>() {});
         }
     }

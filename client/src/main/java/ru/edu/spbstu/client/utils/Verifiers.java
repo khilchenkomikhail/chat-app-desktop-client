@@ -3,7 +3,7 @@ package ru.edu.spbstu.client.utils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Verificators {
+public class Verifiers {
     public static boolean isEmail(String email)
     {
         final String EMAIL_PATTERN =

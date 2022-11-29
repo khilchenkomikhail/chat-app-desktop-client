@@ -1,5 +1,6 @@
 package ru.edu.spbstu.client.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,6 +10,13 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import ru.edu.spbstu.client.ClientApplication;
 import ru.edu.spbstu.clientComponents.PasswordTextField;
 
@@ -18,8 +26,9 @@ import java.io.IOException;
 
 
 import ru.edu.spbstu.client.services.LogInService;
+import ru.edu.spbstu.request.SignUpRequest;
 
-import static ru.edu.spbstu.client.utils.Verificators.isEmail;
+import static ru.edu.spbstu.client.utils.Verifiers.isEmail;
 
 public class LoginFormController {
     public CheckBox rememberMeCheckBox;
@@ -50,24 +59,30 @@ public class LoginFormController {
     void initialize() {
         service=new LogInService();
         logInButton.setDisable(true);
-        //registerButton.setDisable(true);
+       // registerButton.setDisable(true);
         forgetPasswordButton.setDisable(true);
         regLoginTextBox.setText("olegoleg");
-        emailTextBox.setText("olegoleg@gmail.com");
+        emailTextBox.setText("вставь свой email");
         regPasswordTextBox.setText("olegoleg");
         stage= ClientApplication.getStage();
 
     }
 
 
-    public void logInButtonPress(ActionEvent actionEvent) throws IOException {
+    public void logInButtonPress(ActionEvent actionEvent)  {
         if(passwordTextBox.getText().length()<8)
         {
             showError("Поле пароль должно содержать не менее 8 символов");
             return;
         }
         service.logIn(loginTextBox.getText(),passwordTextBox.getText());
-        openChatForm(loginTextBox);
+        try {
+            openChatForm(loginTextBox);
+        } catch (IOException e) {
+            showError("Учётной записи с данным логином и паролем не существует");
+            return;
+        }
+
     }
 
     public void forgotPasswordButtonPress(ActionEvent actionEvent) throws IOException {
@@ -103,16 +118,17 @@ public class LoginFormController {
         FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/chat_form.fxml"));
         Parent window = (Pane) fmxlLoader.load();
         conC = fmxlLoader.<ChatFormController>getController();
-        Scene scene = new Scene(window,800,600);
+        Scene scene = new Scene(window,700,700);
 
         conC.setCredentials(this.service.getProvider(), regLoginTextBox.getText());
-        conC.init();
+
 
         Stage nstage= new Stage();
         nstage.setScene(scene);
         nstage.setTitle("Chats");
         conC.setCurrStage(nstage);
         conC.setPrimaryStage(this.stage);
+        conC.init();
 
         nstage.show();
     }
@@ -157,4 +173,6 @@ public class LoginFormController {
     public void setStage(Stage stage) {
         this.stage = stage;
     }
+
+
 }

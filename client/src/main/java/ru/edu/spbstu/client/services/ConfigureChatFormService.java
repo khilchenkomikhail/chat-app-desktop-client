@@ -19,20 +19,16 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-public class ChatFormService {
+public class ConfigureChatFormService {
 
     private static final ObjectMapper jsonMapper = new ObjectMapper();
     private CredentialsProvider prov= new BasicCredentialsProvider();
     private String login;
 
 
-    public CredentialsProvider getCredentialsProvider()
+    CredentialsProvider getCredentialsProvider()
     {
         return prov;
-    }
-    public String getLogin()
-    {
-        return login;
     }
 
     public void setCredentialsProvider(CredentialsProvider prov,String login)
@@ -93,9 +89,4 @@ public class ChatFormService {
     }
 
 
-    public List<Chat> find(String name) {
-        List<Chat>res=Collections.emptyList();
-
-        return res;
-    }
 }

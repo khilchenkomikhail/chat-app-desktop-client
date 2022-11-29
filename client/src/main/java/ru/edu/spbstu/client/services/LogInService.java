@@ -29,7 +29,7 @@ public class LogInService {
         String image = "image "+ login;//TODO когда будет поддержка изображений его надо добавить сюда
 
         int regStatus = register(login, password, email, image);
-        System.out.println(regStatus);
+       // System.out.println(regStatus);
 
         if (regStatus != 200) {
             throw new HttpResponseException(regStatus,"Error while register");
@@ -39,7 +39,7 @@ public class LogInService {
         UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(login, password);
         prov.setCredentials(AuthScope.ANY, credentials);
     }
-    public void logIn(String login,String password) throws IOException {
+    public void logIn(String login,String password){
         UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(login, password);
         prov.setCredentials(AuthScope.ANY, credentials);
     }

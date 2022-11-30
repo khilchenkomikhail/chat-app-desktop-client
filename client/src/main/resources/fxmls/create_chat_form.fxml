@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import ru.edu.spbstu.clientComponents.ListViewWithButtons?>
 
 <AnchorPane prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.edu.spbstu.client.controllers.CreateChatFormController">
    <children>
@@ -38,11 +39,11 @@
             </TextField>
             <Button fx:id="AddUserButton" mnemonicParsing="false" onAction="#AddUserButtonClick" text="Добавить пользователя" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
             <Label fx:id="chatUsersLabel" text="Участники чата" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
-            <ListView fx:id="usersToAddListView" onScroll="#scrollAction" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="2" GridPane.rowSpan="3">
+            <ListViewWithButtons fx:id="usersToAddListView" onScroll="#scrollAction" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="2" GridPane.rowSpan="3">
                <GridPane.margin>
                   <Insets bottom="30.0" left="20.0" right="20.0" />
                </GridPane.margin>
-            </ListView>
+            </ListViewWithButtons>
             <Button fx:id="createChatButton" mnemonicParsing="false" onAction="#createChatButtonClick" text="СоздатьЧат" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="BOTTOM" />
          </children>
       </GridPane>

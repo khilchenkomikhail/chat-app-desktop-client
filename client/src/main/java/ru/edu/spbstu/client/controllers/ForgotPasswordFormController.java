@@ -1,5 +1,6 @@
 package ru.edu.spbstu.client.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -8,12 +9,20 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
 
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import ru.edu.spbstu.request.CheckEmailRequest;
+import ru.edu.spbstu.request.SignUpRequest;
 
 
 import java.io.IOException;
@@ -25,6 +34,13 @@ public class ForgotPasswordFormController {
     @FXML
     private Button changePasswordButton;
     public TextField emailTextBox;
+
+    public void setProvider(CredentialsProvider provider) {
+        this.provider = provider;
+    }
+
+    private CredentialsProvider provider;
+
     public  void setLogin(String llog)
     {
         login=llog;
@@ -41,7 +57,7 @@ public class ForgotPasswordFormController {
 
 
     public void changePasswordButtonClick(MouseEvent mouseEvent) throws IOException {
-        if(isEmail(emailTextBox.getText()))
+        if(!isEmail(emailTextBox.getText()))
         {
             showError("Содержимое поля email не соотвествует стандарту!");
             return;
@@ -49,6 +65,23 @@ public class ForgotPasswordFormController {
 
         //todo проверить что email совпадает с email учётки
         boolean isValid=true;
+        String email=emailTextBox.getText();
+        CheckEmailRequest signUpRequest = new CheckEmailRequest(login,email);
+
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            HttpPost signUpReq = new HttpPost("http://localhost:8080/check_user_email");
+            signUpReq.addHeader("content-type", "application/json");
+            signUpReq.setEntity(new StringEntity(jsonMapper.writeValueAsString(signUpRequest)));
+            var temp=client.execute(signUpReq);
+            int code=temp.getStatusLine().getStatusCode();
+            {
+                if(code!=200)
+                {
+                    //return new ChatUser();
+                    isValid=false;
+                }
+            }
+        }
         if(isValid) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             forgotAction();
@@ -64,10 +97,11 @@ public class ForgotPasswordFormController {
         {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Ошибка!");
-            emailTextBox.setText("попробуйте повторить запрос!");
+            alert.setContentText("Введена неверная почта попробуйте повторить запрос!");
             alert.show();
         }
     }
+
     private static final ObjectMapper jsonMapper = new ObjectMapper();
 
     private void forgotAction() throws IOException {
@@ -80,11 +114,16 @@ public class ForgotPasswordFormController {
             signUpReq.addHeader("content-type", "application/json");
             signUpReq.setEntity(new StringEntity(login));//TODo This must work but after sending letter something bad happens
             sendStatus= client.execute(signUpReq).getStatusLine().getStatusCode();
+            if (sendStatus != 200) {
+                throw new HttpResponseException(sendStatus,"Error while register");
+            }
+        }
+        catch (IOException e)
+        {
+            showError("Error occured during email send! " +e.getMessage()+" !");
         }
 
-        if (sendStatus != 200) {
-            throw new HttpResponseException(sendStatus,"Error while register");
-        }
+
 
 
     }

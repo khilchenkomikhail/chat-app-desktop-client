@@ -82,7 +82,8 @@ public class LogInService {
             HttpPost signUpReq = new HttpPost("http://localhost:8080/sign-up");
             signUpReq.addHeader("content-type", "application/json");
             signUpReq.setEntity(new StringEntity(jsonMapper.writeValueAsString(signUpRequest)));
-            return client.execute(signUpReq).getStatusLine().getStatusCode();
+            var temp=client.execute(signUpReq);
+            return temp.getStatusLine().getStatusCode();
         }
     }
 }

@@ -13,6 +13,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import ru.edu.spbstu.model.Chat;
+import ru.edu.spbstu.model.ChatUser;
+import ru.edu.spbstu.model.User;
 import ru.edu.spbstu.request.CreateChatRequest;
 
 import java.io.IOException;
@@ -23,10 +25,15 @@ public class CreateChatFormService {
 
     private static final ObjectMapper jsonMapper = new ObjectMapper();
     private CredentialsProvider prov= new BasicCredentialsProvider();
+
+    public String getLogin() {
+        return login;
+    }
+
     private String login;
 
 
-    CredentialsProvider getCredentialsProvider()
+    public CredentialsProvider getCredentialsProvider()
     {
         return prov;
     }
@@ -42,7 +49,7 @@ public class CreateChatFormService {
     }
     public void addChat(String chatName, List<String>users) throws IOException {
         int reqStatusCreateChat = createChat(prov, chatName, users, login);
-        System.out.println(reqStatusCreateChat);
+       // System.out.println(reqStatusCreateChat);
 
         if (reqStatusCreateChat != 200) {
             throw new HttpResponseException(reqStatusCreateChat,"Error while addChat");
@@ -69,7 +76,9 @@ public class CreateChatFormService {
             return jsonMapper.readValue(json, new TypeReference<>() {});
         }
     }
-
+    public ChatUser getUser(String text) throws IOException {
+        return getUser(prov,text);
+    }
     private static int createChat(CredentialsProvider provider, String chatName, List<String> users, String admin) throws IOException {
         CreateChatRequest request = new CreateChatRequest();
         request.setAdmin_login(admin);
@@ -91,5 +100,28 @@ public class CreateChatFormService {
 
     public boolean checkUser(String username) {
         return true;
+    }
+
+    private static ChatUser getUser(CredentialsProvider provider, String login) throws IOException {
+
+        String getChatsUrlBlueprint = "http://localhost:8080/get_chat_user?login=%s";
+
+        try (CloseableHttpClient client = HttpClientBuilder
+                .create()
+                .setDefaultCredentialsProvider(provider)
+                .build()) {
+            HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, login));
+            CloseableHttpResponse re = client.execute(httpGet);
+            String json = EntityUtils.toString(re.getEntity());
+            int code=re.getStatusLine().getStatusCode();
+            {
+                if(code!=200)
+                {
+                    //return new ChatUser();
+                    throw new HttpResponseException(code,"Error while getting user");
+                }
+            }
+            return jsonMapper.readValue(json, new TypeReference<>() {});
+        }
     }
 }

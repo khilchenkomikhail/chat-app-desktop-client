@@ -139,4 +139,9 @@ public class ChatService {
                 .collect(Collectors.toList());
     }
 
+    public ChatUser getChatUser(String login) {
+        UserJpa user=userRepository.getByLogin(login)
+                .orElseThrow(() -> new ResourceNotFound("User with login '" + login + "' was not found"));
+        return new ChatUser(user.getLogin(),false);
+    }
 }

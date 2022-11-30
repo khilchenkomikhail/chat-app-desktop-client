@@ -42,10 +42,6 @@ public class ConfigureChatFormController {
 
     }
     void init() throws IOException {
-        for (Integer i=0;i<10;i++)
-        {
-            service.addChat("chat"+i.toString());
-        }
         chatList=service.getChats(1);
         chatsListView.setItems(FXCollections.observableArrayList(chatList));
 

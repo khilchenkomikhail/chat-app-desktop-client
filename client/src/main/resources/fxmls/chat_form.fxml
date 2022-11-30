@@ -30,17 +30,17 @@
          <children>
             <Button fx:id="addChatButton" mnemonicParsing="false" onAction="#addChatButtonClick" prefHeight="25.0" prefWidth="139.0" text="Добавить чат" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.valignment="TOP" />
             <Button fx:id="logOutButton" mnemonicParsing="false" onAction="#logOutMouseClick" prefHeight="25.0" prefWidth="139.0" text="Выйти" GridPane.valignment="TOP" />
-            <ListView fx:id="chatsListView" onScroll="#scrollMethod" prefHeight="200.0" prefWidth="373.0" GridPane.columnIndex="3" GridPane.rowSpan="4" />
             <TextField fx:id="newChatTextBox" onKeyTyped="#findChatsEvent" prefHeight="25.0" prefWidth="288.0" GridPane.columnIndex="1" GridPane.valignment="TOP" />
             <Button fx:id="profileButton" mnemonicParsing="false" onAction="#ProfileMouseClick" prefHeight="25.0" prefWidth="139.0" text="Профиль" GridPane.valignment="CENTER" />
             <ComboBox fx:id="LanguageComboBox" onAction="#LanguageCBAction" prefWidth="150.0" GridPane.valignment="BOTTOM" />
-            <ListView fx:id="chatsListView1" onScroll="#scrollMethod" prefHeight="200.0" prefWidth="373.0" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="3" />
+            <ListView fx:id="chatsListView" onScroll="#scrollMethod" prefHeight="200.0" prefWidth="373.0" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="3" />
             <Button fx:id="sendMessageButton" mnemonicParsing="false" onAction="#sendMessageButtonClick" prefHeight="25.0" prefWidth="139.0" text="Send" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="BOTTOM" />
             <TextArea fx:id="messageTextArea" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="4">
                <GridPane.margin>
                   <Insets bottom="40.0" right="40.0" />
                </GridPane.margin>
             </TextArea>
+            <ListView fx:id="messagesListView" GridPane.columnIndex="3" GridPane.rowSpan="3" />
          </children>
          <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />

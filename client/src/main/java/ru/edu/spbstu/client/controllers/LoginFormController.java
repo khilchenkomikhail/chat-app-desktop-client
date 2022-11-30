@@ -88,6 +88,8 @@ public class LoginFormController {
             showError("Ошибка при открытии 2-й формы");
             return;
         }
+        stage.hide();
+
 
 
     }

@@ -1,6 +1,8 @@
 package ru.edu.spbstu.client.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,13 +17,18 @@ import javafx.stage.Stage;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import ru.edu.spbstu.client.ListViewDemo;
 import ru.edu.spbstu.client.services.ChatFormService;
 import ru.edu.spbstu.client.services.LogInService;
+import ru.edu.spbstu.clientComponents.HBoxCell;
+import ru.edu.spbstu.clientComponents.ListViewWithButtons;
 import ru.edu.spbstu.clientComponents.PasswordTextField;
 import ru.edu.spbstu.model.Chat;
+import ru.edu.spbstu.model.Message;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ChatFormController {
@@ -33,15 +40,17 @@ public class ChatFormController {
     public Button addChatButton;
     public Button profileButton;
     public ComboBox LanguageComboBox;
-    public ListView chatsListView1;
     public Button sendMessageButton;
     public TextArea messageTextArea;
+    public ListView<Message> messagesListView;
     private ChatFormService service=new ChatFormService();
     private Stage primaryStage;
     private Stage currStage;
     private int ChatPage=1;
     private int SelectedChat=0;
     private List<Chat> chatList;
+    private List<Message> messageList;
+
     public void setCredentials(CredentialsProvider prov,String login)
     {
         this.service.setCredentialsProvider(prov,login);
@@ -69,8 +78,29 @@ public class ChatFormController {
         } catch (IOException e) {
             showError("Internal server error!");
         }
+        chatsListView.setItems(FXCollections.observableList(chatList));
 
-        chatsListView.setItems(FXCollections.observableArrayList(chatList));
+        /*chatsListView.resetList(chatList);*/
+
+        chatsListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Chat>() {//Todo переместить в лругое место
+            @Override
+            public void changed(ObservableValue<? extends Chat> observableValue, Chat item, Chat t1) {
+                var curr=chatsListView.getSelectionModel().getSelectedItem();
+                //System.out.println(curr.toString());
+
+                try {
+                    messageList=service.getMessages(curr.getId(),1);
+                } catch (IOException e) {
+                    messageList=new ArrayList<>();
+                }
+                messagesListView.setItems(FXCollections.observableList(messageList));
+
+                //TODO update messageListView
+            }
+        });
+        //chatsListView.init();
+
+        //chatsListView.setItems(FXCollections.observableArrayList(chatList));
 
     }
 
@@ -91,8 +121,16 @@ public class ChatFormController {
     public void setCurrStage(Stage currStage) {
         this.currStage = currStage;
     }
-    private void update()
-    {
+    void update() {
+        try {
+            chatList = service.getChats(1);
+        }
+        catch(IOException e)
+        {
+            showError("Ошибка при поулчении чатов" +e.getMessage()+" !");
+            return;
+        }
+
         chatsListView.setItems(FXCollections.observableArrayList(chatList));
     }
 
@@ -109,22 +147,19 @@ public class ChatFormController {
 
         Stage nstage= new Stage();
         nstage.setScene(scene);
-        nstage.setTitle("Profile");
+        nstage.setTitle("Create_chat");
         conC.setCurrStage(nstage);
+        conC.setPrevController(this);
         conC.setPrimaryStage(this.currStage);
         conC.init();
 
         nstage.show();
         chatList=service.getChats(1);
-        update();
+        //update();
     }
 
 
 
-    public void scrollMethod(ScrollEvent scrollEvent) {
-        var index =chatsListView.getSelectionModel().getSelectedIndices();
-        System.out.println(chatList.get(index.get(0)));
-    }
 
     public void findChatsEvent(KeyEvent keyEvent) {
         String name=newChatTextBox.getText();
@@ -156,5 +191,27 @@ public class ChatFormController {
     }
 
     public void sendMessageButtonClick(ActionEvent actionEvent) {
+        var curr=chatsListView.getSelectionModel().getSelectedItem();
+        try {
+            service.sendMessage(curr.getId(),messageTextArea.getText());
+        }
+        catch (IOException e)
+        {
+            showError("Error occured during send message! "+e.getMessage()+" !");
+            return;
+        }
+
+
+        //System.out.println(curr.toString());
+
+        try {
+            messageList=service.getMessages(curr.getId(),1);
+        } catch (IOException e) {
+            messageList=new ArrayList<>();
+        }
+        messagesListView.setItems(FXCollections.observableList(messageList));
+    }
+
+    public void scrollMethod(ScrollEvent scrollEvent) {
     }
 }

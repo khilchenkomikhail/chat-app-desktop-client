@@ -9,8 +9,10 @@ import javafx.stage.Stage;
 import org.apache.http.client.CredentialsProvider;
 import ru.edu.spbstu.client.services.ChatFormService;
 import ru.edu.spbstu.client.services.CreateChatFormService;
+import ru.edu.spbstu.clientComponents.ListViewWithButtons;
 import ru.edu.spbstu.clientComponents.PasswordTextField;
 import ru.edu.spbstu.model.Chat;
+import ru.edu.spbstu.model.ChatUser;
 import ru.edu.spbstu.model.User;
 
 import java.io.IOException;
@@ -23,7 +25,7 @@ public class CreateChatFormController {
     public Label loginLabel;
     public Label ChatNameLabel;
 
-    public ListView<String> usersToAddListView;
+    public ListViewWithButtons<ChatUser> usersToAddListView;
     public TextField loginTextField;
     public TextField chatNameTextBox;
 
@@ -32,7 +34,12 @@ public class CreateChatFormController {
     private CreateChatFormService service=new CreateChatFormService();
     private Stage primaryStage;
     private Stage currStage;
-    private List<String> userList;
+    private List<ChatUser> userList;
+    private ChatFormController prevController;
+
+    public void setPrevController(ChatFormController prevController) {
+        this.prevController = prevController;
+    }
     void showError(String errorText)
     {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -74,7 +81,7 @@ public class CreateChatFormController {
     }
     private void update()
     {
-        usersToAddListView.setItems(FXCollections.observableArrayList(userList));
+        usersToAddListView.resetList(userList);
     }
 
 
@@ -87,32 +94,55 @@ public class CreateChatFormController {
 
     public void AddUserButtonClick(ActionEvent actionEvent) {
         String username= loginTextField.getText();
-        boolean check= service.checkUser(username);
-        if(check) {
-            userList.add(username);
-            //service.add
-
-            update();
+        ChatUser temp;
+        try {
+           temp=service.getUser(username);
         }
-        else
+        catch(IOException e)
         {
             showError("Пользователя с данным логином не существует!");
+            return;
         }
+
+        String userLof=service.getLogin();
+
+        if(username.equals(userLof))
+        {
+            showError("Создателя чата не нужно добавлять в список чата!");
+            return;
+        }
+        ChatUser temp2=new ChatUser(username,false);
+        if(usersToAddListView.getList().contains(temp2))
+        {
+            showError("Данный пользователь уже был добавлен в чат!");
+            return;
+        }
+        userList.add(temp);
+        usersToAddListView.addInList(temp);
+
+            //service.add
+
+        //update();
 
     }
 
     public void createChatButtonClick(ActionEvent actionEvent) throws IOException {
 
         String name=chatNameTextBox.getText();
+        List<String> logins=new ArrayList<>();
+        for (var elem: usersToAddListView.getList())
+        {
+            logins.add(elem.getLogin());
+        }
 
-
-        service.addChat(name,userList);
-
+        service.addChat(name,logins);
+        //service.addChat(name,userList);
+        prevController.update();
         currStage.close();
-        //TODo refresh prev thing
         primaryStage.show();
 
 
 
     }
+
 }

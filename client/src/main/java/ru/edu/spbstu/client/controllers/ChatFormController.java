@@ -1,6 +1,5 @@
 package ru.edu.spbstu.client.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -16,19 +15,12 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpResponseException;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import ru.edu.spbstu.client.ListViewDemo;
 import ru.edu.spbstu.client.services.ChatFormService;
-import ru.edu.spbstu.client.services.LogInService;
-import ru.edu.spbstu.clientComponents.HBoxCell;
-import ru.edu.spbstu.clientComponents.ListViewWithButtons;
-import ru.edu.spbstu.clientComponents.PasswordTextField;
 import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.model.Message;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ChatFormController {

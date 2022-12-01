@@ -170,7 +170,7 @@ public class ChatFormController {
         conC.setCredentials(service.getCredentialsProvider() ,service.getLogin());
         conC.init();
 
-        Stage nstage= new Stage();
+        Stage nstage = new Stage();
         nstage.setScene(scene);
         nstage.setTitle("Profile");
         conC.setCurrStage(nstage);

@@ -1,11 +1,14 @@
 package ru.edu.spbstu.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.edu.spbstu.dao.UserRepository;
 import ru.edu.spbstu.exception.ResourceNotFound;
 import ru.edu.spbstu.mail.EmailSender;
 import ru.edu.spbstu.model.jpa.UserJpa;
+import ru.edu.spbstu.request.CheckEmailRequest;
+import ru.edu.spbstu.request.SignUpRequest;
 
 import javax.transaction.Transactional;
 import java.util.UUID;
@@ -16,6 +19,26 @@ public class LoginService {
 
     private final UserRepository userRepository;
     private final EmailSender emailSender;
+    private final PasswordEncoder passwordEncoder;
+
+    public void signUp(SignUpRequest request) {
+        UserJpa user = new UserJpa();
+        user.setLogin(request.getLogin());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setEmail(request.getEmail());
+        user.setImage(request.getImage());
+
+        userRepository.save(user);
+    }
+
+    public void checkUserEmail(CheckEmailRequest request) {
+        UserJpa user=userRepository.getByLogin(request.getLogin())
+                .orElseThrow(() -> new ResourceNotFound("User with login '" + (request.getLogin() + "' was not found")));
+        if(!user.getEmail().equals(request.getEmail()))
+        {
+            throw new ResourceNotFound("Invalid email");
+        }
+    }
 
     @Transactional
     public void sendTemporaryPassword(String login) {
@@ -23,7 +46,7 @@ public class LoginService {
                 .orElseThrow(() -> new ResourceNotFound("User with login '" + login + "' was not found"));
 
         String tempPassword = UUID.randomUUID().toString().substring(0, 16);
-        user.setPassword(tempPassword);
+        user.setPassword(passwordEncoder.encode(tempPassword));
         userRepository.save(user);
         emailSender.send(user.getEmail(), buildEmail(login, tempPassword));
     }

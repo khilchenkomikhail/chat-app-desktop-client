@@ -1,10 +1,9 @@
-package ru.edu.spbstu;
+package ru.edu.spbstu.client.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -12,56 +11,47 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.request.CreateChatRequest;
-import ru.edu.spbstu.request.SignUpRequest;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-public class ConsoleTestClient {
+public class ConfigureChatFormService {
 
     private static final ObjectMapper jsonMapper = new ObjectMapper();
+    private CredentialsProvider prov= new BasicCredentialsProvider();
+    private String login;
 
-    public static void main(String[] args) throws IOException {
 
-        String login = "login";
-        String password = "password";
-        String email = "email@email.com";
-        String image = "image"; // must be changed later
+    CredentialsProvider getCredentialsProvider()
+    {
+        return prov;
+    }
 
-        int regStatus = register(login, password, email, image);
-        System.out.println(regStatus); // is status is 200 OK then everything is fine
-
-        if (regStatus != 200) {
-            throw new RuntimeException();
-        }
-
-        CredentialsProvider provider = new BasicCredentialsProvider();
-        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(login, password);
-        provider.setCredentials(AuthScope.ANY, credentials);
-
-        int reqStatusCreateChat = createChat(provider, "chat1", Collections.emptyList(), login);
+    public void setCredentialsProvider(CredentialsProvider prov,String login)
+    {
+        this.prov=prov;
+        this.login=login;
+    }
+    public List<Chat> getChats(Integer page) throws IOException {
+        //getAllChats(prov, login, page).forEach(chat -> System.out.println(chat.getName()))
+        return getAllChats(prov, login, page);
+    }
+    public void addChat(String chatName, List<String>users) throws IOException {
+        int reqStatusCreateChat = createChat(prov, chatName, users, login);
         System.out.println(reqStatusCreateChat);
 
         if (reqStatusCreateChat != 200) {
-            throw new RuntimeException();
+            throw new HttpResponseException(reqStatusCreateChat,"Error while addChat");
         }
-
-        getAllChats(provider, login, 1).forEach(chat -> System.out.println(chat.getName()));
     }
-
-    private static int register(String login, String password, String email, String image) throws IOException {
-        SignUpRequest signUpRequest = new SignUpRequest(login, password, email, image);
-
-        try (CloseableHttpClient client = HttpClients.createDefault()) {
-            HttpPost signUpReq = new HttpPost("http://localhost:8080/sign-up");
-            signUpReq.addHeader("content-type", "application/json");
-            signUpReq.setEntity(new StringEntity(jsonMapper.writeValueAsString(signUpRequest)));
-            return client.execute(signUpReq).getStatusLine().getStatusCode();
+    public void addChat(String chatName) throws IOException {
+        int reqStatusCreateChat = createChat(prov, chatName, Collections.emptyList(), login);
+        if (reqStatusCreateChat != 200) {
+            throw new HttpResponseException(reqStatusCreateChat,"Error while addChat");
         }
     }
 
@@ -97,4 +87,6 @@ public class ConsoleTestClient {
             return re.getStatusLine().getStatusCode();
         }
     }
+
+
 }

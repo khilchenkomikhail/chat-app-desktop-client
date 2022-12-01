@@ -167,7 +167,7 @@ public class ChatFormController {
         var conC = fmxlLoader.<ChatFormController>getController();//TODO поменять
         Scene scene = new Scene(window,700,700);
 
-        conC.setCredentials(this.service.getCredentialsProvider(),this.service.getLogin());
+        conC.setCredentials(service.getCredentialsProvider() ,service.getLogin());
         conC.init();
 
         Stage nstage= new Stage();

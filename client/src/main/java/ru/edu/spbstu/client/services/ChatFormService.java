@@ -27,7 +27,7 @@ import java.util.List;
 public class ChatFormService {
 
     private static final ObjectMapper jsonMapper = new ObjectMapper();
-    private CredentialsProvider prov= new BasicCredentialsProvider();
+    private CredentialsProvider prov = new BasicCredentialsProvider();
     private String login;
 
 

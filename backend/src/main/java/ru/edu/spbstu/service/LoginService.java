@@ -21,8 +21,6 @@ public class LoginService {
     private final EmailSender emailSender;
     private final PasswordEncoder passwordEncoder;
 
-
-
     public void signUp(SignUpRequest request) {
         UserJpa user = new UserJpa();
         user.setLogin(request.getLogin());
@@ -40,7 +38,6 @@ public class LoginService {
         {
             throw new ResourceNotFound("Invalid email");
         }
-        //return user.getEmail().equals(request.getEmail());
     }
 
     @Transactional
@@ -122,7 +119,4 @@ public class LoginService {
                 "\n" +
                 "</div></div>";
     }
-
-
-
 }

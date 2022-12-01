@@ -13,7 +13,6 @@ import ru.edu.spbstu.service.LoginService;
 public class LoginController {
     private final LoginService loginService;
 
-    // TODO переделать эндпоинт для регистрации в соответствии с требованиями, вынести репозиторий и пароль в отдельный сервис
     @PostMapping("/sign-up")
     public void signUp(@RequestBody SignUpRequest request) {
         loginService.signUp(request);

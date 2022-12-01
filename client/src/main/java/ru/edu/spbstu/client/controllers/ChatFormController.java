@@ -119,7 +119,7 @@ public class ChatFormController {
         }
         catch(IOException e)
         {
-            showError("Ошибка при поулчении чатов" +e.getMessage()+" !");
+            showError("Ошибка при получении чатов" + e.getMessage() + " !");
             return;
         }
 

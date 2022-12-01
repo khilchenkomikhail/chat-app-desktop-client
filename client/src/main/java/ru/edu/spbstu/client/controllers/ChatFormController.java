@@ -189,7 +189,7 @@ public class ChatFormController {
         }
         catch (IOException e)
         {
-            showError("Error occured during send message! "+e.getMessage()+" !");
+            showError("Error occured when sending the message! "+ e.getMessage() + " !");
             return;
         }
 

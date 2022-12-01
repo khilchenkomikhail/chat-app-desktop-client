@@ -11,6 +11,7 @@ import ru.edu.spbstu.request.CheckEmailRequest;
 import ru.edu.spbstu.request.SignUpRequest;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -49,6 +50,11 @@ public class LoginService {
         user.setPassword(passwordEncoder.encode(tempPassword));
         userRepository.save(user);
         emailSender.send(user.getEmail(), buildEmail(login, tempPassword));
+    }
+
+    public Boolean isUserPresent(String login) {
+        Optional<UserJpa> userJpaOptional = userRepository.getByLogin(login);
+        return userJpaOptional.isPresent();
     }
 
     private String buildEmail(String name, String password) {

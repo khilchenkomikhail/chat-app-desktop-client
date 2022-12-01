@@ -47,7 +47,7 @@ public class ChatFormController {
     {
         this.service.setCredentialsProvider(prov,login);
     }
-    void showError(String errorText)
+    private void showError(String errorText)
     {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setHeaderText(errorText);

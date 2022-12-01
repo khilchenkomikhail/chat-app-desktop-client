@@ -67,10 +67,6 @@ public class CreateChatFormController {
 
 
 
-    public void logOutMouseClick(ActionEvent actionEvent) {
-        currStage.close();
-        primaryStage.show();
-    }
 
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;

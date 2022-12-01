@@ -48,7 +48,7 @@ public class CreateChatFormController {
     }
     public void setCredentials(CredentialsProvider prov,String login)
     {
-        this.service.setCredentialsProvider(prov,login);
+        service.setCredentialsProvider(prov,login);
     }
 
     @FXML

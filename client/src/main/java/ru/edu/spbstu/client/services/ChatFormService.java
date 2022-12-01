@@ -89,7 +89,7 @@ public class ChatFormService {
 
 
 
-    private  static List<Chat> getAllChats(CredentialsProvider provider, String login, Integer page) throws IOException {
+    private static List<Chat> getAllChats(CredentialsProvider provider, String login, Integer page) throws IOException {
 
         String getChatsUrlBlueprint = "http://localhost:8080/get_chats?login=%s&page_number=%d";
 

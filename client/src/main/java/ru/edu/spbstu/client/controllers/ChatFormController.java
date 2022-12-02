@@ -1,18 +1,28 @@
 package ru.edu.spbstu.client.controllers;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
+import javafx.geometry.Rectangle2D;
+import javafx.geometry.Side;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpResponseException;
 import ru.edu.spbstu.client.services.ChatFormService;
@@ -22,6 +32,7 @@ import ru.edu.spbstu.model.Message;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ChatFormController {
 
@@ -42,6 +53,8 @@ public class ChatFormController {
     private int SelectedChat=0;
     private List<Chat> chatList;
     private List<Message> messageList;
+    ContextMenu contextMenu = new ContextMenu();
+
 
     public void setCredentials(CredentialsProvider prov,String login)
     {
@@ -56,9 +69,100 @@ public class ChatFormController {
 
     @FXML
     void initialize() throws IOException {
+        javafx.scene.control.MenuItem menuItem1 = new javafx.scene.control.MenuItem("Выйти из чата");
+        javafx.scene.control.MenuItem menuItem2 = new javafx.scene.control.MenuItem("Настройки чата");
+
+        menuItem1.setOnAction(this::exitAction);
+        menuItem2.setOnAction(this::configAction);
+        contextMenu.getItems().add(menuItem1);
+        contextMenu.getItems().add(menuItem2);
+
+
+        chatsListView.setCellFactory(lv -> {
+
+            ListCell<Chat> cell = new ListCell<>();
+
+            cell.textProperty().bind(Bindings.createStringBinding(
+                    () -> Objects.toString(cell.getItem(), ""),
+                    cell.itemProperty()));
+
+            cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
+                if (isNowEmpty) {
+                    cell.setContextMenu(null);
+                } else {
+                    cell.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
+
+                        @Override
+                        public void handle(ContextMenuEvent event) {
+                            Bounds boundsInScreen = chatsListView.localToScreen(chatsListView.getBoundsInLocal());
+                            double y=event.getScreenY();
+                            double h=cell.heightProperty().get();
+                            y=(h)*Math.round(y/(h+1));
+
+                            contextMenu.show(chatsListView, boundsInScreen.getMaxX() , y);
+                        }
+                    });
+                }
+            });
+            return cell ;
+        });
+
+
 
 
     }
+    private void exitAction(javafx.event.ActionEvent actionEvent) {
+        Long chatId=chatsListView.getSelectionModel().getSelectedItem().getId();
+
+        String login=service.getLogin();
+        try {
+            service.leaveChat(chatId,login);
+        } catch (IOException e) {
+            showError("Error while delete ! + "+ e.getMessage()+" !");
+            return;
+        }
+        try {
+            chatList=service.getChats(1);
+        } catch (IOException e) {
+            showError("Error while getChats ! + "+ e.getMessage()+" !");
+            return;
+        }
+        chatsListView.setItems(FXCollections.observableList(chatList));
+        messagesListView.setItems(FXCollections.observableList(new ArrayList<>()));
+        contextMenu.hide();
+
+
+    }
+
+    private void configAction(javafx.event.ActionEvent actionEvent) {
+        try {
+        System.out.println("Edit chat from chat");
+        FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/configure_chat_form.fxml"));
+        Parent window = null;
+
+            window = (Pane) fmxlLoader.load();
+
+        ConfigureChatFormController confController = fmxlLoader.getController();
+        Scene scene = new Scene(window,700,700);
+
+        confController.setCredentials(this.service.getCredentialsProvider(),this.service.getLogin());
+        confController.setChat(chatsListView.getSelectionModel().getSelectedItem());
+
+        Stage nstage= new Stage();
+        nstage.setScene(scene);
+        nstage.setTitle("ChatConfiguration");
+        confController.setCurrStage(nstage);
+        confController.setPrimaryStage(this.currStage);
+        confController.init();
+
+        nstage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        contextMenu.hide();
+
+    }
+
     void init() {
         try {
             chatList = service.getChats(1);
@@ -72,28 +176,29 @@ public class ChatFormController {
         }
         chatsListView.setItems(FXCollections.observableList(chatList));
 
-        /*chatsListView.resetList(chatList);*/
 
-        chatsListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Chat>() {//Todo переместить в лругое место
+        chatsListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
             @Override
-            public void changed(ObservableValue<? extends Chat> observableValue, Chat item, Chat t1) {
+            public void handle(MouseEvent event) {
                 var curr=chatsListView.getSelectionModel().getSelectedItem();
-                //System.out.println(curr.toString());
+                if(curr!=null) {
 
-                try {
-                    messageList=service.getMessages(curr.getId(),1);
-                } catch (IOException e) {
-                    messageList=new ArrayList<>();
+                    try {
+
+                        messageList = service.getMessages(curr.getId(), 1);
+
+                    } catch (IOException e) {
+                        messageList = new ArrayList<>();
+                    }
+                    messagesListView.setItems(FXCollections.observableList(messageList));
                 }
-                messagesListView.setItems(FXCollections.observableList(messageList));
-
-                //TODO update messageListView
+                else
+                {
+                    messagesListView.setItems(FXCollections.observableList(new ArrayList<>()));
+                }
             }
         });
-        //chatsListView.init();
-
-        //chatsListView.setItems(FXCollections.observableArrayList(chatList));
-
     }
 
 
@@ -128,11 +233,10 @@ public class ChatFormController {
 
     public void addChatButtonClick(ActionEvent actionEvent) throws IOException {
 
-       // service.addChat(newChatTextBox.getText());
         FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/create_chat_form.fxml"));
         Parent window = (Pane) fmxlLoader.load();
         var conC = fmxlLoader.<CreateChatFormController>getController();
-        Scene scene = new Scene(window,800,800);
+        Scene scene = new Scene(window,700,700);
 
         conC.setCredentials(this.service.getCredentialsProvider(),this.service.getLogin());
 
@@ -155,7 +259,7 @@ public class ChatFormController {
 
     public void findChatsEvent(KeyEvent keyEvent) {
         String name=newChatTextBox.getText();
-
+        //TODo поиск чатов сделать
         List<Chat> temp =service.find(name);
     }
 

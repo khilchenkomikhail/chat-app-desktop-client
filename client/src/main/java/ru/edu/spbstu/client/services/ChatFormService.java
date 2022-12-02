@@ -1,7 +1,9 @@
 package ru.edu.spbstu.client.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.collections.FXCollections;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -15,12 +17,14 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.model.Message;
+import ru.edu.spbstu.request.ChatUpdateRequest;
 import ru.edu.spbstu.request.CreateChatRequest;
 import ru.edu.spbstu.request.EditMessageRequest;
 import ru.edu.spbstu.request.SendMessageRequest;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -87,6 +91,30 @@ public class ChatFormService {
         }
     }
 
+    public void leaveChat(Long chatId, String login) throws IOException {
+
+        int reqStatusCreateChat = leaveChat(prov,chatId,Collections.singletonList(login));
+        if (reqStatusCreateChat != 200) {
+            throw new HttpResponseException(reqStatusCreateChat,"Error while send message");
+        }
+
+    }
+
+    private static int leaveChat(CredentialsProvider provider, Long chatId, List<String> login) throws IOException {
+        ChatUpdateRequest request = new ChatUpdateRequest(chatId,login);
+
+
+        try (CloseableHttpClient client = HttpClientBuilder
+                .create()
+                .setDefaultCredentialsProvider(provider)
+                .build()) {
+            HttpPatch post = new HttpPatch("http://localhost:8080/delete_users_from_chat");
+            post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request)));
+            post.addHeader("content-type", "application/json");
+            CloseableHttpResponse re = client.execute(post);
+            return re.getStatusLine().getStatusCode();
+        }
+    }
 
 
     private  static List<Chat> getAllChats(CredentialsProvider provider, String login, Integer page) throws IOException {
@@ -130,6 +158,8 @@ public class ChatFormService {
     }
 
 
+
+
     public List<Chat> find(String name) {
         List<Chat>res=Collections.emptyList();
 
@@ -166,6 +196,7 @@ public class ChatFormService {
             HttpPost post = new HttpPost("http://localhost:8080/send_message");
             post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request)));
             post.addHeader("content-type", "application/json");
+
             CloseableHttpResponse re = client.execute(post);
             return re.getStatusLine().getStatusCode();
         }
@@ -214,4 +245,6 @@ public class ChatFormService {
             return re.getStatusLine().getStatusCode();
         }
     }
+
+
 }

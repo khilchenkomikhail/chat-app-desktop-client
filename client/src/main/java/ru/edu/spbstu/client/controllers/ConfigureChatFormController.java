@@ -30,10 +30,14 @@ public class ConfigureChatFormController {
     private Stage currStage;
     private int ChatPage=1;
     private int SelectedChat=0;
+    private Chat ChatToConfigure;
     private List<Chat> chatList;
     public void setCredentials(CredentialsProvider prov,String login)
     {
         this.service.setCredentialsProvider(prov,login);
+    }
+    public void setChat(Chat selectedItem) {
+        ChatToConfigure=selectedItem;
     }
 
     @FXML
@@ -76,4 +80,6 @@ public class ConfigureChatFormController {
         var index =chatsListView.getSelectionModel().getSelectedIndices();
         System.out.println(chatList.get(index.get(0)));
     }
+
+
 }

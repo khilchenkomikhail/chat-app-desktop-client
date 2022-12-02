@@ -84,11 +84,6 @@ public class CreateChatFormController {
         usersToAddListView.resetList(userList);
     }
 
-    public void scrollAction(ScrollEvent scrollEvent) {
-        var index =usersToAddListView.getSelectionModel().getSelectedIndices();
-        System.out.println(userList.get(index.get(0)));
-    }
-
     public void AddUserButtonClick(ActionEvent actionEvent) {
         String username= loginTextField.getText();
         ChatUser temp;

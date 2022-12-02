@@ -18,10 +18,6 @@ public class Chat {
 
     @Override
     public String toString() {
-        if(this==new Chat())
-        {
-            return "";
-        }
         return name;
     }
 }

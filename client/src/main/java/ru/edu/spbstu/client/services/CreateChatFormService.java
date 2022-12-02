@@ -25,14 +25,10 @@ public class CreateChatFormService {
 
     private static final ObjectMapper jsonMapper = new ObjectMapper();
     private CredentialsProvider prov= new BasicCredentialsProvider();
-
     public String getLogin() {
         return login;
     }
-
     private String login;
-
-
     public CredentialsProvider getCredentialsProvider()
     {
         return prov;
@@ -43,14 +39,9 @@ public class CreateChatFormService {
         this.prov=prov;
         this.login=login;
     }
-    public List<Chat> getChats(Integer page) throws IOException {
-        //getAllChats(prov, login, page).forEach(chat -> System.out.println(chat.getName()))
-        return getAllChats(prov, login, page);
-    }
+
     public void addChat(String chatName, List<String>users) throws IOException {
         int reqStatusCreateChat = createChat(prov, chatName, users, login);
-       // System.out.println(reqStatusCreateChat);
-
         if (reqStatusCreateChat != 200) {
             throw new HttpResponseException(reqStatusCreateChat,"Error while addChat");
         }

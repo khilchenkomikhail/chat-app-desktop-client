@@ -29,12 +29,8 @@ public class ClientApplication extends Application {
 
         Parent root = FXMLLoader.load(fxmlUrl);
         primaryStage.setTitle("Authorization");
-        primaryStage.setScene(new Scene(root, 600, 450));
+        primaryStage.setScene(new Scene(root, 520, 240));
         primaryStage.show();
-
-
-
-
     }
     public static Stage getStage()
     {

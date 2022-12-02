@@ -15,6 +15,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.model.Message;
+import ru.edu.spbstu.request.ChatUpdateRequest;
 import ru.edu.spbstu.request.CreateChatRequest;
 import ru.edu.spbstu.request.EditMessageRequest;
 import ru.edu.spbstu.request.SendMessageRequest;
@@ -86,7 +87,30 @@ public class ChatFormService {
             throw new HttpResponseException(reqStatusCreateChat,"Error while delete message");
         }
     }
+    public void leaveChat(Long chatId, String login) throws IOException {
 
+        int reqStatusCreateChat = leaveChat(prov,chatId,Collections.singletonList(login));
+        if (reqStatusCreateChat != 200) {
+            throw new HttpResponseException(reqStatusCreateChat,"Error while send message");
+        }
+
+    }
+
+    private static int leaveChat(CredentialsProvider provider, Long chatId, List<String> login) throws IOException {
+        ChatUpdateRequest request = new ChatUpdateRequest(chatId,login);
+
+
+        try (CloseableHttpClient client = HttpClientBuilder
+                .create()
+                .setDefaultCredentialsProvider(provider)
+                .build()) {
+            HttpPatch post = new HttpPatch("http://localhost:8080/delete_users_from_chat");
+            post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request)));
+            post.addHeader("content-type", "application/json");
+            CloseableHttpResponse re = client.execute(post);
+            return re.getStatusLine().getStatusCode();
+        }
+    }
 
 
     private static List<Chat> getAllChats(CredentialsProvider provider, String login, Integer page) throws IOException {

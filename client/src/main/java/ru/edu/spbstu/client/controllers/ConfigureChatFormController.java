@@ -120,6 +120,9 @@ public class ConfigureChatFormController {
         {
             userList=new ArrayList<>();
             tabChatSettings.setDisable(true);
+            SingleSelectionModel<Tab> selectionModel =mainTabPanel.getSelectionModel();
+            selectionModel.select(0);
+            mainTabPanel.setSelectionModel(selectionModel);
         }
         else
         {
@@ -132,9 +135,6 @@ public class ConfigureChatFormController {
         service.deleteChatUsers(chatToConfigure,chatMembersConfigurationLV.getUsersToDelete());
         service.setChatUsersAdmins(chatToConfigure,chatMembersConfigurationLV.getUsersToMakeAdmins());
         update();
-        SingleSelectionModel<Tab> selectionModel =mainTabPanel.getSelectionModel();
-        selectionModel.select(0);
-        mainTabPanel.setSelectionModel(selectionModel);
     }
 
     public void AddUserButtonClick(ActionEvent actionEvent) {

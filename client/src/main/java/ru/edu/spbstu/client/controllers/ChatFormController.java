@@ -84,18 +84,7 @@ public class ChatFormController {
                 if (isNowEmpty) {
                     cell.setContextMenu(null);
                 } else {
-                    cell.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
-
-                        @Override
-                        public void handle(ContextMenuEvent event) {
-                            Bounds boundsInScreen = chatsListView.localToScreen(chatsListView.getBoundsInLocal());
-                            double y=event.getScreenY();
-                            double h=cell.heightProperty().get();
-                            y=(h)*Math.round(y/(h+1));
-
-                            contextMenu.show(chatsListView, boundsInScreen.getMaxX() , y);
-                        }
-                    });
+                    cell.setContextMenu(contextMenu);
                 }
             });
             return cell ;

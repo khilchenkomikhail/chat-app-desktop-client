@@ -14,14 +14,10 @@ import lombok.Setter;
 
 public class Chat {
     private Long id;
-    private String name;
+    private String name="";
 
     @Override
     public String toString() {
-        if(this==new Chat())
-        {
-            return "";
-        }
         return name;
     }
 }

@@ -48,7 +48,7 @@ public class CreateChatFormController {
     }
     public void setCredentials(CredentialsProvider prov,String login)
     {
-        this.service.setCredentialsProvider(prov,login);
+        service.setCredentialsProvider(prov,login);
     }
 
     @FXML
@@ -67,10 +67,6 @@ public class CreateChatFormController {
 
 
 
-    public void logOutMouseClick(ActionEvent actionEvent) {
-        currStage.close();
-        primaryStage.show();
-    }
 
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;

@@ -171,7 +171,7 @@ public class fillServer {
         SignUpRequest signUpRequest = new SignUpRequest(login, password, email, image);
 
         try (CloseableHttpClient client = HttpClients.createDefault()) {
-            HttpPost signUpReq = new HttpPost("http://localhost:8080/sign-up");
+            HttpPost signUpReq = new HttpPost("http://localhost:8080/register");
             signUpReq.addHeader("content-type", "application/json");
             signUpReq.setEntity(new StringEntity(jsonMapper.writeValueAsString(signUpRequest)));
             return client.execute(signUpReq).getStatusLine().getStatusCode();

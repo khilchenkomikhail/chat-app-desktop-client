@@ -58,11 +58,21 @@ public class LoginFormController {
         logInButton.setDisable(true);
         registerButton.setDisable(true);
         forgetPasswordButton.setDisable(true);
-        regLoginTextBox.setText("olegoleg");
-        emailTextBox.setText("вставь свой email");
-        regPasswordTextBox.setText("olegoleg");
+        //regLoginTextBox.setText("olegoleg");
+        //emailTextBox.setText("вставь свой email");
+        //regPasswordTextBox.setText("olegoleg");
         stage= ClientApplication.getStage();
 
+    }
+
+    private void clear()
+    {
+        passwordTextBox.setText("");
+        emailTextBox.setText("");
+        regPasswordTextBox.setText("");
+        passwordTextBox.setText("");
+        logInButton.setDisable(true);
+        registerButton.setDisable(true);
     }
 
 
@@ -88,10 +98,10 @@ public class LoginFormController {
             showError("Ошибка при открытии 2-й формы");
             return;
         }
+        regLoginTextBox.setText("");
+        registerButton.setDisable(true);
+        clear();
         stage.hide();
-
-
-
     }
 
 
@@ -103,7 +113,9 @@ public class LoginFormController {
         conF.setLogin(loginTextBox.getText());
         Stage stage= new Stage();
         stage.setScene(scene);
-
+        clear();
+        regLoginTextBox.setText("");
+        registerButton.setDisable(true);
         stage.show();
     }
 
@@ -121,6 +133,10 @@ public class LoginFormController {
         }
         service.register(regLoginTextBox.getText(),regPasswordTextBox.getText(),emailTextBox.getText());
         openChatForm(regLoginTextBox);
+        clear();
+        loginTextBox.setText("");
+        logInButton.setDisable(true);
+        forgetPasswordButton.setDisable(true);
         stage.hide();
 
     }
@@ -130,18 +146,14 @@ public class LoginFormController {
         Parent window = (Pane) fmxlLoader.load();
         // private Scene scene;
         ChatFormController conC = fmxlLoader.<ChatFormController>getController();
-        Scene scene = new Scene(window,700,700);
-
+        Scene scene = new Scene(window,900,700);
         conC.setCredentials(this.service.getProvider(), regLoginTextBox.getText());
-
-
         Stage nstage= new Stage();
         nstage.setScene(scene);
         nstage.setTitle("Chats");
         conC.setCurrStage(nstage);
         conC.setPrimaryStage(this.stage);
         conC.init();
-
         nstage.show();
     }
 

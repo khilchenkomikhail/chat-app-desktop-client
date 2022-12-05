@@ -15,7 +15,7 @@
 
 <AnchorPane prefHeight="248.0" prefWidth="537.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.edu.spbstu.client.controllers.LoginFormController">
    <children>
-      <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="234.0" prefWidth="513.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="240.0" prefWidth="520.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
           <Tab text="Вход">
             <content>
@@ -47,19 +47,22 @@
                               <TextField fx:id="loginTextBox" onKeyTyped="#updateLogin" prefHeight="25.0" prefWidth="221.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
                               <Button fx:id="logInButton" mnemonicParsing="false" onAction="#logInButtonPress" prefHeight="25.0" prefWidth="139.0" text="Войти" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
                                  <GridPane.margin>
-                                    <Insets left="5.0" right="5.0" />
+                                    <Insets left="5.0" right="5.0" top="10.0" />
                                  </GridPane.margin></Button>
                               <Button fx:id="forgetPasswordButton" mnemonicParsing="false" onAction="#forgotPasswordButtonPress" prefHeight="25.0" prefWidth="139.0" text="Забыли пароль?" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
                                  <opaqueInsets>
                                     <Insets />
                                  </opaqueInsets>
                                  <GridPane.margin>
-                                    <Insets left="5.0" right="5.0" />
+                                    <Insets left="5.0" right="5.0" top="10.0" />
                                  </GridPane.margin></Button>
                               <CheckBox fx:id="rememberMeCheckBox" mnemonicParsing="false" text="Запомнить меня" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
                                  <padding>
                                     <Insets right="20.0" />
                                  </padding>
+                                 <GridPane.margin>
+                                    <Insets top="10.0" />
+                                 </GridPane.margin>
                               </CheckBox>
                               <PasswordTextField fx:id="passwordTextBox" onKeyTyped="#updateLogin" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="1" />
                            </children>

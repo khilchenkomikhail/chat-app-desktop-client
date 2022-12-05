@@ -1,36 +1,40 @@
 package ru.edu.spbstu.client.controllers;
 
-import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.ScrollEvent;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.apache.http.client.CredentialsProvider;
-import ru.edu.spbstu.client.services.ChatFormService;
 import ru.edu.spbstu.client.services.CreateChatFormService;
 import ru.edu.spbstu.clientComponents.ListViewWithButtons;
-import ru.edu.spbstu.clientComponents.PasswordTextField;
-import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.model.ChatUser;
-import ru.edu.spbstu.model.User;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class CreateChatFormController {
-    public Label chatUsersLabel;
-    public Label loginLabel;
-    public Label ChatNameLabel;
+
 
     public ListViewWithButtons<ChatUser> usersToAddListView;
     public TextField loginTextField;
     public TextField chatNameTextBox;
 
+
+
+
     public Button createChatButton;
     public Button AddUserButton;
+    public Label chatUsersLabel;
+    public Label loginLabel;
+    public Label ChatNameLabel;
+
     private CreateChatFormService service=new CreateChatFormService();
     private Stage primaryStage;
     private Stage currStage;
@@ -50,42 +54,34 @@ public class CreateChatFormController {
     {
         service.setCredentialsProvider(prov,login);
     }
-
+    public void setPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
+    public void setCurrStage(Stage currStage) {
+        this.currStage = currStage;
+    }
     @FXML
     void initialize() throws IOException {
-
-
     }
+
     void init() throws IOException {
         currStage.setOnCloseRequest(event -> {
-            //currStage.close();
             primaryStage.show();
         });
         userList=new ArrayList<>(0);
 
+        currStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent e) {
+                primaryStage.show();
+                currStage.close();
+            }
+        });
     }
 
-
-
-
-    public void setPrimaryStage(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-    }
-
-    public void setCurrStage(Stage currStage) {
-        this.currStage = currStage;
-    }
     private void update()
     {
         usersToAddListView.resetList(userList);
-    }
-
-
-
-
-    public void scrollAction(ScrollEvent scrollEvent) {
-        var index =usersToAddListView.getSelectionModel().getSelectedIndices();
-        System.out.println(userList.get(index.get(0)));
     }
 
     public void AddUserButtonClick(ActionEvent actionEvent) {
@@ -115,11 +111,6 @@ public class CreateChatFormController {
         }
         userList.add(temp);
         usersToAddListView.addInList(temp);
-
-            //service.add
-
-        //update();
-
     }
 
     public void createChatButtonClick(ActionEvent actionEvent) throws IOException {

@@ -14,6 +14,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import ru.edu.spbstu.model.Chat;
+import ru.edu.spbstu.model.ChatUser;
 import ru.edu.spbstu.model.Message;
 import ru.edu.spbstu.request.ChatUpdateRequest;
 import ru.edu.spbstu.request.CreateChatRequest;
@@ -238,4 +239,6 @@ public class ChatFormService {
             return re.getStatusLine().getStatusCode();
         }
     }
+
+
 }

@@ -55,10 +55,6 @@ public class LogInService {
 
     }
     public Boolean isUserPresent(String login) throws IOException {
-        //@GetMapping("/is_user_present")
-        //public Boolean isUserPresent(@RequestParam String login) {
-        //return loginService.isUserPresent(login);
-
         String getChatsUrlBlueprint = "http://localhost:8080/is_user_present?login=%s";
 
         try (CloseableHttpClient client = HttpClientBuilder

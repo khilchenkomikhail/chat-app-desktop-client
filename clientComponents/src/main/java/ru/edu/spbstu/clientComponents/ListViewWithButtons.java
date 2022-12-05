@@ -67,7 +67,7 @@ public class ListViewWithButtons<T> extends ListView<HBoxCell<T>> {
             lst.remove(index);
         }
         for (int i = index; i < myObservableList.size(); i++) {
-            HBoxCell temp = myObservableList.get(i);
+            HBoxCell<T> temp = myObservableList.get(i);
             temp.button.structNum -= 1;
             myObservableList.set(i, temp);
         }

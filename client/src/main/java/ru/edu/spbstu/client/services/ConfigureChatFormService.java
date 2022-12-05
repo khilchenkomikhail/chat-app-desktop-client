@@ -42,27 +42,6 @@ public class ConfigureChatFormService {
         this.login=login;
     }
 
-    public ChatUser getUser(String text) throws IOException {
-        String getChatsUrlBlueprint = "http://localhost:8080/get_chat_user?login=%s";
-
-        try (CloseableHttpClient client = HttpClientBuilder
-                .create()
-                .setDefaultCredentialsProvider(prov)
-                .build()) {
-            HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, text));
-            CloseableHttpResponse re = client.execute(httpGet);
-            String json = EntityUtils.toString(re.getEntity());
-            int code = re.getStatusLine().getStatusCode();
-            {
-                if (code != 200) {
-                    throw new HttpResponseException(code, "Error while getting user");
-                }
-            }
-            return jsonMapper.readValue(json, new TypeReference<>() {
-            });
-        }
-    }
-
     public List<ChatUser> getChatMembers(Chat chatToConfigure) throws IOException {
 
         String getChatsUrlBlueprint = "http://localhost:8080/get_chat_members?chat_id=%d";
@@ -151,5 +130,17 @@ public class ConfigureChatFormService {
         var res=(getClass().getResource("/images/dAvatar.bmp")).getPath().replaceFirst("/","");
         image=new Image(res);
         return  image;
+    }
+    public Boolean isUserPresent(String login) throws IOException {
+        String getChatsUrlBlueprint = "http://localhost:8080/is_user_present?login=%s";
+
+        try (CloseableHttpClient client = HttpClientBuilder
+                .create()
+                .build()) {
+            HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, login));
+            CloseableHttpResponse re = client.execute(httpGet);
+            String json = EntityUtils.toString(re.getEntity());
+            return jsonMapper.readValue(json, new TypeReference<>() {});
+        }
     }
 }

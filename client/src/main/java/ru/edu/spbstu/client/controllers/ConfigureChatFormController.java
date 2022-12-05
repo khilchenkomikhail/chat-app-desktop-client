@@ -145,13 +145,17 @@ public class ConfigureChatFormController {
     public void AddUserButtonClick(ActionEvent actionEvent) {
 
         String username= loginTextField.getText();
-        ChatUser temp;
         try {
-            temp=service.getUser(username);
+            boolean pres=service.isUserPresent(username);
+            if(!pres)
+            {
+                showError("Пользователя с данным логином не существует!");
+                return;
+            }
         }
         catch(IOException e)
         {
-            showError("Пользователя с данным логином не существует!");
+            showError("Внутренняя ошибка сервера!");
             return;
         }
 
@@ -162,20 +166,20 @@ public class ConfigureChatFormController {
             showError("Создателя чата не нужно добавлять в список чата!");
             return;
         }
-        ChatUser temp2=new ChatUser(username,false);
-        var UserList=chatMembersConfigurationLV.getUsers();
-        if(UserList.contains(temp2))
+        var userList=chatMembersConfigurationLV.getUsers();
+        if(userList.stream().anyMatch(user -> user.getLogin().equals(username)))
         {
             showError("Данный пользователь уже есть в чате!");
             return;
         }
-        if(usersToAddListView.getList().contains(temp2))
+        if(usersToAddListView.getList().stream().anyMatch(user -> user.getLogin().equals(username)))
         {
             showError("Данный пользователь уже есть в списке на добавление!");
             return;
         }
-        Image image=service.getImage(temp2);
-        usersToAddListView.addInList(temp2,image);
+        ChatUser user=new ChatUser(username,false);
+        Image image=service.getImage(user);
+        usersToAddListView.addInList(user,image);
        // mainTabPanel.getTabs().add(tabChatSettings);//Todo return second tab
     }
 

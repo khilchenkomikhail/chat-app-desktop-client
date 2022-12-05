@@ -44,24 +44,23 @@ public class HboxCellWithCheckboxes extends HBox {
         }
 
     }*/
-    ImageView  imageView=new ImageView();
+    ImageView  imageView;
     //ImageHbox imageView=new ImageHbox();
-    Label label=new Label();
-    MyCheckBox deleteCB=new MyCheckBox();
-    MyCheckBox adminCB=new MyCheckBox();
+    Label label;
+    MyCheckBox deleteCB;
+    MyCheckBox adminCB;
 
     public HboxCellWithCheckboxes()
     {
         super();
         imageView=new ImageView();
-        //imageView=new ImageHbox();
         label = new Label();
         deleteCB=new MyCheckBox();
         adminCB=new MyCheckBox();
     }
 
     HboxCellWithCheckboxes(String labelText, int number,Image image) {
-        super();
+        this();
         label.setText(labelText);
         label.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(label, Priority.ALWAYS);

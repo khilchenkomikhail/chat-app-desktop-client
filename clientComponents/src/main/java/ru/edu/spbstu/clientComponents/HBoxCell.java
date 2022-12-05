@@ -25,20 +25,20 @@ public class HBoxCell<T> extends HBox {
         }
 
     }
-    ImageView imageView=new ImageView();
-    Label label=new Label();
-    public MyButton button=new MyButton();
+    ImageView imageView;
+    Label label;
+    public MyButton button;
     public HBoxCell()
     {
         super();
-        ImageView  imageView=new ImageView();
+        imageView=new ImageView();
         button= new MyButton();
-        Label label = new Label();
+        label = new Label();
 
     }
 
     HBoxCell(T labelText, String buttonText, int number, Image image) {
-        super();
+        this();
 
 
         imageView.setImage(image);

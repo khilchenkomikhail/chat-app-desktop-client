@@ -69,9 +69,7 @@ public class CreateChatFormService {
             return jsonMapper.readValue(json, new TypeReference<>() {});
         }
     }
-    public ChatUser getUser(String text) throws IOException {
-        return getUser(prov,text);
-    }
+
     private static int createChat(CredentialsProvider provider, String chatName, List<String> users, String admin) throws IOException {
         CreateChatRequest request = new CreateChatRequest();
         request.setAdmin_login(admin);
@@ -95,28 +93,7 @@ public class CreateChatFormService {
         return true;
     }
 
-    private static ChatUser getUser(CredentialsProvider provider, String login) throws IOException {
 
-        String getChatsUrlBlueprint = "http://localhost:8080/get_chat_user?login=%s";
-
-        try (CloseableHttpClient client = HttpClientBuilder
-                .create()
-                .setDefaultCredentialsProvider(provider)
-                .build()) {
-            HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, login));
-            CloseableHttpResponse re = client.execute(httpGet);
-            String json = EntityUtils.toString(re.getEntity());
-            int code=re.getStatusLine().getStatusCode();
-            {
-                if(code!=200)
-                {
-                    //return new ChatUser();
-                    throw new HttpResponseException(code,"Error while getting user");
-                }
-            }
-            return jsonMapper.readValue(json, new TypeReference<>() {});
-        }
-    }
     public ArrayList<Image> getImageList(List<ChatUser> userList) {
         int size=userList.size();
         ArrayList<Image> images= new ArrayList<Image>();
@@ -134,5 +111,17 @@ public class CreateChatFormService {
         image=new Image(res);
 
         return  image;
+    }
+    public Boolean isUserPresent(String login) throws IOException {
+        String getChatsUrlBlueprint = "http://localhost:8080/is_user_present?login=%s";
+
+        try (CloseableHttpClient client = HttpClientBuilder
+                .create()
+                .build()) {
+            HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, login));
+            CloseableHttpResponse re = client.execute(httpGet);
+            String json = EntityUtils.toString(re.getEntity());
+            return jsonMapper.readValue(json, new TypeReference<>() {});
+        }
     }
 }

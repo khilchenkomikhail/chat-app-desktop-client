@@ -1,5 +1,6 @@
 package ru.edu.spbstu.client.controllers;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.fxml.FXML;
@@ -35,11 +36,7 @@ public class ForgotPasswordFormController {
     private Button changePasswordButton;
     public TextField emailTextBox;
 
-    public void setProvider(CredentialsProvider provider) {
-        this.provider = provider;
-    }
 
-    private CredentialsProvider provider;
 
     public  void setLogin(String llog)
     {
@@ -60,6 +57,7 @@ public class ForgotPasswordFormController {
         if(!isEmail(emailTextBox.getText()))
         {
             showError("Содержимое поля email не соотвествует стандарту!");
+           // showError("Invalid email format!");
             return;
         }
 
@@ -74,18 +72,20 @@ public class ForgotPasswordFormController {
             signUpReq.setEntity(new StringEntity(jsonMapper.writeValueAsString(signUpRequest)));
             var temp=client.execute(signUpReq);
             int code=temp.getStatusLine().getStatusCode();
-            {
-                if(code!=200)
-                {
-                    //return new ChatUser();
-                    isValid=false;
-                }
-            }
+            String json = EntityUtils.toString(temp.getEntity());
+            isValid=jsonMapper.readValue(json, new TypeReference<>() {});
+        }
+        catch (IOException ex)
+        {
+            showError("Внутренняя ошибка сервера");
+           // showError("Internal server error!");
+            return;
         }
         if(isValid) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             forgotAction();
             alert.setTitle("Пароль успешно сброшен! Временный пароль был отпрален на почту!");
+            //alert.setTitle("Password was reset successfully! Temporary password was sent to your mail!");
             alert.showAndWait().ifPresent(rs -> {
                 if (rs == ButtonType.OK) {
                     Stage stage = (Stage) changePasswordButton.getScene().getWindow();
@@ -97,7 +97,8 @@ public class ForgotPasswordFormController {
         {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Ошибка!");
-            alert.setContentText("Введена неверная почта попробуйте повторить запрос!");
+            alert.setContentText("Введена неверная почта! Попробуйте повторить запрос!");
+           // alert.setContentText("Invalid mail address entered! Try to repeat  request!");
             alert.show();
         }
     }
@@ -112,7 +113,7 @@ public class ForgotPasswordFormController {
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpPatch signUpReq = new HttpPatch("http://localhost:8080/send-tmp-password");
             signUpReq.addHeader("content-type", "application/json");
-            signUpReq.setEntity(new StringEntity(login));//TODo This must work but after sending letter something bad happens
+            signUpReq.setEntity(new StringEntity(login));
             sendStatus= client.execute(signUpReq).getStatusLine().getStatusCode();
             if (sendStatus != 200) {
                 throw new HttpResponseException(sendStatus,"Error while register");
@@ -120,7 +121,8 @@ public class ForgotPasswordFormController {
         }
         catch (IOException e)
         {
-            showError("Error occured during email send! " +e.getMessage()+" !");
+            showError("Ошибка во время оправки письма!");
+           // showError("Error occurred during email send!");
         }
 
 

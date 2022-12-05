@@ -32,13 +32,14 @@ public class LoginService {
         userRepository.save(user);
     }
 
-    public void checkUserEmail(CheckEmailRequest request) {
+    public boolean checkUserEmail(CheckEmailRequest request) {
         UserJpa user=userRepository.getByLogin(request.getLogin())
                 .orElseThrow(() -> new ResourceNotFound("User with login '" + (request.getLogin() + "' was not found")));
-        if(!user.getEmail().equals(request.getEmail()))
+       /* if(!user.getEmail().equals(request.getEmail()))
         {
             throw new ResourceNotFound("Invalid email");
-        }
+        }*/
+        return user.getEmail().equals(request.getEmail());
     }
 
     @Transactional
@@ -54,6 +55,12 @@ public class LoginService {
 
     public Boolean isUserPresent(String login) {
         Optional<UserJpa> userJpaOptional = userRepository.getByLogin(login);
+        return userJpaOptional.isPresent();
+    }
+
+
+    public Boolean isEmailUsed(String email) {
+        Optional<UserJpa> userJpaOptional = userRepository.getByEmail(email);
         return userJpaOptional.isPresent();
     }
 
@@ -125,4 +132,5 @@ public class LoginService {
                 "\n" +
                 "</div></div>";
     }
+
 }

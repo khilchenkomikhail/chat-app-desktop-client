@@ -11,7 +11,7 @@ public class PasswordTextField extends TextField {
     @Override
     public void replaceText(int start, int end, String text) {
         String oldValue = getText();
-        if ((validate(text))&&text.length()<=10) {
+        if ((validate(text))&&text.length()<=100) {
             super.replaceText(start, end, text);
             String newText = super.getText();
             if (!validate(newText)) {

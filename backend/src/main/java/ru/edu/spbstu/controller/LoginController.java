@@ -23,8 +23,8 @@ public class LoginController {
     }
 
     @PostMapping("/check_user_email")
-    public void checkUserEmail(@RequestBody CheckEmailRequest request) {
-        loginService.checkUserEmail(request);
+    public Boolean checkUserEmail(@RequestBody CheckEmailRequest request) {
+        return loginService.checkUserEmail(request);
     }
 
     @PatchMapping("/send-tmp-password")
@@ -35,5 +35,10 @@ public class LoginController {
     @GetMapping("/is_user_present")
     public Boolean isUserPresent(@RequestParam String login) {
         return loginService.isUserPresent(login);
+    }
+
+    @GetMapping("/is_email_used")
+    public Boolean isEmailUsed(@RequestParam String email) {
+        return loginService.isEmailUsed(email);
     }
 }

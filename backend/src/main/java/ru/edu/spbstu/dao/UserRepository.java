@@ -11,4 +11,6 @@ import ru.edu.spbstu.model.jpa.UserJpa;
 public interface UserRepository extends CrudRepository<UserJpa, Long> {
 
     Optional<UserJpa> getByLogin(String login);
+
+    Optional<UserJpa> getByEmail(String email);
 }

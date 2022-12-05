@@ -2,6 +2,7 @@ package ru.edu.spbstu.client.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.scene.image.Image;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -132,4 +133,23 @@ public class ConfigureChatFormService {
         }
     }
 
+    public ArrayList<Image> getImageList(List<ChatUser> userList) {
+        int size=userList.size();
+        ArrayList<Image> images= new ArrayList<Image>();
+        for (int i=0;i<size;i++)
+        {
+            var resourse=getClass().getResource("/images/dAvatar.bmp");
+            var res=(getClass().getResource("/images/dAvatar.bmp")).getPath().replaceFirst("/","");
+            Image temp=new Image(res);
+            images.add(temp);
+            //images.set(i,temp);
+        }
+        return  images;
+    }
+    public Image getImage(ChatUser userList) {
+        Image image;
+        var res=(getClass().getResource("/images/dAvatar.bmp")).getPath().replaceFirst("/","");
+        image=new Image(res);
+        return  image;
+    }
 }

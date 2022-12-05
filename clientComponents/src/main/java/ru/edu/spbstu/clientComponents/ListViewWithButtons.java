@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ListView;
+import javafx.scene.image.Image;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +27,12 @@ public class ListViewWithButtons<T> extends ListView<HBoxCell<T>> {
     };
     private List<T> lst = new ArrayList<T>(0);
 
-    public void resetList(List<T> arr) {
+    public void resetList(List<T> arr, List<Image> images) {
+        this.setFixedCellSize(50);
         this.lst = arr;
         List<HBoxCell<T>> list = new ArrayList<>();
         for (int i = 0; i < lst.size(); i++) {
-            HBoxCell<T> temp = new HBoxCell<T>(lst.get(i), "x", i);
+            HBoxCell<T> temp = new HBoxCell<T>(lst.get(i), "x", i,images.get(i));
             temp.button.setOnAction(handler);
             list.add(temp);
         }
@@ -38,10 +40,10 @@ public class ListViewWithButtons<T> extends ListView<HBoxCell<T>> {
         this.setItems(FXCollections.observableList(list));
     }
 
-    public void addInList(T element) {
+    public void addInList(T element,Image image) {
         this.lst.add(element);
         var list2 = this.getItems();
-        HBoxCell<T> temp = new HBoxCell<T>(element, "x", this.lst.size() - 1);
+        HBoxCell<T> temp = new HBoxCell<T>(element, "x", this.lst.size() - 1,image);
         temp.button.setOnAction(handler);
         list2.add(temp);
         this.setItems(list2);

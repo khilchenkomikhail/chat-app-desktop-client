@@ -5,6 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.apache.http.client.CredentialsProvider;
@@ -16,6 +17,7 @@ import ru.edu.spbstu.model.ChatUser;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ConfigureChatFormController {
@@ -86,7 +88,9 @@ public class ConfigureChatFormController {
         {
             mainTabPanel.getTabs().remove(1);
         }
-        chatMembersConfigurationLV.resetList(userList);
+
+        ArrayList<Image> images=service.getImageList(userList);
+        chatMembersConfigurationLV.resetList(userList,images);
 
         currStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
@@ -128,7 +132,8 @@ public class ConfigureChatFormController {
         {
             userList.remove(user);
         }
-        chatMembersConfigurationLV.resetList(userList);
+        ArrayList<Image> images=service.getImageList(userList);
+        chatMembersConfigurationLV.resetList(userList,images);
     }
 
     public void confirmSettingsButtonPress(ActionEvent actionEvent) throws IOException {
@@ -169,7 +174,8 @@ public class ConfigureChatFormController {
             showError("Данный пользователь уже есть в списке на добавление!");
             return;
         }
-        usersToAddListView.addInList(temp2);
+        Image image=service.getImage(temp2);
+        usersToAddListView.addInList(temp2,image);
        // mainTabPanel.getTabs().add(tabChatSettings);//Todo return second tab
     }
 

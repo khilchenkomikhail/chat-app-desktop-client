@@ -7,6 +7,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.ScrollEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -81,7 +82,11 @@ public class CreateChatFormController {
 
     private void update()
     {
-        usersToAddListView.resetList(userList);
+
+        int size=userList.size();
+        ArrayList<Image> images= service.getImageList(userList);
+
+        usersToAddListView.resetList(userList,images);
     }
 
     public void AddUserButtonClick(ActionEvent actionEvent) {
@@ -110,7 +115,9 @@ public class CreateChatFormController {
             return;
         }
         userList.add(temp);
-        usersToAddListView.addInList(temp);
+        Image image= service.getImage(temp);
+
+        usersToAddListView.addInList(temp,image);
     }
 
     public void createChatButtonClick(ActionEvent actionEvent) throws IOException {

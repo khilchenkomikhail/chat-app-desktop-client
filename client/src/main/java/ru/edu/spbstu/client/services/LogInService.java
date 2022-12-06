@@ -68,10 +68,6 @@ public class LogInService {
     }
 
     public Boolean isEmailUsed(String email) throws IOException {
-        //@GetMapping("/is_user_present")
-        //public Boolean isUserPresent(@RequestParam String email) {
-        //return loginService.isUserPresent(email);
-
         String getChatsUrlBlueprint = "http://localhost:8080/is_email_used?email=%s";
 
         try (CloseableHttpClient client = HttpClientBuilder

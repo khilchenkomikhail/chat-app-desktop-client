@@ -80,18 +80,15 @@ public class ChatFormController {
 
                         @Override
                         public void handle(ContextMenuEvent event) {
-                            Bounds boundsInScreen = chatsListView.localToScreen(chatsListView.getBoundsInLocal());
-                            double y = event.getScreenY();
-                            double h = cell.heightProperty().get();
-                            y = (h) * Math.round(y / (h + 1));
-
-                            contextMenu.show(chatsListView, boundsInScreen.getMaxX(), y);
+                            contextMenu.show(chatsListView, event.getScreenX(), event.getScreenY());
                         }
                     });
                 }
             });
             return cell;
         });
+
+
     }
 
 
@@ -150,7 +147,6 @@ public class ChatFormController {
             showError("Internal server error!");
         }
         chatsListView.setItems(FXCollections.observableList(chatList));
-        chatsListView.setContextMenu(contextMenu);
         chatsListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
             @Override

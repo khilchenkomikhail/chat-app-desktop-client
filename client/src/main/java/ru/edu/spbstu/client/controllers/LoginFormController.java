@@ -1,35 +1,24 @@
 package ru.edu.spbstu.client.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import ru.edu.spbstu.client.ClientApplication;
+import ru.edu.spbstu.client.services.LogInService;
 import ru.edu.spbstu.clientComponents.PasswordTextField;
 
-import java.io.File;
 import java.io.IOException;
 
-
-
-
-import ru.edu.spbstu.client.services.LogInService;
 import static ru.edu.spbstu.client.utils.Verifiers.isEmail;
 
 public class LoginFormController {

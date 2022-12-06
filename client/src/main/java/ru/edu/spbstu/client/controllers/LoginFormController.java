@@ -67,9 +67,11 @@ public class LoginFormController {
 
 
     public void logInButtonPress(ActionEvent actionEvent)  {
-        if(passwordTextBox.getText().length()<8)
+        if(passwordTextBox.getText().length()<8||passwordTextBox.getText().length()>128)
         {
-            showError("Поле пароль должно содержать не менее 8 символов");
+            showError("Поле пароль должно содержать не менее 8 символов и не более 128 символов!");
+            // showError("Password filed must contain more than 7 symbols and less than 128 symbols!");
+
             return;
         }
 

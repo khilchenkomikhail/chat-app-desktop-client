@@ -45,6 +45,8 @@ public class ChatFormController {
     public Button logOutButton;
 
     private final ContextMenu contextMenu = new ContextMenu();
+    private final ContextMenu messageMenu=new ContextMenu();
+    private final ContextMenu messageMenu2=new ContextMenu();
 
     public void setCredentials(CredentialsProvider prov, String login) {
         service.setCredentialsProvider(prov, login);
@@ -80,7 +82,53 @@ public class ChatFormController {
 
                         @Override
                         public void handle(ContextMenuEvent event) {
-                            contextMenu.show(chatsListView, event.getScreenX(), event.getScreenY());
+                            contextMenu.show(chatsListView.getScene().getWindow(), event.getScreenX(), event.getScreenY());
+                        }
+                    });
+                }
+            });
+            return cell;
+        });
+
+        javafx.scene.control.MenuItem menuItem21 = new javafx.scene.control.MenuItem("Отредактировать сообщение");
+        javafx.scene.control.MenuItem menuItem22 = new javafx.scene.control.MenuItem("Удалить сообщение");
+        javafx.scene.control.MenuItem menuItem23 = new javafx.scene.control.MenuItem("Переслать сообщение");
+        menuItem21.setOnAction(this::editMessageAction);
+        menuItem22.setOnAction(this::deleteMessageAction);
+        menuItem23.setOnAction(this::forwardMessageAction);
+        messageMenu.getItems().add(menuItem21);
+        messageMenu.getItems().add(menuItem22);
+        messageMenu.getItems().add(menuItem23);
+
+        javafx.scene.control.MenuItem menu3 = new javafx.scene.control.MenuItem("Переслать сообщение");
+        menu3.setOnAction(this::forwardMessageAction);
+        messageMenu2.getItems().add(menu3);
+
+        messagesListView.setCellFactory(lv -> {
+
+            ListCell<Message> cell = new ListCell<>();
+
+            cell.textProperty().bind(Bindings.createStringBinding(
+                    () -> Objects.toString(cell.getItem(), ""),
+                    cell.itemProperty()));
+
+            cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
+                if (isNowEmpty) {
+                    cell.setContextMenu(null);
+                } else {
+                    cell.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
+
+                        @Override
+                        public void handle(ContextMenuEvent event) {
+                            String s1=cell.getItem().getAuthor_login();
+                            String s2=service.getLogin();
+                            if(s1.equals(s2)) {
+                                messageMenu.show(messagesListView.getScene().getWindow(), event.getScreenX(), event.getScreenY());
+                            }
+                            else
+                            {
+                                messageMenu2.show(messagesListView.getScene().getWindow(), event.getScreenX(), event.getScreenY());
+                            }
                         }
                     });
                 }
@@ -89,6 +137,11 @@ public class ChatFormController {
         });
 
 
+    }
+
+    private void forwardMessageAction(ActionEvent actionEvent) {
+        System.out.println("Forward");
+        //TODo open forward message form
     }
 
 
@@ -135,6 +188,58 @@ public class ChatFormController {
         }
         contextMenu.hide();
 
+    }
+
+
+    private void editMessageAction(javafx.event.ActionEvent actionEvent) {
+        System.out.println("Edit message!");
+        messageTextArea.setText(messagesListView.getSelectionModel().getSelectedItem().getContent());
+        sendMessageButton.setText("Отредактировать");
+        sendMessageButton.setOnAction(this::editMessageButtonAction);
+
+        try {
+            service.deleteMessage(messagesListView.getSelectionModel().getSelectedItem().getId());
+        }
+        catch (IOException e)
+        {
+            showError("Error while delete message! "+e.getMessage());
+        }
+
+    }
+
+    private void editMessageButtonAction(ActionEvent actionEvent) {
+        try {
+            service.editMessage(messagesListView.getSelectionModel().getSelectedItem().getId(),messageTextArea.getText());
+        } catch (IOException e) {
+            showError("Error while edit message button");
+        }
+        sendMessageButton.setText("Отправить");
+        messageTextArea.setText("");
+        sendMessageButton.setOnAction(this::sendMessageButtonClick);
+        try {
+            messagesListView.setItems(FXCollections.observableList(service.getMessages(chatsListView.getSelectionModel().getSelectedItem().getId(),1)));
+        } catch (IOException e) {
+            showError("Error while delete meessage! "+e.getMessage());
+            return;
+        }
+    }
+
+    private void deleteMessageAction(javafx.event.ActionEvent actionEvent) {
+        System.out.println("Delete message");
+        try {
+            service.deleteMessage(messagesListView.getSelectionModel().getSelectedItem().getId());
+        }
+        catch (IOException e)
+        {
+            showError("Error while delete meessage! "+e.getMessage());
+            return;
+        }
+        try {
+            messagesListView.setItems(FXCollections.observableList(service.getMessages(chatsListView.getSelectionModel().getSelectedItem().getId(),1)));
+        } catch (IOException e) {
+            showError("Error while delete meessage! "+e.getMessage());
+            return;
+        }
     }
 
     void init() {

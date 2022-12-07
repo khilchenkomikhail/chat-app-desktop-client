@@ -33,14 +33,14 @@ public class ChatController {
         return chatService.getChatMembers(chatId);
     }
 
-    @GetMapping("/get_chat_user")
-    public ChatUser getChatUser(@RequestParam("login") String  login) {
-        return chatService.getChatUser(login);
-    }
-
     @PostMapping("/create_chat")
     public void createChat(@RequestBody CreateChatRequest request) {
         chatService.createChat(request);
+    }
+
+    @DeleteMapping("/delete_chat")
+    public void deleteChat(@RequestParam("chat_id") Long chatId) {
+        chatService.deleteChat(chatId);
     }
 
     @PatchMapping("/delete_users_from_chat")

@@ -16,6 +16,9 @@ public interface MessageRepository extends CrudRepository<MessageJpa, Long> {
 
     Optional<MessageJpa> getById(Long messageId);
 
+    @Modifying
+    void deleteAllByChat_Id(Long chatId);
+
     @Query("select m from MessageJpa m where m.chat.id = :chatId order by m.date desc")
     List<MessageJpa> getMessagesByChatId(@Param("chatId") Long chatId);
 

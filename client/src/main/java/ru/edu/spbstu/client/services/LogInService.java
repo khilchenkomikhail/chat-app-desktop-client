@@ -16,6 +16,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import ru.edu.spbstu.client.utils.AuthScheme;
 import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.request.SignUpRequest;
 
@@ -63,6 +64,7 @@ public class LogInService {
 
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()
+                .setDefaultAuthSchemeRegistry(AuthScheme.getAuthScheme())
                 .setDefaultCredentialsProvider(provider)
                 .build()) {
             HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, login, page));
@@ -81,7 +83,7 @@ public class LogInService {
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpPost signUpReq = new HttpPost("http://localhost:8080/register");
             signUpReq.addHeader("content-type", "application/json");
-            signUpReq.setEntity(new StringEntity(jsonMapper.writeValueAsString(signUpRequest)));
+            signUpReq.setEntity(new StringEntity(jsonMapper.writeValueAsString(signUpRequest), "UTF-8"));
             var temp=client.execute(signUpReq);
             return temp.getStatusLine().getStatusCode();
         }

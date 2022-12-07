@@ -2,6 +2,7 @@ package ru.edu.spbstu.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.edu.spbstu.dao.MessageRepository;
 import ru.edu.spbstu.request.ChatUpdateRequest;
 import ru.edu.spbstu.request.CreateChatRequest;
 import ru.edu.spbstu.request.SendMessageRequest;
@@ -29,6 +30,7 @@ public class ChatService {
 
     private final JpaToModelConverter converter;
     private final ChatRepository chatRepository;
+    private final MessageRepository messageRepository;
     private final UserChatDetailsRepository userChatDetailsRepository;
     private final UserRepository userRepository;
     private final MessageService messageService;
@@ -54,6 +56,15 @@ public class ChatService {
         List<UserChatDetailsJpa> userChatDetailsJpaList = userChatDetailsRepository.getChatMembers(chatId);
         return userChatDetailsJpaList.stream().map(converter::convertUserChatDetailsJpaToChatUser)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteChat(Long chatId) {
+        chatRepository.getById(chatId)
+                .orElseThrow(() -> new ResourceNotFound("Chat with id '" + chatId + "' was not found"));
+        userChatDetailsRepository.deleteAllByChat_Id(chatId);
+        messageRepository.deleteAllByChat_Id(chatId);
+        chatRepository.deleteById(chatId);
     }
 
     @Transactional
@@ -137,11 +148,5 @@ public class ChatService {
                 .map(converter::convertChatJpaToChat)
                 .sorted(chatComparator)
                 .collect(Collectors.toList());
-    }
-
-    public ChatUser getChatUser(String login) {
-        UserJpa user=userRepository.getByLogin(login)
-                .orElseThrow(() -> new ResourceNotFound("User with login '" + login + "' was not found"));
-        return new ChatUser(user.getLogin(),false);
     }
 }

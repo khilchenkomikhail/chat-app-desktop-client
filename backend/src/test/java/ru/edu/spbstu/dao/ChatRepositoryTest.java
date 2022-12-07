@@ -88,7 +88,7 @@ class ChatRepositoryTest {
         rightChatJpa1 = chatRepository.save(rightChatJpa1);
 
         ChatJpa rightChatJpa2 = new ChatJpa();
-        rightChatJpa2.setName("someChat");
+        rightChatJpa2.setName("SoMeChat");
         rightChatJpa2 = chatRepository.save(rightChatJpa2);
 
         ChatJpa wrongChatJpa1 = new ChatJpa();

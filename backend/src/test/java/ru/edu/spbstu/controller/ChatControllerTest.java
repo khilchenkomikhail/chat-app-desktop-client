@@ -130,6 +130,18 @@ public class ChatControllerTest {
     }
 
     @Test
+    public void deleteChat_SuccessResult() throws Exception {
+        LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("chat_id", "1");
+
+        this.mockMvc.perform(delete("/delete_chat").params(params))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        verify(chatService, times(1)).deleteChat(anyLong());
+    }
+
+    @Test
     public void getChatMembers_SuccessResult() throws Exception {
         LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("chat_id", "1");

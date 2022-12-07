@@ -86,6 +86,38 @@ class UserChatDetailsRepositoryTest {
     }
 
     @Test
+    void deleteAllByChat_Id() {
+        UserJpa user1 = new UserJpa();
+        user1.setEmail("u1@mail.org");
+        user1.setImage("image 1");
+        user1.setPassword("password 1");
+        user1.setLogin("login 1");
+        user1 = userRepository.save(user1);
+
+        ChatJpa chat = new ChatJpa();
+        chat.setName("someChat");
+        chat = chatRepository.save(chat);
+
+        UserChatDetailsJpa userChatDetails1 = new UserChatDetailsJpa();
+        userChatDetails1.setChat(chat);
+        userChatDetails1.setUser(user1);
+        userChatDetails1.setChatRole(ChatRole.USER);
+        userChatDetailsRepository.save(userChatDetails1);
+
+        UserChatDetailsJpa userChatDetails2 = new UserChatDetailsJpa();
+        userChatDetails2.setChat(chat);
+        userChatDetails2.setUser(user1);
+        userChatDetails2.setChatRole(ChatRole.USER);
+        userChatDetailsRepository.save(userChatDetails2);
+
+        long all = userChatDetailsRepository.findAll().spliterator().getExactSizeIfKnown();
+        userChatDetailsRepository.deleteAllByChat_Id(chat.getId());
+        long count = userChatDetailsRepository.findAll().spliterator().getExactSizeIfKnown();
+        Assertions.assertEquals(2, all);
+        Assertions.assertEquals(0, count);
+    }
+
+    @Test
     void deleteByChatAndUser() {
         UserJpa user1 = new UserJpa();
         user1.setEmail("u1@mail.org");

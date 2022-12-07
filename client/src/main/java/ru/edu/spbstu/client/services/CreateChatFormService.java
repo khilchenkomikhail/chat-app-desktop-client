@@ -12,6 +12,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import ru.edu.spbstu.client.utils.AuthScheme;
 import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.model.ChatUser;
 import ru.edu.spbstu.model.User;
@@ -59,6 +60,7 @@ public class CreateChatFormService {
 
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()
+                .setDefaultAuthSchemeRegistry(AuthScheme.getAuthScheme())
                 .setDefaultCredentialsProvider(provider)
                 .build()) {
             HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, login, page));
@@ -78,10 +80,11 @@ public class CreateChatFormService {
 
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()
+                .setDefaultAuthSchemeRegistry(AuthScheme.getAuthScheme())
                 .setDefaultCredentialsProvider(provider)
                 .build()) {
             HttpPost post = new HttpPost("http://localhost:8080/create_chat");
-            post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request)));
+            post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request), "UTF-8"));
             post.addHeader("content-type", "application/json");
             CloseableHttpResponse re = client.execute(post);
             return re.getStatusLine().getStatusCode();
@@ -99,6 +102,7 @@ public class CreateChatFormService {
 
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()
+                .setDefaultAuthSchemeRegistry(AuthScheme.getAuthScheme())
                 .setDefaultCredentialsProvider(provider)
                 .build()) {
             HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, login));

@@ -9,6 +9,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.shape.Rectangle;
 import ru.edu.spbstu.model.ChatUser;
 
 public class HboxCellWithCheckboxes extends HBox {
@@ -26,26 +27,7 @@ public class HboxCellWithCheckboxes extends HBox {
         }
 
     }
-
-    /*public static class ImageHbox extends Label {
-        protected ImageView imageView;
-        ImageHbox()
-        {
-            super();
-            imageView=new ImageView();
-        }
-        ImageHbox(Image avatar)
-        {
-            super();
-            imageView=new ImageView();
-            imageView.setImage(avatar);
-            imageView.setFitHeight(20);
-            imageView.setFitWidth(20);
-        }
-
-    }*/
     ImageView  imageView;
-    //ImageHbox imageView=new ImageHbox();
     Label label;
     MyCheckBox deleteCB;
     MyCheckBox adminCB;
@@ -73,6 +55,12 @@ public class HboxCellWithCheckboxes extends HBox {
         imageView.setImage(image);
         imageView.setFitHeight(40);
         imageView.setFitWidth(40);
+        final Rectangle clip = new Rectangle();
+        clip.arcWidthProperty().bind(clip.heightProperty().divide(0.1));
+        clip.arcHeightProperty().bind(clip.heightProperty().divide(0.1));
+        clip.setWidth( imageView.getLayoutBounds().getWidth());
+        clip.setHeight( imageView.getLayoutBounds().getHeight());
+        imageView.setClip(clip);
 
 
         label.setAlignment(Pos.CENTER_LEFT);

@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.shape.Rectangle;
 
 public class HBoxCell<T> extends HBox {
     public static class MyButton extends Button {
@@ -44,6 +45,13 @@ public class HBoxCell<T> extends HBox {
         imageView.setImage(image);
         imageView.setFitHeight(40);
         imageView.setFitWidth(40);
+
+        final Rectangle clip = new Rectangle();
+        clip.arcWidthProperty().bind(clip.heightProperty().divide(0.1));
+        clip.arcHeightProperty().bind(clip.heightProperty().divide(0.1));
+        clip.setWidth( imageView.getLayoutBounds().getWidth());
+        clip.setHeight( imageView.getLayoutBounds().getHeight());
+        imageView.setClip(clip);
 
 
         label.setAlignment(Pos.CENTER_LEFT);

@@ -69,7 +69,7 @@ public class ForgotPasswordFormController {
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpPost signUpReq = new HttpPost("http://localhost:8080/check_user_email");
             signUpReq.addHeader("content-type", "application/json");
-            signUpReq.setEntity(new StringEntity(jsonMapper.writeValueAsString(signUpRequest)));
+            signUpReq.setEntity(new StringEntity(jsonMapper.writeValueAsString(signUpRequest), "UTF-8"));
             var temp=client.execute(signUpReq);
             int code=temp.getStatusLine().getStatusCode();
             String json = EntityUtils.toString(temp.getEntity());
@@ -113,7 +113,7 @@ public class ForgotPasswordFormController {
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpPatch signUpReq = new HttpPatch("http://localhost:8080/send-tmp-password");
             signUpReq.addHeader("content-type", "application/json");
-            signUpReq.setEntity(new StringEntity(login));
+            signUpReq.setEntity(new StringEntity(login, "UTF-8"));
             sendStatus= client.execute(signUpReq).getStatusLine().getStatusCode();
             if (sendStatus != 200) {
                 throw new HttpResponseException(sendStatus,"Error while register");

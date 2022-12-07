@@ -16,6 +16,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import ru.edu.spbstu.client.utils.AuthScheme;
 import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.model.Message;
 import ru.edu.spbstu.request.CreateChatRequest;
@@ -173,7 +174,7 @@ public class fillServer {
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpPost signUpReq = new HttpPost("http://localhost:8080/register");
             signUpReq.addHeader("content-type", "application/json");
-            signUpReq.setEntity(new StringEntity(jsonMapper.writeValueAsString(signUpRequest)));
+            signUpReq.setEntity(new StringEntity(jsonMapper.writeValueAsString(signUpRequest), "UTF-8"));
             return client.execute(signUpReq).getStatusLine().getStatusCode();
         }
     }
@@ -184,6 +185,7 @@ public class fillServer {
 
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()
+                .setDefaultAuthSchemeRegistry(AuthScheme.getAuthScheme())
                 .setDefaultCredentialsProvider(provider)
                 .build()) {
             HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, login, page));
@@ -201,10 +203,11 @@ public class fillServer {
 
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()
+                .setDefaultAuthSchemeRegistry(AuthScheme.getAuthScheme())
                 .setDefaultCredentialsProvider(provider)
                 .build()) {
             HttpPost post = new HttpPost("http://localhost:8080/create_chat");
-            post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request)));
+            post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request), "UTF-8"));
             post.addHeader("content-type", "application/json");
             CloseableHttpResponse re = client.execute(post);
             return re.getStatusLine().getStatusCode();
@@ -225,12 +228,13 @@ public class fillServer {
         String getMessagesUrlBlueprint = "http://localhost:8080/get_messages?chat_id=%d&page_number=%d";
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()
+                .setDefaultAuthSchemeRegistry(AuthScheme.getAuthScheme())
                 .setDefaultCredentialsProvider(provider)
                 .build()) {
 
             HttpGet httpGet = new HttpGet(String.format( getMessagesUrlBlueprint, chatId, page));
             CloseableHttpResponse re = client.execute(httpGet);
-            String json = EntityUtils.toString(re.getEntity());
+            String json = EntityUtils.toString(re.getEntity(), "UTF-8");
             int code=re.getStatusLine().getStatusCode();
             if(code==400)
             {
@@ -244,10 +248,11 @@ public class fillServer {
         SendMessageRequest request=new SendMessageRequest(login,login,chat_id,message);
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()
+                .setDefaultAuthSchemeRegistry(AuthScheme.getAuthScheme())
                 .setDefaultCredentialsProvider(provider)
                 .build()) {
             HttpPost post = new HttpPost("http://localhost:8080/send_message");
-            post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request)));
+            post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request), "UTF-8"));
             post.addHeader("content-type", "application/json");
             CloseableHttpResponse re = client.execute(post);
             return re.getStatusLine().getStatusCode();
@@ -258,6 +263,7 @@ public class fillServer {
         String getMessagesUrlBlueprint = "http://localhost:8080/delete_message?message_id=%d";
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()
+                .setDefaultAuthSchemeRegistry(AuthScheme.getAuthScheme())
                 .setDefaultCredentialsProvider(provider)
                 .build()) {
 
@@ -273,6 +279,7 @@ public class fillServer {
         String getMessagesUrlBlueprint = "http://localhost:8080/forward_message?message_id=%d?sender_login=%s?chat_id=%d";
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()
+                .setDefaultAuthSchemeRegistry(AuthScheme.getAuthScheme())
                 .setDefaultCredentialsProvider(provider)
                 .build()) {
 
@@ -288,10 +295,11 @@ public class fillServer {
         EditMessageRequest request=new EditMessageRequest(message_id,message);
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()
+                .setDefaultAuthSchemeRegistry(AuthScheme.getAuthScheme())
                 .setDefaultCredentialsProvider(provider)
                 .build()) {
             HttpPatch post = new HttpPatch("http://localhost:8080/edit_message");
-            post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request)));
+            post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request), "UTF-8"));
             post.addHeader("content-type", "application/json");
             CloseableHttpResponse re = client.execute(post);
             return re.getStatusLine().getStatusCode();

@@ -13,6 +13,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import ru.edu.spbstu.client.utils.AuthScheme;
 import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.model.ChatUser;
 import ru.edu.spbstu.request.ChatUpdateRequest;
@@ -48,6 +49,7 @@ public class ConfigureChatFormService {
 
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()
+                .setDefaultAuthSchemeRegistry(AuthScheme.getAuthScheme())
                 .setDefaultCredentialsProvider(prov)
                 .build()) {
             HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint,chatToConfigure.getId()));
@@ -71,10 +73,11 @@ public class ConfigureChatFormService {
         int code=0;
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()
+                .setDefaultAuthSchemeRegistry(AuthScheme.getAuthScheme())
                 .setDefaultCredentialsProvider(prov)
                 .build()) {
             HttpPatch post = new HttpPatch("http://localhost:8080/delete_users_from_chat");
-            post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request)));
+            post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request), "UTF-8"));
             post.addHeader("content-type", "application/json");
             CloseableHttpResponse re = client.execute(post);
             code=re.getStatusLine().getStatusCode();
@@ -87,10 +90,11 @@ public class ConfigureChatFormService {
         int code=0;
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()
+                .setDefaultAuthSchemeRegistry(AuthScheme.getAuthScheme())
                 .setDefaultCredentialsProvider(prov)
                 .build()) {
             HttpPatch post = new HttpPatch("http://localhost:8080/make_users_admins");
-            post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request)));
+            post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request), "UTF-8"));
             post.addHeader("content-type", "application/json");
             CloseableHttpResponse re = client.execute(post);
             code = re.getStatusLine().getStatusCode();
@@ -102,10 +106,11 @@ public class ConfigureChatFormService {
         int code=0;
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()
+                .setDefaultAuthSchemeRegistry(AuthScheme.getAuthScheme())
                 .setDefaultCredentialsProvider(prov)
                 .build()) {
             HttpPatch post = new HttpPatch("http://localhost:8080/add_users_to_chat");
-            post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request)));
+            post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request), "UTF-8"));
             post.addHeader("content-type", "application/json");
             CloseableHttpResponse re = client.execute(post);
             code = re.getStatusLine().getStatusCode();

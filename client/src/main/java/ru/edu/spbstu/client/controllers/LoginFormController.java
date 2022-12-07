@@ -48,10 +48,14 @@ public class LoginFormController {
     @FXML
     void initialize() {
         service=new LogInService();
-        logInButton.setDisable(true);
+        //logInButton.setDisable(true);
         registerButton.setDisable(true);
         forgetPasswordButton.setDisable(true);
         stage= ClientApplication.getStage();
+        loginTextBox.setText("olegoleg");
+        passwordTextBox.setText("olegoleg");
+        //logInButtonPress(new ActionEvent());
+
 
     }
 
@@ -86,6 +90,7 @@ public class LoginFormController {
             {
                 showError("Неверные логин или пароль!");
                // showError("Invalid login or password!");
+                return;
 
             }
         }
@@ -206,7 +211,7 @@ public class LoginFormController {
         Parent window = (Pane) fmxlLoader.load();
         // private Scene scene;
         ChatFormController conC = fmxlLoader.<ChatFormController>getController();
-        Scene scene = new Scene(window,900,700);
+        Scene scene = new Scene(window);
         conC.setCredentials(this.service.getProvider(), regLoginTextBox.getText());
         Stage nstage= new Stage();
         nstage.setScene(scene);

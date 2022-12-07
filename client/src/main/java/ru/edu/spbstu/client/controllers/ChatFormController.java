@@ -7,34 +7,25 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.*;
-import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpResponseException;
 import ru.edu.spbstu.client.services.ChatFormService;
-import ru.edu.spbstu.clientComponents.HboxCellWithCheckboxes;
 import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.model.Message;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -61,133 +52,132 @@ public class ChatFormController {
     private final ContextMenu messageMenu=new ContextMenu();
     private final ContextMenu messageMenu2=new ContextMenu();
 
+    private ListCell<Message> cellListFiller()
+    {
+       return new ListCell<Message>() {
+            @Override
+            protected void updateItem(Message message, boolean bln) {
+                super.updateItem(message, bln);
+                setGraphic(null);
+                setText(null);
 
+                if (message != null) {
+
+                    HBox box=new HBox();
+
+                    GridPane pane=new GridPane();
+
+                    pane.setPrefWidth(500.0);
+                    ColumnConstraints column1=new ColumnConstraints();
+
+                    column1.setHgrow(Priority.SOMETIMES);
+                    column1.setMaxWidth(50);
+                    column1.setMinWidth(50);
+                    column1.setPrefWidth(50.0);
+
+
+                    ColumnConstraints column2=new ColumnConstraints();
+                    column2.setHgrow(Priority.NEVER);
+                    column2.setMaxWidth(-Double.MAX_VALUE);
+                    column2.setMinWidth(-Double.MAX_VALUE);
+                    ColumnConstraints column3=new ColumnConstraints();
+                    column3.setHgrow(Priority.SOMETIMES);
+                    //column3.setMaxWidth(-Double.MAX_VALUE);
+                    column3.setMinWidth(-Double.MAX_VALUE);
+
+                    RowConstraints row1=new RowConstraints();
+                    row1.setMaxHeight(-Double.MAX_VALUE);
+                    row1.setMinHeight(-Double.MAX_VALUE);
+                    row1.setPrefHeight(50);
+                    row1.setVgrow(Priority.SOMETIMES);
+
+                    RowConstraints row2=new RowConstraints();
+                    //row2.setMaxHeight(50);
+                    //row2.setMinHeight(50);
+                    row2.setMaxHeight(-1);
+                    row2.setVgrow(Priority.SOMETIMES);
+
+                    pane.getColumnConstraints().addAll(column1, column2, column3);
+                    pane.getRowConstraints().addAll(row1,row2);
+
+                    HBox imageHbox=new HBox();
+                    imageHbox.setMaxHeight(40);
+                    imageHbox.setMaxWidth(40);
+                    imageHbox.setMinHeight(40);
+                    imageHbox.setMinWidth(40);
+                    ImageView pictureImageView = new ImageView();
+                    Image image = service.getImage(message.getAuthor_login());
+                    pictureImageView.setImage(image);
+                    pictureImageView.setFitHeight(40);
+                    pictureImageView.setFitWidth(40);
+                    final Rectangle clip = new Rectangle();
+                    clip.arcWidthProperty().bind(clip.heightProperty().divide(0.1));
+                    clip.arcHeightProperty().bind(clip.heightProperty().divide(0.1));
+                    clip.setWidth(pictureImageView.getLayoutBounds().getWidth());
+                    clip.setHeight(pictureImageView.getLayoutBounds().getHeight());
+                    pictureImageView.setClip(clip);
+
+                    GridPane.setMargin(imageHbox, new Insets(5, 5, 5, 5));
+                    imageHbox.getChildren().add(pictureImageView);
+                    pane.add(imageHbox,0,0);
+
+
+                    Label username = new Label(message.getAuthor_login());
+                    GridPane.setHalignment(username,HPos.LEFT);
+                    GridPane.setValignment(username,VPos.TOP);
+                    GridPane.setMargin(username, new Insets(0, 20, 0, 5));
+                    pane.add(username,1,0);
+
+
+                    Label date = new Label(message.getDate().toString());
+                    GridPane.setHalignment(date,HPos.LEFT);
+                    GridPane.setValignment(date,VPos.TOP);
+                    GridPane.setMargin(date, new Insets(0, 20, 0, 5));
+                    pane.add(date,2,0);
+
+
+                    Label messageContents = new Label(message.getContent());
+                    if(message.getIs_deleted())
+                    {
+                        messageContents.setText("Message deleted");
+                    }
+                    if(message.getIs_edited())
+                    {
+                        String newMess= messageContents.getText();
+                        newMess+=" (ред.)";
+                        //newMess+=" (ed.)";
+                        messageContents.setText(newMess);
+                    }
+                    messageContents.setMinWidth(300);
+                    messageContents.setMaxWidth(300);
+                    messageContents.setPrefWidth(300.0);
+                    messageContents.setWrapText(true);
+
+
+                    GridPane.setValignment(messageContents,VPos.TOP);
+                    GridPane.setMargin(messageContents, new Insets(20, 0, 20, 5));
+                    pane.add(messageContents,1,0,2,2);
+                    messageContents.setStyle("-fx-background-radius: 5");
+                    imageHbox.setStyle("-fx-background-color: white");
+
+                    pane.setStyle("-fx-background-color: #BEBEBE");
+                    if(!message.getAuthor_login().equals(service.getLogin()))
+                    {
+                        HBox.setMargin(pane,new Insets(0,0,0,200));
+                    }
+                    box.getChildren().add(pane);
+
+                    setGraphic(box);
+
+                }
+            }
+        };
+    }
 
     private Callback<ListView<Message>, ListCell<Message>>messageCallback =new Callback<ListView<Message>, ListCell<Message>>() {
         @Override
         public ListCell<Message> call(ListView<Message> lv) {
-            ListCell<Message> cell = new ListCell<Message>() {
-                @Override
-                protected void updateItem(Message message, boolean bln) {
-                    super.updateItem(message, bln);
-                    setGraphic(null);
-                    setText(null);
-
-                    if (message != null) {
-
-                        HBox box=new HBox();
-
-                        GridPane pane=new GridPane();
-
-                        pane.setPrefWidth(500.0);
-                        ColumnConstraints column1=new ColumnConstraints();
-
-                        column1.setHgrow(Priority.SOMETIMES);
-                        column1.setMaxWidth(50);
-                        column1.setMinWidth(50);
-                        column1.setPrefWidth(50.0);
-
-
-                        ColumnConstraints column2=new ColumnConstraints();
-                        column2.setHgrow(Priority.NEVER);
-                        column2.setMaxWidth(-Double.MAX_VALUE);
-                        column2.setMinWidth(-Double.MAX_VALUE);
-                        ColumnConstraints column3=new ColumnConstraints();
-                        column3.setHgrow(Priority.SOMETIMES);
-                        //column3.setMaxWidth(-Double.MAX_VALUE);
-                        column3.setMinWidth(-Double.MAX_VALUE);
-
-                        RowConstraints row1=new RowConstraints();
-                        row1.setMaxHeight(-Double.MAX_VALUE);
-                        row1.setMinHeight(-Double.MAX_VALUE);
-                        row1.setPrefHeight(50);
-                        row1.setVgrow(Priority.SOMETIMES);
-
-                        RowConstraints row2=new RowConstraints();
-                        //row2.setMaxHeight(50);
-                        //row2.setMinHeight(50);
-                        row2.setMaxHeight(-1);
-                        row2.setVgrow(Priority.SOMETIMES);
-
-                        pane.getColumnConstraints().addAll(column1, column2, column3);
-                        pane.getRowConstraints().addAll(row1,row2);
-
-                        HBox imageHbox=new HBox();
-                        imageHbox.setMaxHeight(40);
-                        imageHbox.setMaxWidth(40);
-                        imageHbox.setMinHeight(40);
-                        imageHbox.setMinWidth(40);
-                        ImageView pictureImageView = new ImageView();
-                        Image image = service.getImage(message.getAuthor_login());
-                        pictureImageView.setImage(image);
-                        pictureImageView.setFitHeight(40);
-                        pictureImageView.setFitWidth(40);
-                        final Rectangle clip = new Rectangle();
-                        clip.arcWidthProperty().bind(clip.heightProperty().divide(0.1));
-                        clip.arcHeightProperty().bind(clip.heightProperty().divide(0.1));
-                        clip.setWidth(pictureImageView.getLayoutBounds().getWidth());
-                        clip.setHeight(pictureImageView.getLayoutBounds().getHeight());
-                        pictureImageView.setClip(clip);
-
-                        GridPane.setMargin(imageHbox, new Insets(5, 5, 5, 5));
-                        imageHbox.getChildren().add(pictureImageView);
-                        pane.add(imageHbox,0,0);
-
-
-                        Label username = new Label(message.getAuthor_login());
-                        GridPane.setHalignment(username,HPos.LEFT);
-                        GridPane.setValignment(username,VPos.TOP);
-                        GridPane.setMargin(username, new Insets(0, 20, 0, 5));
-                        pane.add(username,1,0);
-
-
-                        Label date = new Label(message.getDate().toString());
-                        GridPane.setHalignment(date,HPos.LEFT);
-                        GridPane.setValignment(date,VPos.TOP);
-                        GridPane.setMargin(date, new Insets(0, 20, 0, 5));
-                        pane.add(date,2,0);
-
-
-                        Label messageContents = new Label(message.getContent());
-                        if(message.getIs_deleted())
-                        {
-                            messageContents.setText("Message deleted");
-                        }
-                        if(message.getIs_edited())
-                        {
-                           String newMess= messageContents.getText();
-                           newMess+=" (ред.)";
-                           //newMess+=" (ed.)";
-                           messageContents.setText(newMess);
-                        }
-                        messageContents.setMinWidth(300);
-                        messageContents.setMaxWidth(300);
-                        messageContents.setPrefWidth(300.0);
-                        messageContents.setWrapText(true);
-
-
-                        GridPane.setValignment(messageContents,VPos.TOP);
-                        GridPane.setMargin(messageContents, new Insets(20, 0, 20, 5));
-                        pane.add(messageContents,1,0,2,2);
-                        messageContents.setStyle("-fx-background-radius: 5");
-                        imageHbox.setStyle("-fx-background-color: white");
-
-                        pane.setStyle("-fx-background-color: #BEBEBE");
-                        if(!message.getAuthor_login().equals(service.getLogin()))
-                        {
-                            HBox.setMargin(pane,new Insets(0,0,0,200));
-                        }
-                        box.getChildren().add(pane);
-
-                        setGraphic(box);
-
-                    }
-                }
-            };
-
-               /* cell.textProperty().bind(Bindings.createStringBinding(
-                        () -> Objects.toString(cell.getItem(), ""),
-                        cell.itemProperty()));*/
+            ListCell<Message> cell = cellListFiller();
 
             cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
                 if (isNowEmpty) {
@@ -330,26 +320,17 @@ public class ChatFormController {
 
 
     private void editMessageAction(javafx.event.ActionEvent actionEvent) {
-        System.out.println("Edit message!");
         messageTextArea.setText(messagesListView.getSelectionModel().getSelectedItem().getContent());
         sendMessageButton.setText("Отредактировать");
         sendMessageButton.setOnAction(this::editMessageButtonAction);
-
-        /*try {
-            service.deleteMessage(messagesListView.getSelectionModel().getSelectedItem().getId());
-        }
-        catch (IOException e)
-        {
-            showError("Error while delete message! "+e.getMessage());
-        }*/
-
     }
 
     private void editMessageButtonAction(ActionEvent actionEvent) {
         try {
             service.editMessage(messagesListView.getSelectionModel().getSelectedItem().getId(),messageTextArea.getText());
         } catch (IOException e) {
-            showError("Error while edit message button");
+            showError("Внутрення ошибка сервера!");
+            return;
         }
         sendMessageButton.setText("Отправить");
         messageTextArea.setText("");
@@ -357,8 +338,7 @@ public class ChatFormController {
         try {
             messagesListView.setItems(FXCollections.observableList(service.getMessages(chatsListView.getSelectionModel().getSelectedItem().getId(),1)));
         } catch (IOException e) {
-            showError("Error while delete meessage! "+e.getMessage());
-            return;
+            showError("Внутрення ошибка сервера!");
         }
     }
 
@@ -369,14 +349,13 @@ public class ChatFormController {
         }
         catch (IOException e)
         {
-            showError("Error while delete meessage! "+e.getMessage());
+            showError("Внутрення ошибка сервера!");
             return;
         }
         try {
             messagesListView.setItems(FXCollections.observableList(service.getMessages(chatsListView.getSelectionModel().getSelectedItem().getId(),1)));
         } catch (IOException e) {
-            showError("Error while delete meessage! "+e.getMessage());
-            return;
+            showError("Внутрення ошибка сервера!");
         }
     }
 
@@ -387,16 +366,17 @@ public class ChatFormController {
             showError(e.getReasonPhrase());
             logOutAction();
         } catch (IOException e) {
-            showError("Internal server error!");
+            showError("Внутренняя ошибка сервера!");
+            //showError("Internal server error!");
+            currStage.close();
+            return;
         }
         chatsListView.setItems(FXCollections.observableList(chatList));
         chatsListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
             @Override
             public void handle(MouseEvent event) {
                 if (event.getButton()!= MouseButton.PRIMARY)
                 {
-                    //messagesListView.setItems(FXCollections.observableList(new ArrayList<>()));
                     return;
                 }
                 var curr = chatsListView.getSelectionModel().getSelectedItem();
@@ -425,9 +405,6 @@ public class ChatFormController {
                 currStage.close();
             }
         });
-
-
-
     }
 
 
@@ -482,8 +459,24 @@ public class ChatFormController {
 
     public void findChatsEvent(KeyEvent keyEvent) {
         String name = newChatTextBox.getText();
+        if(newChatTextBox.getText().length()==1)
+        {
+            try {
+                chatsListView.setItems(FXCollections.observableList(service.getChats(1)));
+            } catch (IOException e) {
+                showError("Внутренняя ошибка сервера!");
+                return;
+            }
+        }
 
-        List<Chat> temp = service.find(name);
+        List<Chat> temp = null;
+        try {
+            temp = service.find(name,1L);
+        } catch (IOException e) {
+            showError("Внутренняя ошибка сервера!");
+            return;
+        }
+        chatsListView.setItems(FXCollections.observableList(temp));
     }
 
     public void LanguageCBAction(ActionEvent actionEvent) {
@@ -494,14 +487,16 @@ public class ChatFormController {
         try {
             service.sendMessage(curr.getId(), messageTextArea.getText());
         } catch (IOException e) {
-            showError("Error occurred when sending the message! " + e.getMessage() + " !");
+            showError("Внутренняя ошибка сервера!");
+
             return;
         }
 
         try {
             messageList = service.getMessages(curr.getId(), 1);
         } catch (IOException e) {
-            messageList = new ArrayList<>();
+            showError("Внутренняя ошибка сервера!");
+            return;
         }
         messagesListView.setItems(FXCollections.observableList(messageList));
         messageTextArea.setText("");
@@ -522,7 +517,7 @@ public class ChatFormController {
     public void ProfileButtonMouseClick(ActionEvent actionEvent) throws IOException {
         FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/profile_form.fxml"));
         Parent window = (Pane) fmxlLoader.load();
-        var conC = fmxlLoader.<ChatFormController>getController();//TODO поменять
+        var conC = fmxlLoader.<ChatFormController>getController();
         Scene scene = new Scene(window, 700, 700);
 
         conC.setCredentials(service.getCredentialsProvider(), service.getLogin());

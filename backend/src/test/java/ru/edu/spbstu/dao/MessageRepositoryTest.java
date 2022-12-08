@@ -40,7 +40,7 @@ public class MessageRepositoryTest {
         userJpa.setLogin("login");
         userJpa.setPassword("password");
         userJpa.setEmail("e@mail.ru");
-        userJpa.setImage("image");
+        userJpa.setImage(null);
         userJpa = userRepository.save(userJpa);
 
         ChatJpa chatJpa = new ChatJpa();
@@ -69,7 +69,7 @@ public class MessageRepositoryTest {
         userJpa.setLogin("login");
         userJpa.setPassword("password");
         userJpa.setEmail("e@mail.ru");
-        userJpa.setImage("image");
+        userJpa.setImage(null);
         userJpa = userRepository.save(userJpa);
 
         ChatJpa chatJpa1 = new ChatJpa();
@@ -114,7 +114,7 @@ public class MessageRepositoryTest {
         userJpa.setLogin("login");
         userJpa.setPassword("password");
         userJpa.setEmail("e@mail.ru");
-        userJpa.setImage("image");
+        userJpa.setImage(null);
         userJpa = userRepository.save(userJpa);
 
         ChatJpa chatJpa = new ChatJpa();
@@ -145,7 +145,7 @@ public class MessageRepositoryTest {
         userJpa.setLogin("login");
         userJpa.setPassword("password");
         userJpa.setEmail("e@mail.ru");
-        userJpa.setImage("image");
+        userJpa.setImage(null);
         userJpa = userRepository.save(userJpa);
 
         ChatJpa chatJpa = new ChatJpa();
@@ -174,7 +174,7 @@ public class MessageRepositoryTest {
         userJpa.setLogin("login");
         userJpa.setPassword("password");
         userJpa.setEmail("e@mail.ru");
-        userJpa.setImage("image");
+        userJpa.setImage(null);
         userJpa = userRepository.save(userJpa);
 
         ChatJpa chatJpa = new ChatJpa();

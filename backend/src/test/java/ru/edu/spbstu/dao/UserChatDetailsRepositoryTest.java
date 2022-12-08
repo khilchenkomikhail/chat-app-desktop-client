@@ -32,21 +32,21 @@ class UserChatDetailsRepositoryTest {
     void getChatMembers() {
         UserJpa user1 = new UserJpa();
         user1.setEmail("u1@mail.org");
-        user1.setImage("image 1");
+        user1.setImage(null);
         user1.setPassword("password 1");
         user1.setLogin("login 1");
         user1 = userRepository.save(user1);
 
         UserJpa user2 = new UserJpa();
         user2.setEmail("u2@mail.org");
-        user2.setImage("image 2");
+        user2.setImage(null);
         user2.setPassword("password 2");
         user2.setLogin("login 2");
         user2 = userRepository.save(user2);
 
         UserJpa user3 = new UserJpa();
         user3.setEmail("u3@mail.org");
-        user3.setImage("image 3");
+        user3.setImage(null);
         user3.setPassword("password 3");
         user3.setLogin("login 3");
         userRepository.save(user3);
@@ -89,7 +89,7 @@ class UserChatDetailsRepositoryTest {
     void deleteAllByChat_Id() {
         UserJpa user1 = new UserJpa();
         user1.setEmail("u1@mail.org");
-        user1.setImage("image 1");
+        user1.setImage(null);
         user1.setPassword("password 1");
         user1.setLogin("login 1");
         user1 = userRepository.save(user1);
@@ -121,7 +121,7 @@ class UserChatDetailsRepositoryTest {
     void deleteByChatAndUser() {
         UserJpa user1 = new UserJpa();
         user1.setEmail("u1@mail.org");
-        user1.setImage("image 1");
+        user1.setImage(null);
         user1.setPassword("password 1");
         user1.setLogin("login 1");
         user1 = userRepository.save(user1);
@@ -146,21 +146,21 @@ class UserChatDetailsRepositoryTest {
     void makeUsersAdmins() {
         UserJpa user1 = new UserJpa();
         user1.setEmail("u1@mail.org");
-        user1.setImage("image 1");
+        user1.setImage(null);
         user1.setPassword("password 1");
         user1.setLogin("login 1");
         user1 = userRepository.save(user1);
 
         UserJpa user2 = new UserJpa();
         user2.setEmail("u2@mail.org");
-        user2.setImage("image 2");
+        user2.setImage(null);
         user2.setPassword("password 2");
         user2.setLogin("login 2");
         user2 = userRepository.save(user2);
 
         UserJpa user3 = new UserJpa();
         user3.setEmail("u3@mail.org");
-        user3.setImage("image 3");
+        user3.setImage(null);
         user3.setPassword("password 3");
         user3.setLogin("login 3");
         user3 = userRepository.save(user3);

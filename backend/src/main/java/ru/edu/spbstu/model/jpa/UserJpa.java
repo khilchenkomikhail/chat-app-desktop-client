@@ -32,7 +32,7 @@ public class UserJpa implements UserDetails {
     private String login;
     private String password;
     private String email;
-    private String image;
+    private byte[] image;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

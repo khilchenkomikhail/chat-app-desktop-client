@@ -27,7 +27,7 @@ public class LoginService {
         user.setLogin(request.getLogin());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEmail(request.getEmail());
-        user.setImage(request.getImage());
+        user.setImage(null);
 
         userRepository.save(user);
     }

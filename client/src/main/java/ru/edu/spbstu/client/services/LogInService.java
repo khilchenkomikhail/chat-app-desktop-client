@@ -36,9 +36,9 @@ public class LogInService {
 
 
     public  void register(String login,String password,String email) throws IOException {
-        String image = "image "+ login;//TODO когда будет поддержка изображений его надо добавить сюда
+        //String image = "image "+ login;//TODO когда будет поддержка изображений его надо добавить сюда
 
-        int regStatus = register(login, password, email, image);
+        int regStatus = executeRegister(login, password, email);
 
         if (regStatus != 200) {
             throw new HttpResponseException(regStatus,"Error while register");
@@ -77,8 +77,8 @@ public class LogInService {
             return jsonMapper.readValue(json, new TypeReference<>() {});
         }
     }
-    private static int register(String login, String password, String email, String image) throws IOException {
-        SignUpRequest signUpRequest = new SignUpRequest(login, password, email, image);
+    private static int executeRegister(String login, String password, String email) throws IOException {
+        SignUpRequest signUpRequest = new SignUpRequest(login, password, email);
 
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpPost signUpReq = new HttpPost("http://localhost:8080/register");

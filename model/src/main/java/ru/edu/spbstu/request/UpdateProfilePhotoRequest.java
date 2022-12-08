@@ -6,11 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SignUpRequest {
+@Setter
+public class UpdateProfilePhotoRequest {
     private String login;
-    private String password;
-    private String email;
+    private byte[] image;
 }

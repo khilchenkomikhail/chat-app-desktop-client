@@ -10,8 +10,6 @@ import ru.edu.spbstu.request.CheckEmailRequest;
 import ru.edu.spbstu.request.SignUpRequest;
 import ru.edu.spbstu.service.LoginService;
 
-import java.net.http.HttpResponse;
-
 @RestController
 @AllArgsConstructor
 public class LoginController {

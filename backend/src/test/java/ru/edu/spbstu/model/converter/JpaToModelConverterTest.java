@@ -21,15 +21,13 @@ class JpaToModelConverterTest {
                 "login",
                 "password",
                 "email@mail.org",
-                "image"
+                null
         );
 
         User expectedUser = new User(
-                1L,
                 "login",
                 "password",
-                "email@mail.org",
-                "image"
+                "email@mail.org"
         );
 
         User actualUser = jpaToModelConverter.convertUserJpaToUser(userJpa);
@@ -58,7 +56,7 @@ class JpaToModelConverterTest {
                 "login",
                 "password",
                 "email@mail.org",
-                "image"
+                null
         );
 
         ChatJpa chatJpa = new ChatJpa(
@@ -102,14 +100,14 @@ class JpaToModelConverterTest {
                 "login1",
                 "password",
                 "email@mail.org",
-                "image"
+                null
         );
         UserJpa userJpa2 = new UserJpa(
                 2L,
                 "login2",
                 "password",
                 "email@mail.org",
-                "image"
+                null
         );
 
         ChatJpa chatJpa = new ChatJpa(

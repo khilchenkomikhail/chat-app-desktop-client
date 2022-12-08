@@ -37,7 +37,7 @@ class ChatRepositoryTest {
     void getChatsByUserId() {
         UserJpa userJpa = new UserJpa();
         userJpa.setEmail("some@mail.org");
-        userJpa.setImage("someImage");
+        userJpa.setImage(null);
         userJpa.setPassword("somePassword");
         userJpa.setLogin("someLogin");
         userJpa = userRepository.save(userJpa);
@@ -78,7 +78,7 @@ class ChatRepositoryTest {
     void getChatsBySearch() {
         UserJpa userJpa = new UserJpa();
         userJpa.setEmail("some@mail.org");
-        userJpa.setImage("someImage");
+        userJpa.setImage(null);
         userJpa.setPassword("somePassword");
         userJpa.setLogin("someLogin");
         userJpa = userRepository.save(userJpa);

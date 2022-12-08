@@ -24,7 +24,7 @@ class UserRepositoryTest {
         userJpa.setLogin(login);
         userJpa.setPassword("password");
         userJpa.setEmail("e@mail.ru");
-        userJpa.setImage("image");
+        userJpa.setImage(null);
         userJpa = userRepository.save(userJpa);
 
         Optional<UserJpa> byLogin = userRepository.getByLogin(login);

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.edu.spbstu.dao.MessageRepository;
 import ru.edu.spbstu.request.ChatUpdateRequest;
 import ru.edu.spbstu.request.CreateChatRequest;
 import ru.edu.spbstu.dao.ChatRepository;
@@ -42,6 +43,9 @@ public class ChatServiceTest {
 
     @Mock
     private ChatRepository chatRepository;
+
+    @Mock
+    private MessageRepository messageRepository;
 
     @Mock
     private UserChatDetailsRepository userChatDetailsRepository;
@@ -173,6 +177,33 @@ public class ChatServiceTest {
         verify(chatRepository, times(1)).getChatsBySearch(anyLong(), anyString());
         List<Chat> expectedResult = chats.stream().map(converter::convertChatJpaToChat).toList();
         Assertions.assertEquals(expectedResult, result);
+    }
+
+    @Test
+    public void deleteChat_InvalidChatId() {
+        Long chatId = 1L;
+
+        given(chatRepository.getById(anyLong())).willReturn(Optional.empty());
+
+        Assertions.assertThrows(ResourceNotFound.class, () -> chatService.deleteChat(chatId));
+        verify(chatRepository, times(1)).getById(anyLong());
+        verify(userChatDetailsRepository, never()).deleteAllByChat_Id(anyLong());
+        verify(messageRepository, never()).deleteAllByChat_Id(anyLong());
+        verify(chatRepository, never()).deleteById(anyLong());
+    }
+
+    @Test
+    public void deleteChat_SuccessResult() {
+        Long chatId = 1L;
+
+        given(chatRepository.getById(anyLong())).willReturn(Optional.of(new ChatJpa()));
+
+        chatService.deleteChat(chatId);
+
+        verify(chatRepository, times(1)).getById(anyLong());
+        verify(userChatDetailsRepository, times(1)).deleteAllByChat_Id(anyLong());
+        verify(messageRepository, times(1)).deleteAllByChat_Id(anyLong());
+        verify(chatRepository, times(1)).deleteById(anyLong());
     }
 
     @Test

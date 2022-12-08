@@ -114,7 +114,6 @@ public class LoginFormController {
         stage.hide();
     }
 
-
     public void forgotPasswordButtonPress(ActionEvent actionEvent) {
         //getTheUserFilePath();
         try {

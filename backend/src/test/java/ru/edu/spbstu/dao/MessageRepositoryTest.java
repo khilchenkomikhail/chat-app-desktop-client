@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import ru.edu.spbstu.model.jpa.ChatJpa;
 import ru.edu.spbstu.model.jpa.MessageJpa;
 import ru.edu.spbstu.model.jpa.UserJpa;
@@ -29,6 +30,9 @@ public class MessageRepositoryTest {
     @Autowired
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Autowired
+    private TestEntityManager testEntityManager;
 
     @Test
     void getById() {
@@ -133,6 +137,35 @@ public class MessageRepositoryTest {
         Optional<MessageJpa> byId = messageRepository.getById(messageJpa.getId());
         Assertions.assertTrue(byId.isPresent());
         Assertions.assertTrue(byId.get().getIsDeleted());
+    }
+
+    @Test
+    void deleteAllByChat_Id() {
+        UserJpa userJpa = new UserJpa();
+        userJpa.setLogin("login");
+        userJpa.setPassword("password");
+        userJpa.setEmail("e@mail.ru");
+        userJpa.setImage("image");
+        userJpa = userRepository.save(userJpa);
+
+        ChatJpa chatJpa = new ChatJpa();
+        chatJpa.setName("name");
+        chatJpa = chatRepository.save(chatJpa);
+
+        MessageJpa messageJpa = new MessageJpa();
+        messageJpa.setDate(new Date());
+        messageJpa.setAuthor(userJpa);
+        messageJpa.setSender(userJpa);
+        messageJpa.setContent("content");
+        messageJpa.setChat(chatJpa);
+        messageJpa.setIsDeleted(Boolean.FALSE);
+        messageJpa.setIsEdited(Boolean.FALSE);
+        messageJpa.setIsForwarded(Boolean.FALSE);
+        messageJpa = messageRepository.save(messageJpa);
+
+        messageRepository.deleteAllByChat_Id(chatJpa.getId());
+        testEntityManager.flush();
+        Assertions.assertNull(testEntityManager.find(MessageJpa.class, messageJpa.getId()));
     }
 
     @Test

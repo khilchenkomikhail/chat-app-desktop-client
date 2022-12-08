@@ -50,8 +50,6 @@ public class HboxCellWithCheckboxes extends HBox {
         deleteCB.structNum=number;
         adminCB.structNum=number;
 
-
-
         imageView.setImage(image);
         imageView.setFitHeight(40);
         imageView.setFitWidth(40);

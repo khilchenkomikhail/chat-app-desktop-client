@@ -15,6 +15,9 @@ import java.util.List;
 @Repository
 public interface UserChatDetailsRepository extends CrudRepository<UserChatDetailsJpa, Long> {
 
+    @Modifying
+    void deleteAllByChat_Id(Long chatId);
+
     @Query("select ucd from UserChatDetailsJpa ucd where ucd.chat.id = :chatId")
     List<UserChatDetailsJpa> getChatMembers(@Param("chatId") Long chatId);
 

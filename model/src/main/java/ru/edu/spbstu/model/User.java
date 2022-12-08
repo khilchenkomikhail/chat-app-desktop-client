@@ -14,9 +14,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class User {
-    private Long id;
     private String login;
     private String password;
     private String email;
-    private String image;
 }

@@ -135,7 +135,9 @@ public class CreateChatFormController {
 
         service.addChat(name,logins);
         //service.addChat(name,userList);
-        prevController.update();
+        prevController.addNewChat(name);
+
+        //prevController.update();
         currStage.close();
         primaryStage.show();
 

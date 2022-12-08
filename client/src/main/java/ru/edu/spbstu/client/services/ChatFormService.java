@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class ChatFormService {
@@ -90,6 +91,19 @@ public class ChatFormService {
             return jsonMapper.readValue(json, new TypeReference<>() {
             });
         }
+    }
+    public Message makeMessage(Long chatId, String messageContent)
+    {
+        Message message = new Message();
+        message.setDate(new Date());
+        message.setChat_id(chatId);
+        message.setAuthor_login(login);
+        message.setSender_login(login);
+        message.setContent(messageContent);
+        message.setIs_deleted(false);
+        message.setIs_edited(false);
+        message.setIs_forwarded(false);
+        return  message;
     }
     public void sendMessage(Long chatId,String message) throws IOException {
         int reqStatusCreateChat ;

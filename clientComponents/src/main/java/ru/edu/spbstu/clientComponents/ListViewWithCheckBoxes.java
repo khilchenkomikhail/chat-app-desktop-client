@@ -54,10 +54,6 @@ public class ListViewWithCheckBoxes extends ListView<HboxCellWithCheckboxes> {
                 temp.adminCB.setDisable(true);
                 temp.deleteCB.setDisable(true);
             }
-           // var lls=getStylesheets().add(getClass().getResource("/styles/imageStyle.css").toExternalForm());
-           // temp.adminCB.getStyleClass().clear();//TODO стили?
-           // temp.adminCB.getStyleClass().add("image_views");
-            //System.out.println(temp.imageView.getStyleClass().);
             list.add(temp);
         }
 

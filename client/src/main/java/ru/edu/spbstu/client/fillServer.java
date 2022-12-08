@@ -138,7 +138,6 @@ public class fillServer {
         List<Message> afterChange=getMessages(chats.get(0).getId(),1);
         deleteMessage(messages.get(1).getId());
         List<Message> afterDelete=getMessages(chats.get(0).getId(),1);
-        //Todo add some messages
 
 
 
@@ -149,7 +148,7 @@ public class fillServer {
     //private String lo;
 
     public  void register(String login,String password,String email) throws IOException {
-        String image = "image "+ login;//TODO когда будет поддержка изображений его надо добавить сюда
+        String image = "image "+ login;//TODO когда будет поддержка
 
         int regStatus = register(login, password, email, image);
         //System.out.println(regStatus);

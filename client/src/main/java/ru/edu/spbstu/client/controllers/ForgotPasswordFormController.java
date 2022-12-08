@@ -1,6 +1,5 @@
 package ru.edu.spbstu.client.controllers;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.fxml.FXML;
@@ -10,21 +9,14 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
-
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import ru.edu.spbstu.request.CheckEmailRequest;
-import ru.edu.spbstu.request.SignUpRequest;
-
 
 import java.io.IOException;
 
@@ -38,9 +30,9 @@ public class ForgotPasswordFormController {
 
 
 
-    public  void setLogin(String llog)
+    public  void setLogin(String sLogin)
     {
-        login=llog;
+        login= sLogin;
     }
 
     void showError(String errorText)
@@ -53,7 +45,7 @@ public class ForgotPasswordFormController {
 
 
 
-    public void changePasswordButtonClick(MouseEvent mouseEvent) throws IOException {
+    public void changePasswordButtonClick(MouseEvent mouseEvent) {
         if(!isEmail(emailTextBox.getText()))
         {
             showError("Содержимое поля email не соотвествует стандарту!");
@@ -61,8 +53,7 @@ public class ForgotPasswordFormController {
             return;
         }
 
-        //todo проверить что email совпадает с email учётки
-        boolean isValid=true;
+        boolean isValid;
         String email=emailTextBox.getText();
         CheckEmailRequest signUpRequest = new CheckEmailRequest(login,email);
 
@@ -105,7 +96,7 @@ public class ForgotPasswordFormController {
 
     private static final ObjectMapper jsonMapper = new ObjectMapper();
 
-    private void forgotAction() throws IOException {
+    private void forgotAction() {
 
         int sendStatus;
 

@@ -36,7 +36,7 @@ public class LogInService {
 
 
     public  void register(String login,String password,String email) throws IOException {
-        String image = "image "+ login;//TODO когда будет поддержка изображений его надо добавить сюда
+        String image = "image "+ login;//TODO когда будет поддержка изображений
 
         int regStatus = register(login, password, email, image);
 

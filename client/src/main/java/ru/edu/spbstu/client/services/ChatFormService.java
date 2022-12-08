@@ -170,7 +170,6 @@ public class ChatFormService {
 
 
     public List<Chat> find(String name,Long page) throws IOException {
-        List<Chat>res=Collections.emptyList();
         String getMessagesUrlBlueprint = "http://localhost:8080/get_chats_by_search?login=%s&begin=%s&page_number=%d";
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()
@@ -182,6 +181,17 @@ public class ChatFormService {
             CloseableHttpResponse re = client.execute(httpGet);
             String json = EntityUtils.toString(re.getEntity());
             int code=re.getStatusLine().getStatusCode();
+            if(code!=200)
+            {
+                if (code==400)
+                {
+                    return new ArrayList<>();
+                }
+                else
+                {
+                    throw new HttpResponseException(code,"Error while find");
+                }
+            }
 
             return jsonMapper.readValue(json, new TypeReference<>() {
             });

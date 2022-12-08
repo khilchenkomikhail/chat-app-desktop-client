@@ -1,13 +1,10 @@
 package ru.edu.spbstu.client.controllers;
 
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import org.apache.http.client.CredentialsProvider;
 import ru.edu.spbstu.client.services.ConfigureChatFormService;
 import ru.edu.spbstu.clientComponents.ListViewWithButtons;
@@ -17,7 +14,6 @@ import ru.edu.spbstu.model.ChatUser;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ConfigureChatFormController {
@@ -61,7 +57,7 @@ public class ConfigureChatFormController {
     }
 
     @FXML
-    void initialize() throws IOException {
+    void initialize() {
 
 
     }
@@ -92,16 +88,13 @@ public class ConfigureChatFormController {
         ArrayList<Image> images=service.getImageList(userList);
         chatMembersConfigurationLV.resetList(userList,images);
 
-        currStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent e) {
-                primaryStage.show();
-                currStage.close();
-            }
+        currStage.setOnCloseRequest(e -> {
+            primaryStage.show();
+            currStage.close();
         });
     }
 
-    public void addUsersToChatButtonPress(ActionEvent actionEvent) throws IOException {
+    public void addUsersToChatButtonPress() throws IOException {
         List<String> logins=new ArrayList<>();
         for (var elem: usersToAddListView.getList())
         {
@@ -136,13 +129,13 @@ public class ConfigureChatFormController {
         chatMembersConfigurationLV.resetList(userList,images);
     }
 
-    public void confirmSettingsButtonPress(ActionEvent actionEvent) throws IOException {
+    public void confirmSettingsButtonPress() throws IOException {
         service.deleteChatUsers(chatToConfigure,chatMembersConfigurationLV.getUsersToDelete());
         service.setChatUsersAdmins(chatToConfigure,chatMembersConfigurationLV.getUsersToMakeAdmins());
         update();
     }
 
-    public void AddUserButtonClick(ActionEvent actionEvent) {
+    public void AddUserButtonClick() {
 
         String username= loginTextField.getText();
         try {

@@ -9,21 +9,14 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
-
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import ru.edu.spbstu.request.CheckEmailRequest;
-import ru.edu.spbstu.request.SignUpRequest;
-
 
 import java.io.IOException;
 
@@ -35,15 +28,11 @@ public class ForgotPasswordFormController {
     private Button changePasswordButton;
     public TextField emailTextBox;
 
-    public void setProvider(CredentialsProvider provider) {
-        this.provider = provider;
-    }
 
-    private CredentialsProvider provider;
 
-    public  void setLogin(String llog)
+    public  void setLogin(String sLogin)
     {
-        login=llog;
+        login= sLogin;
     }
 
     void showError(String errorText)
@@ -56,36 +45,38 @@ public class ForgotPasswordFormController {
 
 
 
-    public void changePasswordButtonClick(MouseEvent mouseEvent) throws IOException {
+    public void changePasswordButtonClick(MouseEvent mouseEvent) {
         if(!isEmail(emailTextBox.getText()))
         {
             showError("Содержимое поля email не соотвествует стандарту!");
+           // showError("Invalid email format!");
             return;
         }
 
-        //todo проверить что email совпадает с email учётки
-        boolean isValid=true;
+        boolean isValid;
         String email=emailTextBox.getText();
         CheckEmailRequest signUpRequest = new CheckEmailRequest(login,email);
 
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpPost signUpReq = new HttpPost("http://localhost:8080/check_user_email");
             signUpReq.addHeader("content-type", "application/json");
-            signUpReq.setEntity(new StringEntity(jsonMapper.writeValueAsString(signUpRequest)));
+            signUpReq.setEntity(new StringEntity(jsonMapper.writeValueAsString(signUpRequest), "UTF-8"));
             var temp=client.execute(signUpReq);
             int code=temp.getStatusLine().getStatusCode();
-            {
-                if(code!=200)
-                {
-                    //return new ChatUser();
-                    isValid=false;
-                }
-            }
+            String json = EntityUtils.toString(temp.getEntity());
+            isValid=jsonMapper.readValue(json, new TypeReference<>() {});
+        }
+        catch (IOException ex)
+        {
+            showError("Внутренняя ошибка сервера");
+           // showError("Internal server error!");
+            return;
         }
         if(isValid) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             forgotAction();
             alert.setTitle("Пароль успешно сброшен! Временный пароль был отпрален на почту!");
+            //alert.setTitle("Password was reset successfully! Temporary password was sent to your mail!");
             alert.showAndWait().ifPresent(rs -> {
                 if (rs == ButtonType.OK) {
                     Stage stage = (Stage) changePasswordButton.getScene().getWindow();
@@ -97,14 +88,15 @@ public class ForgotPasswordFormController {
         {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Ошибка!");
-            alert.setContentText("Введена неверная почта попробуйте повторить запрос!");
+            alert.setContentText("Введена неверная почта! Попробуйте повторить запрос!");
+           // alert.setContentText("Invalid mail address entered! Try to repeat  request!");
             alert.show();
         }
     }
 
     private static final ObjectMapper jsonMapper = new ObjectMapper();
 
-    private void forgotAction() throws IOException {
+    private void forgotAction() {
 
         int sendStatus;
 
@@ -112,7 +104,7 @@ public class ForgotPasswordFormController {
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpPatch signUpReq = new HttpPatch("http://localhost:8080/send-tmp-password");
             signUpReq.addHeader("content-type", "application/json");
-            signUpReq.setEntity(new StringEntity(login));//TODo This must work but after sending letter something bad happens
+            signUpReq.setEntity(new StringEntity(login, "UTF-8"));
             sendStatus= client.execute(signUpReq).getStatusLine().getStatusCode();
             if (sendStatus != 200) {
                 throw new HttpResponseException(sendStatus,"Error while register");
@@ -120,7 +112,8 @@ public class ForgotPasswordFormController {
         }
         catch (IOException e)
         {
-            showError("Error occured during email send! " +e.getMessage()+" !");
+            showError("Ошибка во время оправки письма!");
+           // showError("Error occurred during email send!");
         }
 
 

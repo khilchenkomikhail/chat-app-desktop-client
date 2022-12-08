@@ -5,8 +5,11 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.shape.Rectangle;
 import ru.edu.spbstu.model.ChatUser;
 
 public class HboxCellWithCheckboxes extends HBox {
@@ -24,21 +27,22 @@ public class HboxCellWithCheckboxes extends HBox {
         }
 
     }
-    Label label=new Label();
-    MyCheckBox deleteCB=new MyCheckBox();
-    MyCheckBox adminCB=new MyCheckBox();
+    ImageView  imageView;
+    Label label;
+    MyCheckBox deleteCB;
+    MyCheckBox adminCB;
 
     public HboxCellWithCheckboxes()
     {
         super();
+        imageView=new ImageView();
         label = new Label();
         deleteCB=new MyCheckBox();
         adminCB=new MyCheckBox();
     }
 
-    HboxCellWithCheckboxes(String labelText, int number) {
-        super();
-
+    HboxCellWithCheckboxes(String labelText, int number,Image image) {
+        this();
         label.setText(labelText);
         label.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(label, Priority.ALWAYS);
@@ -46,12 +50,26 @@ public class HboxCellWithCheckboxes extends HBox {
         deleteCB.structNum=number;
         adminCB.structNum=number;
 
+        imageView.setImage(image);
+        imageView.setFitHeight(40);
+        imageView.setFitWidth(40);
+        final Rectangle clip = new Rectangle();
+        clip.arcWidthProperty().bind(clip.heightProperty().divide(0.1));
+        clip.arcHeightProperty().bind(clip.heightProperty().divide(0.1));
+        clip.setWidth( imageView.getLayoutBounds().getWidth());
+        clip.setHeight( imageView.getLayoutBounds().getHeight());
+        imageView.setClip(clip);
+
+
         label.setAlignment(Pos.CENTER_LEFT);
         deleteCB.setAlignment(Pos.CENTER_RIGHT);
         adminCB.setAlignment(Pos.CENTER_RIGHT);
+        HboxCellWithCheckboxes.setMargin(imageView,new Insets(5,0,5,0));
+        HboxCellWithCheckboxes.setMargin(label,new Insets(0,0,0,20));
         HboxCellWithCheckboxes.setMargin(deleteCB,new Insets(0,120,0,0));
         HboxCellWithCheckboxes.setMargin(adminCB,new Insets(0,40,0,0));
-        this.getChildren().addAll(label,deleteCB,adminCB);
+        this.getChildren().addAll( imageView,label,deleteCB,adminCB);
+        this.setAlignment(Pos.CENTER_LEFT);
 
     }
     public String getLabelText()

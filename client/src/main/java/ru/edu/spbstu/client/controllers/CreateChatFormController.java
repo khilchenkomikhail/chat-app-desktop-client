@@ -7,6 +7,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.ScrollEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -81,18 +82,25 @@ public class CreateChatFormController {
 
     private void update()
     {
-        usersToAddListView.resetList(userList);
+
+        int size=userList.size();
+        ArrayList<Image> images= service.getImageList(userList);
+        usersToAddListView.resetList(userList,images);
     }
 
     public void AddUserButtonClick(ActionEvent actionEvent) {
         String username= loginTextField.getText();
-        ChatUser temp;
         try {
-           temp=service.getUser(username);
+            boolean pres=service.isUserPresent(username);
+            if(!pres)
+            {
+                showError("Пользователя с данным логином не существует!");
+                return;
+            }
         }
         catch(IOException e)
         {
-            showError("Пользователя с данным логином не существует!");
+            showError("Внутренняя ошибка сервера!");
             return;
         }
 
@@ -103,14 +111,17 @@ public class CreateChatFormController {
             showError("Создателя чата не нужно добавлять в список чата!");
             return;
         }
-        ChatUser temp2=new ChatUser(username,false);
-        if(usersToAddListView.getList().contains(temp2))
+
+        if(usersToAddListView.getList().stream().anyMatch(user -> user.getLogin().equals(username)))
         {
             showError("Данный пользователь уже был добавлен в чат!");
             return;
         }
-        userList.add(temp);
-        usersToAddListView.addInList(temp);
+        ChatUser user=new ChatUser(username,false);
+        userList.add(user);
+        Image image= service.getImage(user);
+
+        usersToAddListView.addInList(user,image);
     }
 
     public void createChatButtonClick(ActionEvent actionEvent) throws IOException {

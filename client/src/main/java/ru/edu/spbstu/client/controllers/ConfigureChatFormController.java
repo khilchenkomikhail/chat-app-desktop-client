@@ -1,10 +1,9 @@
 package ru.edu.spbstu.client.controllers;
 
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.apache.http.client.CredentialsProvider;
@@ -59,7 +58,7 @@ public class ConfigureChatFormController {
     }
 
     @FXML
-    void initialize() throws IOException {
+    void initialize() {
 
 
     }
@@ -86,18 +85,17 @@ public class ConfigureChatFormController {
         {
             mainTabPanel.getTabs().remove(1);
         }
-        chatMembersConfigurationLV.resetList(userList);
 
-        currStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent e) {
-                primaryStage.show();
-                currStage.close();
-            }
+        ArrayList<Image> images=service.getImageList(userList);
+        chatMembersConfigurationLV.resetList(userList,images);
+
+        currStage.setOnCloseRequest(e -> {
+            primaryStage.show();
+            currStage.close();
         });
     }
 
-    public void addUsersToChatButtonPress(ActionEvent actionEvent) throws IOException {
+    public void addUsersToChatButtonPress() throws IOException {
         List<String> logins=new ArrayList<>();
         for (var elem: usersToAddListView.getList())
         {
@@ -128,25 +126,30 @@ public class ConfigureChatFormController {
         {
             userList.remove(user);
         }
-        chatMembersConfigurationLV.resetList(userList);
+        ArrayList<Image> images=service.getImageList(userList);
+        chatMembersConfigurationLV.resetList(userList,images);
     }
 
-    public void confirmSettingsButtonPress(ActionEvent actionEvent) throws IOException {
+    public void confirmSettingsButtonPress() throws IOException {
         service.deleteChatUsers(chatToConfigure,chatMembersConfigurationLV.getUsersToDelete());
         service.setChatUsersAdmins(chatToConfigure,chatMembersConfigurationLV.getUsersToMakeAdmins());
         update();
     }
 
-    public void AddUserButtonClick(ActionEvent actionEvent) {
+    public void AddUserButtonClick() {
 
         String username= loginTextField.getText();
-        ChatUser temp;
         try {
-            temp=service.getUser(username);
+            boolean pres=service.isUserPresent(username);
+            if(!pres)
+            {
+                showError("Пользователя с данным логином не существует!");
+                return;
+            }
         }
         catch(IOException e)
         {
-            showError("Пользователя с данным логином не существует!");
+            showError("Внутренняя ошибка сервера!");
             return;
         }
 
@@ -157,19 +160,20 @@ public class ConfigureChatFormController {
             showError("Создателя чата не нужно добавлять в список чата!");
             return;
         }
-        ChatUser temp2=new ChatUser(username,false);
-        var UserList=chatMembersConfigurationLV.getUsers();
-        if(UserList.contains(temp2))
+        var userList=chatMembersConfigurationLV.getUsers();
+        if(userList.stream().anyMatch(user -> user.getLogin().equals(username)))
         {
             showError("Данный пользователь уже есть в чате!");
             return;
         }
-        if(usersToAddListView.getList().contains(temp2))
+        if(usersToAddListView.getList().stream().anyMatch(user -> user.getLogin().equals(username)))
         {
             showError("Данный пользователь уже есть в списке на добавление!");
             return;
         }
-        usersToAddListView.addInList(temp2);
+        ChatUser user=new ChatUser(username,false);
+        Image image=service.getImage(user);
+        usersToAddListView.addInList(user,image);
        // mainTabPanel.getTabs().add(tabChatSettings);//Todo return second tab
     }
 

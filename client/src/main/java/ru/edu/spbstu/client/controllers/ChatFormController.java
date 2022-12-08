@@ -44,17 +44,18 @@ public class ChatFormController {
     private Stage primaryStage;
     private Stage currStage;
     private List<Chat> chatList;
+    private List<Chat> foundChatsList;
     private List<Message> messageList;
 
     public Button addChatButton;
     public Button profileButton;
     public ComboBox<Button> LanguageComboBox;
     public Button logOutButton;
-    private int chatsPage = 1;//todo скорее всего будут увеличиваться при scroll action
+    boolean findMode=false;//пока я решил, что в заивимости от режима у нас буду заполняться список чатов
+    private int chatsPage = 1;
     private int chatsOffset = 0;
-    private int chatsFindPage = 1;//todo скорее всего будут увеличиваться при scroll action
+    private int chatsFindPage = 1;
     private int chatsFindOffset = 0;
-    //при увеличении потребуется подгрузить следующую страницу
     private int messagesPage = 1;
     private int messageOffset = 0;
 
@@ -268,6 +269,7 @@ public class ChatFormController {
 
 
     private void exitAction(javafx.event.ActionEvent actionEvent) {
+        Chat chat=chatsListView.getSelectionModel().getSelectedItem();
         Long chatId = chatsListView.getSelectionModel().getSelectedItem().getId();
         String login = service.getLogin();
         try {
@@ -276,23 +278,41 @@ public class ChatFormController {
             showError("Error while delete ! + " + e.getMessage() + " !");
             return;
         }
-        //chatsOffset--;
-        // if(chatsOffset<0)
-        {
-            chatsOffset = 0;
-            chatsPage = 1;
 
-        }
+
+
+
+
         //List<Chat>temp;
-        try {
+        /*try {
             chatList = service.getChats(1);
         } catch (IOException e) {
             showError("Error while getChats ! + " + e.getMessage() + " !");
             return;
+        }*/
+
+        if(!findMode) {
+            chatsListView.setItems(FXCollections.observableList(chatList));
+            chatsOffset--;
+            if(chatsOffset==-1)
+            {
+                chatsOffset = CHATS_PAGE_SIZE-1;
+                chatsPage--;
+            }
+            chatList.remove(chat);
+            chatsListView.setItems(FXCollections.observableList(chatList));
         }
-
-
-        chatsListView.setItems(FXCollections.observableList(chatList));      //Todo вот тут надо получать последнюю страницу(если у 1 старниц самое новое)
+        else
+        {
+            chatsFindOffset--;
+            if(chatsFindOffset==-1)
+            {
+                chatsFindOffset = CHATS_PAGE_SIZE-1;
+                chatsFindPage--;
+            }
+            foundChatsList.remove(chat);
+            chatsListView.setItems(FXCollections.observableList(foundChatsList));
+        }
         messagesListView.setItems(FXCollections.observableList(new ArrayList<>()));
         messageList = new ArrayList<>();
         contextMenu.hide();
@@ -454,20 +474,32 @@ public class ChatFormController {
     }
 
     public void addNewChat(String name) {
-
+        List<Chat> temp;
         try {
-            List<Chat> temp = service.find(name, 1L);
-            chatList.add(0, temp.get(0));
+            temp = service.find(name, 1L);
         } catch (IOException e) {
             showError("bad after add find ne w chat");
             return;
         }
-        chatsOffset++;
-        if (chatsOffset == CHATS_PAGE_SIZE) {
-            chatsOffset = 0;
-            chatsPage++;
+        if(!findMode) {
+            chatList.add(0, temp.get(0));
+            chatsOffset++;
+            if (chatsOffset == CHATS_PAGE_SIZE) {
+                chatsOffset = 0;
+                chatsPage++;
+            }
+            chatsListView.setItems(FXCollections.observableList(chatList));
         }
-        chatsListView.setItems(FXCollections.observableList(chatList));
+        else
+        {
+            foundChatsList.add(0, temp.get(0));
+            chatsFindOffset++;
+            if (chatsFindOffset == CHATS_PAGE_SIZE) {
+                chatsFindOffset = 0;
+                chatsFindPage++;
+            }
+            chatsListView.setItems(FXCollections.observableList(foundChatsList));
+        }
 
     }
 
@@ -511,9 +543,10 @@ public class ChatFormController {
     }
 
     void loadChatPage() {
-        try {
-            chatsPage++;
-            List<Chat> temp = service.getChats(chatsPage);
+        if (!findMode) {
+            try {
+                chatsPage++;
+                List<Chat> temp = service.getChats(chatsPage);
             /*if(temp.size()<CHATS_PAGE_SIZE)
             {
                 chatsPage--;
@@ -523,22 +556,54 @@ public class ChatFormController {
             {
 
             }*/
-            if (temp.size() != 0) {
-                //int pageOffset=messageOffset/50;
-                // int messOff=messageOffset-pageOffset*50;
-                //  if(messagesPage)
-                temp = temp.subList(chatsOffset, temp.size());//apply offset
-                chatsOffset = 0;
-                chatList.addAll(temp);
-            } else {
-                chatsPage--;
+                if (temp.size() != 0) {
+                    //int pageOffset=messageOffset/50;
+                    // int messOff=messageOffset-pageOffset*50;
+                    //  if(messagesPage)
+                    temp = temp.subList(chatsOffset, temp.size());//apply offset
+                    chatsOffset = 0;
+                    chatList.addAll(temp);
+                } else {
+                    chatsPage--;
+                }
+            } catch (IOException e) {
+                showError("Internal server error");
+                chatList = new ArrayList<>();
             }
-        } catch (IOException e) {
-            showError("Internal server error");
-            chatList = new ArrayList<>();
+            chatsListView.setItems(FXCollections.observableList(chatList));
         }
-        chatsListView.setItems(FXCollections.observableList(chatList));
+        else
+        {
+            try {
+                chatsFindPage++;
+                List<Chat> temp = service.find(newChatTextBox.getText(), (long) chatsFindPage);
+            /*if(temp.size()<CHATS_PAGE_SIZE)
+            {
+                chatsPage--;
+
+            }
+            else
+            {
+
+            }*/
+                if (temp.size() != 0) {
+                    //int pageOffset=messageOffset/50;
+                    // int messOff=messageOffset-pageOffset*50;
+                    //  if(messagesPage)
+                    temp = temp.subList(chatsFindOffset, temp.size());//apply offset
+                    chatsFindOffset = 0;
+                    foundChatsList.addAll(temp);
+                } else {
+                    chatsFindPage--;
+                }
+            } catch (IOException e) {
+                showError("Internal server error");
+               foundChatsList= new ArrayList<>();
+            }
+            chatsListView.setItems(FXCollections.observableList(foundChatsList));
+        }
     }
+
 
 
     public void addChatButtonClick() throws IOException {
@@ -557,12 +622,41 @@ public class ChatFormController {
         conC.init();
 
         nstage.show();
-        chatList = service.getChats(1);
+        //chatList = service.getChats(1);
         this.currStage.hide();
     }
 
     public void findChatsEvent() {
-        String name = newChatTextBox.getText();
+        if(newChatTextBox.getText().length()==0)
+        {
+            findMode=false;
+            foundChatsList=new ArrayList<>();
+            chatsOffset=0;
+            chatsPage=1;
+            try {
+                chatList=service.getChats(1);
+            } catch (IOException e) {
+                showError(e.getMessage());
+                return;
+            }
+            chatsListView.setItems(FXCollections.observableList(chatList));
+
+        }
+        else
+        {
+            findMode=true;
+            chatList=new ArrayList<>();
+            chatsFindOffset=0;
+            chatsFindPage=1;
+            try {
+                foundChatsList=service.find(newChatTextBox.getText(), 1L);
+            } catch (IOException e) {
+                showError(e.getMessage());
+                return;
+            }
+            chatsListView.setItems(FXCollections.observableList(foundChatsList));
+        }
+        /*String name = newChatTextBox.getText();
         if (newChatTextBox.getText().length() == 1) {
             try {
                 chatsListView.setItems(FXCollections.observableList(service.getChats(1)));
@@ -579,7 +673,7 @@ public class ChatFormController {
             showError("Внутренняя ошибка сервера!");
             return;
         }
-        chatsListView.setItems(FXCollections.observableList(temp));
+        chatsListView.setItems(FXCollections.observableList(temp));*/
     }
 
     public void LanguageCBAction() {

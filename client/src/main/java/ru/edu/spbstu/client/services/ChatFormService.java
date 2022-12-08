@@ -181,6 +181,29 @@ public class ChatFormService {
         }
 
     }
+    public List<ChatUser> getChatMembers(Chat chatToConfigure) throws IOException {
+
+        String getChatsUrlBlueprint = "http://localhost:8080/get_chat_members?chat_id=%d";
+
+        try (CloseableHttpClient client = HttpClientBuilder
+                .create()
+                .setDefaultAuthSchemeRegistry(AuthScheme.getAuthScheme())
+                .setDefaultCredentialsProvider(prov)
+                .build()) {
+            HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint,chatToConfigure.getId()));
+            CloseableHttpResponse re = client.execute(httpGet);
+            String json = EntityUtils.toString(re.getEntity());
+            int code=re.getStatusLine().getStatusCode();
+            if(code!=200) {
+                if (code == 400) {
+                    return new ArrayList<>();
+                } else {
+                    throw new HttpResponseException(code, "Error when get chat members!");
+                }
+            }
+            return jsonMapper.readValue(json, new TypeReference<>() {});
+        }
+    }
 
 
 

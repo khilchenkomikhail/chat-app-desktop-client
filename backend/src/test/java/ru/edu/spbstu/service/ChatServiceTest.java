@@ -17,7 +17,7 @@ import ru.edu.spbstu.exception.ResourceNotFound;
 import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.model.ChatRole;
 import ru.edu.spbstu.model.ChatUser;
-import ru.edu.spbstu.model.comparator.ChatComparator;
+import ru.edu.spbstu.model.comparator.ChatJpaComparator;
 import ru.edu.spbstu.model.converter.JpaToModelConverter;
 import ru.edu.spbstu.model.jpa.ChatJpa;
 import ru.edu.spbstu.model.jpa.UserChatDetailsJpa;
@@ -57,7 +57,7 @@ public class ChatServiceTest {
     private MessageService messageService;
 
     @Mock
-    private ChatComparator chatComparator;
+    private ChatJpaComparator chatComparator;
 
     @Test
     public void getChats_InvalidLogin() {

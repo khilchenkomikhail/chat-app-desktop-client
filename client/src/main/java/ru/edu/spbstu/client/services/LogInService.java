@@ -36,7 +36,7 @@ public class LogInService {
 
 
     public  void register(String login,String password,String email) throws IOException {
-        String image = "image "+ login;//TODO когда будет поддержка изображений его надо добавить сюда
+        String image = "image "+ login;//TODO когда будет поддержка изображений
 
         int regStatus = register(login, password, email, image);
 
@@ -49,11 +49,38 @@ public class LogInService {
         prov.setCredentials(AuthScope.ANY, credentials);
     }
     public void logIn(String login,String password) throws IOException {
+
         UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(login, password);
         prov.setCredentials(AuthScope.ANY, credentials);
-        getAllChats(prov,login,1);//TODo нужно сделать login endpoint, чтобы это не тестить так
+        getAllChats(prov,login,1);
 
     }
+    public Boolean isUserPresent(String login) throws IOException {
+        String getChatsUrlBlueprint = "http://localhost:8080/is_user_present?login=%s";
+
+        try (CloseableHttpClient client = HttpClientBuilder
+                .create()
+                .build()) {
+            HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, login));
+            CloseableHttpResponse re = client.execute(httpGet);
+            String json = EntityUtils.toString(re.getEntity());
+            return jsonMapper.readValue(json, new TypeReference<>() {});
+        }
+    }
+
+    public Boolean isEmailUsed(String email) throws IOException {
+        String getChatsUrlBlueprint = "http://localhost:8080/is_email_used?email=%s";
+
+        try (CloseableHttpClient client = HttpClientBuilder
+                .create()
+                .build()) {
+            HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, email));
+            CloseableHttpResponse re = client.execute(httpGet);
+            String json = EntityUtils.toString(re.getEntity());
+            return jsonMapper.readValue(json, new TypeReference<>() {});
+        }
+    }
+
     public LogInService()
     {
 
@@ -70,9 +97,12 @@ public class LogInService {
             HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, login, page));
             CloseableHttpResponse re = client.execute(httpGet);
             String json = EntityUtils.toString(re.getEntity());
-            if(re.getStatusLine().getStatusCode()==400)
-            {
-                return Collections.emptyList();
+            if(re.getStatusLine().getStatusCode()!=200) {
+                if (re.getStatusLine().getStatusCode() == 400) {
+                    return Collections.emptyList();
+                } else {
+                    throw new HttpResponseException(re.getStatusLine().getStatusCode(), "Error while getAllChats");
+                }
             }
             return jsonMapper.readValue(json, new TypeReference<>() {});
         }

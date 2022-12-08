@@ -118,18 +118,32 @@ public class fillServer {
         List<String> temp1=loggins.subList(1,loggins.size());
         addChat("AllInChat",temp1);
 
-        for (Integer i=1;i<loggins.size();i++)
+        for (Integer i=1;i<10;i++)
         {
-            temp1=loggins.subList(1,loggins.size()-i);
+            //temp1=loggins.subList(1,loggins.size()-i);
             addChat("chat"+i.toString(),temp1);
         }
         List<Chat> chats=getChats(1);
+        Collections.reverse(chats);
+        var temp=getChats(2);
+        Collections.reverse(temp);
+        chats.addAll(temp);
+        temp=getChats(3);
+        Collections.reverse(temp);
+        chats.addAll(temp);
+        temp=getChats(4);
+        Collections.reverse(temp);
+        chats.addAll(temp);
         for(int i=0;i<=0;i++)
         {
             //logIn(loggins.get(i),paswwords.get(i));
-            for (var id : chats) {
-                sendMessage(id.getId(), "Message send to chat " + id.getName() + " from " + login);
-                sendMessage(id.getId(), "Message send 2 to chat " + id.getName() + " from " + login);
+            for (int id=0;id<chats.size();id++) {
+                for (int j=0;j<=8;j++) {
+
+                    sendMessage(chats.get(id).getId(), "Message send" +j+" to chat " + chats.get(id).getName() + " from " + login);
+                    //sendMessage(id.getId(), "Message send 2 to chat " + id.getName() + " from " + login);
+                }
+                System.out.println(chats.get(id).toString());
             }
         }
         logIn(loggins.get(0),paswwords.get(0));
@@ -138,7 +152,6 @@ public class fillServer {
         List<Message> afterChange=getMessages(chats.get(0).getId(),1);
         deleteMessage(messages.get(1).getId());
         List<Message> afterDelete=getMessages(chats.get(0).getId(),1);
-        //Todo add some messages
 
 
 
@@ -149,7 +162,7 @@ public class fillServer {
     //private String lo;
 
     public  void register(String login,String password,String email) throws IOException {
-        String image = "image "+ login;//TODO когда будет поддержка изображений его надо добавить сюда
+        String image = "image "+ login;//TODO когда будет поддержка
 
         int regStatus = register(login, password, email, image);
         //System.out.println(regStatus);
@@ -191,6 +204,10 @@ public class fillServer {
             HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, login, page));
             CloseableHttpResponse re = client.execute(httpGet);
             String json = EntityUtils.toString(re.getEntity());
+            if(re.getStatusLine().getStatusCode()==400)
+            {
+                return new ArrayList<>();
+            }
             return jsonMapper.readValue(json, new TypeReference<>() {});
         }
     }
@@ -234,7 +251,7 @@ public class fillServer {
 
             HttpGet httpGet = new HttpGet(String.format( getMessagesUrlBlueprint, chatId, page));
             CloseableHttpResponse re = client.execute(httpGet);
-            String json = EntityUtils.toString(re.getEntity());
+            String json = EntityUtils.toString(re.getEntity(), "UTF-8");
             int code=re.getStatusLine().getStatusCode();
             if(code==400)
             {

@@ -2,6 +2,7 @@ package ru.edu.spbstu.client.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.scene.image.Image;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -19,6 +20,7 @@ import ru.edu.spbstu.model.User;
 import ru.edu.spbstu.request.CreateChatRequest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -69,9 +71,7 @@ public class CreateChatFormService {
             return jsonMapper.readValue(json, new TypeReference<>() {});
         }
     }
-    public ChatUser getUser(String text) throws IOException {
-        return getUser(prov,text);
-    }
+
     private static int createChat(CredentialsProvider provider, String chatName, List<String> users, String admin) throws IOException {
         CreateChatRequest request = new CreateChatRequest();
         request.setAdmin_login(admin);
@@ -96,26 +96,34 @@ public class CreateChatFormService {
         return true;
     }
 
-    private static ChatUser getUser(CredentialsProvider provider, String login) throws IOException {
 
-        String getChatsUrlBlueprint = "http://localhost:8080/get_chat_user?login=%s";
+    public ArrayList<Image> getImageList(List<ChatUser> userList) {
+        int size=userList.size();
+        ArrayList<Image> images= new ArrayList<Image>();
+        for (int i=0;i<size;i++)
+        {
+            var res=(getClass().getResource("/images/dAvatar.bmp")).getPath().replaceFirst("/","");
+            Image temp=new Image(res);
+            images.add(temp);
+        }
+        return  images;
+    }
+    public Image getImage(ChatUser userList) {
+        Image image;
+        var res=(getClass().getResource("/images/dAvatar.bmp")).getPath().replaceFirst("/","");
+        image=new Image(res);
+
+        return  image;
+    }
+    public Boolean isUserPresent(String login) throws IOException {
+        String getChatsUrlBlueprint = "http://localhost:8080/is_user_present?login=%s";
 
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()
-                .setDefaultAuthSchemeRegistry(AuthScheme.getAuthScheme())
-                .setDefaultCredentialsProvider(provider)
                 .build()) {
             HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, login));
             CloseableHttpResponse re = client.execute(httpGet);
             String json = EntityUtils.toString(re.getEntity());
-            int code=re.getStatusLine().getStatusCode();
-            {
-                if(code!=200)
-                {
-                    //return new ChatUser();
-                    throw new HttpResponseException(code,"Error while getting user");
-                }
-            }
             return jsonMapper.readValue(json, new TypeReference<>() {});
         }
     }

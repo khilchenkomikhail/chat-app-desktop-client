@@ -5,11 +5,19 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
+import javafx.util.Callback;
 import ru.edu.spbstu.model.ChatUser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ListViewWithCheckBoxes extends ListView<HboxCellWithCheckboxes> {
@@ -29,14 +37,16 @@ public class ListViewWithCheckBoxes extends ListView<HboxCellWithCheckboxes> {
     {
         return new ArrayList<>(lst);
     }
-    public void resetList(List<ChatUser> arr)
+    public void resetList(List<ChatUser> arr,List<Image> avatars)
     {
+        this.setFixedCellSize(50);
         this.lst=arr;
         List<HboxCellWithCheckboxes> list = new ArrayList<>();
         for ( int i=0;i<lst.size();i++)
         {
             ChatUser current_item=lst.get(i);
-            HboxCellWithCheckboxes temp=new HboxCellWithCheckboxes(current_item.getLogin(),i);
+            HboxCellWithCheckboxes temp=new HboxCellWithCheckboxes(current_item.getLogin(),i,avatars.get(i));
+
             temp.adminCB.setOnAction(handler);
             temp.deleteCB.setOnAction(handler);
             if(current_item.getIs_admin())

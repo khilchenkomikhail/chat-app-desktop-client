@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.edu.spbstu.dao.MessageRepository;
-import ru.edu.spbstu.model.Chat;
+import ru.edu.spbstu.model.jpa.ChatJpa;
 import ru.edu.spbstu.model.jpa.MessageJpa;
 
 import java.util.Date;
@@ -16,19 +16,19 @@ import java.util.List;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
-public class ChatComparatorTest {
+public class ChatJpaComparatorTest {
 
     @InjectMocks
-    private ChatComparator chatComparator;
+    private ChatJpaComparator chatComparator;
 
     @Mock
     private MessageRepository messageRepository;
 
     @Test
     public void compareTo_test() {
-        Chat chat1 = new Chat(1L, "name1");
-        Chat chat2 = new Chat(2L, "name2");
-        Chat chat3 = new Chat(3L, "name3");
+        ChatJpa chat1 = new ChatJpa(1L, "name1");
+        ChatJpa chat2 = new ChatJpa(2L, "name2");
+        ChatJpa chat3 = new ChatJpa(3L, "name3");
         Date date1 = new Date(100L);
         Date date2 = new Date(101L);
         MessageJpa messageJpa1 = new MessageJpa();

@@ -14,7 +14,7 @@ import ru.edu.spbstu.exception.ResourceNotFound;
 import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.model.ChatRole;
 import ru.edu.spbstu.model.ChatUser;
-import ru.edu.spbstu.model.comparator.ChatComparator;
+import ru.edu.spbstu.model.comparator.ChatJpaComparator;
 import ru.edu.spbstu.model.converter.JpaToModelConverter;
 import ru.edu.spbstu.model.jpa.ChatJpa;
 import ru.edu.spbstu.model.jpa.UserChatDetailsJpa;
@@ -34,7 +34,7 @@ public class ChatService {
     private final UserChatDetailsRepository userChatDetailsRepository;
     private final UserRepository userRepository;
     private final MessageService messageService;
-    private final ChatComparator chatComparator;
+    private final ChatJpaComparator chatComparator;
 
     public List<Chat> getChats(String login, Integer pageNumber) {
         UserJpa userJpa = userRepository.getByLogin(login)
@@ -139,14 +139,14 @@ public class ChatService {
             throw new InvalidRequestParameter("There are no chats on page " + pageNumber);
         }
         else if (chatJpaList.size() < pageCapacity * pageNumber) {
+            chatJpaList.sort(chatComparator);
             return chatJpaList.subList(pageCapacity * (pageNumber - 1), chatJpaList.size()).stream()
                     .map(converter::convertChatJpaToChat)
-                    .sorted(chatComparator)
                     .collect(Collectors.toList());
         }
+        chatJpaList.sort(chatComparator);
         return chatJpaList.subList(pageCapacity * (pageNumber - 1), pageCapacity * pageNumber).stream()
                 .map(converter::convertChatJpaToChat)
-                .sorted(chatComparator)
                 .collect(Collectors.toList());
     }
 }

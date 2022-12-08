@@ -331,7 +331,6 @@ public class ChatFormController {
     }
 
     private void deleteMessageAction(javafx.event.ActionEvent actionEvent) {
-        System.out.println("Delete message");
         try {
             service.deleteMessage(messagesListView.getSelectionModel().getSelectedItem().getId());
         }

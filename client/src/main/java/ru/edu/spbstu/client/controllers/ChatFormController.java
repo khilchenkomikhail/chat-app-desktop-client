@@ -8,6 +8,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
+import javafx.event.EventHandler;
+import javafx.stage.WindowEvent;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -389,6 +391,14 @@ public class ChatFormController {
             primaryStage.show();
             currStage.close();
         });
+        sendMessageButton.setDisable(true);
+        currStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent e) {
+                primaryStage.show();
+                currStage.close();
+            }
+        });
     }
 
 
@@ -411,6 +421,7 @@ public class ChatFormController {
 
     void update() {
         try {
+
             chatList = service.getChats(1);//Todo вот тут надо получить(и добавлять к общему списку) последнюю страницу
         } catch (IOException e) {
             showError("Ошибка при получении чатов" + e.getMessage() + " !");
@@ -419,6 +430,7 @@ public class ChatFormController {
 
         chatsListView.setItems(FXCollections.observableArrayList(chatList));
     }
+
 
     public void addChatButtonClick() throws IOException {
         FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/create_chat_form.fxml"));
@@ -439,7 +451,6 @@ public class ChatFormController {
         chatList = service.getChats(1);
         this.currStage.hide();
     }
-
 
     public void findChatsEvent() {
         String name = newChatTextBox.getText();
@@ -471,8 +482,8 @@ public class ChatFormController {
         try {
             service.sendMessage(curr.getId(), messageTextArea.getText());
         } catch (IOException e) {
-            showError("Внутренняя ошибка сервера!");
 
+            showError("Внутренняя ошибка сервера!");
             return;
         }
 
@@ -490,6 +501,7 @@ public class ChatFormController {
     public void scrollMethod(ScrollEvent scrollEvent) {
     }
 
+  
     public void textAreaKeyTyped() {
         sendMessageButton.setDisable(messageTextArea.getText().length() == 0);
     }

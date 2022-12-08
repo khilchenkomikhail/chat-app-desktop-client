@@ -85,7 +85,6 @@ public class CreateChatFormController {
 
         int size=userList.size();
         ArrayList<Image> images= service.getImageList(userList);
-
         usersToAddListView.resetList(userList,images);
     }
 

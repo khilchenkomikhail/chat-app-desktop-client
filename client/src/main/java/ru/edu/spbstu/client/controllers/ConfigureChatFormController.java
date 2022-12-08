@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.apache.http.client.CredentialsProvider;
 import ru.edu.spbstu.client.services.ConfigureChatFormService;
 import ru.edu.spbstu.clientComponents.ListViewWithButtons;

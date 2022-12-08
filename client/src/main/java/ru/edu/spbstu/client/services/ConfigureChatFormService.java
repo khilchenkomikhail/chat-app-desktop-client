@@ -139,6 +139,7 @@ public class ConfigureChatFormService {
     public Boolean isUserPresent(String login) throws IOException {
         String getChatsUrlBlueprint = "http://localhost:8080/is_user_present?login=%s";
 
+
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()
                 .build()) {

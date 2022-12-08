@@ -16,6 +16,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import ru.edu.spbstu.client.utils.AuthScheme;
 import ru.edu.spbstu.model.Chat;
+import ru.edu.spbstu.model.ChatUser;
 import ru.edu.spbstu.model.Message;
 import ru.edu.spbstu.request.ChatUpdateRequest;
 import ru.edu.spbstu.request.EditMessageRequest;
@@ -228,6 +229,7 @@ public class ChatFormService {
         }
         return  images;
     }
+  
     public Image getImage(String userList) {
         Image image;
         var res=(getClass().getResource("/images/dAvatar.bmp")).getPath().replaceFirst("/","");

@@ -58,7 +58,7 @@ public class MessageRepositoryTest {
         messageJpa.setIsForwarded(Boolean.FALSE);
         messageJpa = messageRepository.save(messageJpa);
 
-        Optional<MessageJpa> byId = messageRepository.getById(messageJpa.getId());
+        Optional<MessageJpa> byId = messageRepository.findByIdIs(messageJpa.getId());
         Assertions.assertTrue(byId.isPresent());
         Assertions.assertEquals(messageJpa, byId.get());
     }
@@ -134,7 +134,7 @@ public class MessageRepositoryTest {
 
         messageRepository.deleteMessage(messageJpa.getId());
         entityManager.clear();
-        Optional<MessageJpa> byId = messageRepository.getById(messageJpa.getId());
+        Optional<MessageJpa> byId = messageRepository.findByIdIs(messageJpa.getId());
         Assertions.assertTrue(byId.isPresent());
         Assertions.assertTrue(byId.get().getIsDeleted());
     }
@@ -195,7 +195,7 @@ public class MessageRepositoryTest {
         String newContent = "new content";
         messageRepository.editMessage(messageJpa.getId(), newContent);
         entityManager.clear();
-        Optional<MessageJpa> byId = messageRepository.getById(messageJpa.getId());
+        Optional<MessageJpa> byId = messageRepository.findByIdIs(messageJpa.getId());
         Assertions.assertTrue(byId.isPresent());
         Assertions.assertTrue(byId.get().getIsEdited());
         Assertions.assertEquals(newContent, byId.get().getContent());

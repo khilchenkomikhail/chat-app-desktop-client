@@ -183,10 +183,10 @@ public class ChatServiceTest {
     public void deleteChat_InvalidChatId() {
         Long chatId = 1L;
 
-        given(chatRepository.getById(anyLong())).willReturn(Optional.empty());
+        given(chatRepository.findByIdIs(anyLong())).willReturn(Optional.empty());
 
         Assertions.assertThrows(ResourceNotFound.class, () -> chatService.deleteChat(chatId));
-        verify(chatRepository, times(1)).getById(anyLong());
+        verify(chatRepository, times(1)).findByIdIs(anyLong());
         verify(userChatDetailsRepository, never()).deleteAllByChat_Id(anyLong());
         verify(messageRepository, never()).deleteAllByChat_Id(anyLong());
         verify(chatRepository, never()).deleteById(anyLong());
@@ -196,11 +196,11 @@ public class ChatServiceTest {
     public void deleteChat_SuccessResult() {
         Long chatId = 1L;
 
-        given(chatRepository.getById(anyLong())).willReturn(Optional.of(new ChatJpa()));
+        given(chatRepository.findByIdIs(anyLong())).willReturn(Optional.of(new ChatJpa()));
 
         chatService.deleteChat(chatId);
 
-        verify(chatRepository, times(1)).getById(anyLong());
+        verify(chatRepository, times(1)).findByIdIs(anyLong());
         verify(userChatDetailsRepository, times(1)).deleteAllByChat_Id(anyLong());
         verify(messageRepository, times(1)).deleteAllByChat_Id(anyLong());
         verify(chatRepository, times(1)).deleteById(anyLong());
@@ -210,10 +210,10 @@ public class ChatServiceTest {
     public void getChatMembers_InvalidChatId() {
         Long chatId = 1L;
 
-        given(chatRepository.getById(anyLong())).willReturn(Optional.empty());
+        given(chatRepository.findByIdIs(anyLong())).willReturn(Optional.empty());
 
         Assertions.assertThrows(ResourceNotFound.class, () -> chatService.getChatMembers(chatId));
-        verify(chatRepository, times(1)).getById(anyLong());
+        verify(chatRepository, times(1)).findByIdIs(anyLong());
         verify(userChatDetailsRepository, never()).getChatMembers(anyLong());
     }
 
@@ -225,12 +225,12 @@ public class ChatServiceTest {
         userChatDetails.add(new UserChatDetailsJpa(1L, new UserJpa(), new ChatJpa(), ChatRole.USER));
         userChatDetails.add(new UserChatDetailsJpa(2L, new UserJpa(), new ChatJpa(), ChatRole.ADMIN));
 
-        given(chatRepository.getById(anyLong())).willReturn(Optional.of(new ChatJpa()));
+        given(chatRepository.findByIdIs(anyLong())).willReturn(Optional.of(new ChatJpa()));
         given(userChatDetailsRepository.getChatMembers(anyLong())).willReturn(userChatDetails);
 
         List<ChatUser> result = chatService.getChatMembers(chatId);
 
-        verify(chatRepository, times(1)).getById(anyLong());
+        verify(chatRepository, times(1)).findByIdIs(anyLong());
         verify(userChatDetailsRepository, times(1)).getChatMembers(anyLong());
         List<ChatUser> expectedResult = userChatDetails.stream().map(converter::convertUserChatDetailsJpaToChatUser).toList();
         Assertions.assertEquals(expectedResult, result);
@@ -293,10 +293,10 @@ public class ChatServiceTest {
         request.setChat_id(1L);
         request.setUser_logins(List.of("login1"));
 
-        given(chatRepository.getById(anyLong())).willReturn(Optional.empty());
+        given(chatRepository.findByIdIs(anyLong())).willReturn(Optional.empty());
 
         Assertions.assertThrows(ResourceNotFound.class, () -> chatService.deleteUsersFromChat(request));
-        verify(chatRepository, times(1)).getById(anyLong());
+        verify(chatRepository, times(1)).findByIdIs(anyLong());
         verify(userRepository, never()).getByLogin(anyString());
         verify(userChatDetailsRepository, never()).deleteByChatAndUser(any(), any());
     }
@@ -307,11 +307,11 @@ public class ChatServiceTest {
         request.setChat_id(1L);
         request.setUser_logins(List.of("login1"));
 
-        given(chatRepository.getById(anyLong())).willReturn(Optional.of(new ChatJpa()));
+        given(chatRepository.findByIdIs(anyLong())).willReturn(Optional.of(new ChatJpa()));
         given(userRepository.getByLogin(anyString())).willReturn(Optional.empty());
 
         Assertions.assertThrows(ResourceNotFound.class, () -> chatService.deleteUsersFromChat(request));
-        verify(chatRepository, times(1)).getById(anyLong());
+        verify(chatRepository, times(1)).findByIdIs(anyLong());
         verify(userRepository, times(1)).getByLogin(anyString());
         verify(userChatDetailsRepository, never()).deleteByChatAndUser(any(), any());
     }
@@ -322,12 +322,12 @@ public class ChatServiceTest {
         request.setChat_id(1L);
         request.setUser_logins(List.of("login1", "login2"));
 
-        given(chatRepository.getById(anyLong())).willReturn(Optional.of(new ChatJpa()));
+        given(chatRepository.findByIdIs(anyLong())).willReturn(Optional.of(new ChatJpa()));
         given(userRepository.getByLogin(anyString())).willReturn(Optional.of(new UserJpa()));
 
         chatService.deleteUsersFromChat(request);
 
-        verify(chatRepository, times(1)).getById(anyLong());
+        verify(chatRepository, times(1)).findByIdIs(anyLong());
         verify(userRepository, times(2)).getByLogin(anyString());
         verify(userChatDetailsRepository, times(2)).deleteByChatAndUser(any(), any());
     }
@@ -338,10 +338,10 @@ public class ChatServiceTest {
         request.setChat_id(1L);
         request.setUser_logins(List.of("login1"));
 
-        given(chatRepository.getById(anyLong())).willReturn(Optional.empty());
+        given(chatRepository.findByIdIs(anyLong())).willReturn(Optional.empty());
 
         Assertions.assertThrows(ResourceNotFound.class, () -> chatService.addUsersToChat(request));
-        verify(chatRepository, times(1)).getById(anyLong());
+        verify(chatRepository, times(1)).findByIdIs(anyLong());
         verify(userRepository, never()).getByLogin(anyString());
         verify(userChatDetailsRepository, never()).save(any());
     }
@@ -352,11 +352,11 @@ public class ChatServiceTest {
         request.setChat_id(1L);
         request.setUser_logins(List.of("login1"));
 
-        given(chatRepository.getById(anyLong())).willReturn(Optional.of(new ChatJpa()));
+        given(chatRepository.findByIdIs(anyLong())).willReturn(Optional.of(new ChatJpa()));
         given(userRepository.getByLogin(anyString())).willReturn(Optional.empty());
 
         Assertions.assertThrows(ResourceNotFound.class, () -> chatService.addUsersToChat(request));
-        verify(chatRepository, times(1)).getById(anyLong());
+        verify(chatRepository, times(1)).findByIdIs(anyLong());
         verify(userRepository, times(1)).getByLogin(anyString());
         verify(userChatDetailsRepository, never()).save(any());
     }
@@ -367,12 +367,12 @@ public class ChatServiceTest {
         request.setChat_id(1L);
         request.setUser_logins(List.of("login1", "login2"));
 
-        given(chatRepository.getById(anyLong())).willReturn(Optional.of(new ChatJpa()));
+        given(chatRepository.findByIdIs(anyLong())).willReturn(Optional.of(new ChatJpa()));
         given(userRepository.getByLogin(anyString())).willReturn(Optional.of(new UserJpa()));
 
         chatService.addUsersToChat(request);
 
-        verify(chatRepository, times(1)).getById(anyLong());
+        verify(chatRepository, times(1)).findByIdIs(anyLong());
         verify(userRepository, times(2)).getByLogin(anyString());
         verify(userChatDetailsRepository, times(2)).save(any());
     }
@@ -383,10 +383,10 @@ public class ChatServiceTest {
         request.setChat_id(1L);
         request.setUser_logins(List.of("login1"));
 
-        given(chatRepository.getById(anyLong())).willReturn(Optional.empty());
+        given(chatRepository.findByIdIs(anyLong())).willReturn(Optional.empty());
 
         Assertions.assertThrows(ResourceNotFound.class, () -> chatService.makeUsersAdmins(request));
-        verify(chatRepository, times(1)).getById(anyLong());
+        verify(chatRepository, times(1)).findByIdIs(anyLong());
         verify(userRepository, never()).getByLogin(anyString());
         verify(userChatDetailsRepository, never()).makeUsersAdmins(anyLong(), anyLong());
     }
@@ -397,11 +397,11 @@ public class ChatServiceTest {
         request.setChat_id(1L);
         request.setUser_logins(List.of("login1"));
 
-        given(chatRepository.getById(anyLong())).willReturn(Optional.of(new ChatJpa()));
+        given(chatRepository.findByIdIs(anyLong())).willReturn(Optional.of(new ChatJpa()));
         given(userRepository.getByLogin(anyString())).willReturn(Optional.empty());
 
         Assertions.assertThrows(ResourceNotFound.class, () -> chatService.makeUsersAdmins(request));
-        verify(chatRepository, times(1)).getById(anyLong());
+        verify(chatRepository, times(1)).findByIdIs(anyLong());
         verify(userRepository, times(1)).getByLogin(anyString());
         verify(userChatDetailsRepository, never()).makeUsersAdmins(anyLong(), anyLong());
     }
@@ -414,12 +414,12 @@ public class ChatServiceTest {
         UserJpa user = new UserJpa();
         user.setId(1L);
 
-        given(chatRepository.getById(anyLong())).willReturn(Optional.of(new ChatJpa(1L, "name")));
+        given(chatRepository.findByIdIs(anyLong())).willReturn(Optional.of(new ChatJpa(1L, "name")));
         given(userRepository.getByLogin(anyString())).willReturn(Optional.of(user));
 
         chatService.makeUsersAdmins(request);
 
-        verify(chatRepository, times(1)).getById(anyLong());
+        verify(chatRepository, times(1)).findByIdIs(anyLong());
         verify(userRepository, times(2)).getByLogin(anyString());
         verify(userChatDetailsRepository, times(2)).makeUsersAdmins(anyLong(), anyLong());
     }

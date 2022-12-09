@@ -49,10 +49,10 @@ public class MessageServiceTest {
         Long chatId = 1L;
         Integer pageNumber = 1;
 
-        given(chatRepository.getById(anyLong())).willReturn(Optional.empty());
+        given(chatRepository.findByIdIs(anyLong())).willReturn(Optional.empty());
 
         Assertions.assertThrows(ResourceNotFound.class, () -> messageService.getMessages(chatId, pageNumber));
-        verify(chatRepository, times(1)).getById(anyLong());
+        verify(chatRepository, times(1)).findByIdIs(anyLong());
         verify(messageRepository, never()).getMessagesByChatId(anyLong());
     }
 
@@ -61,11 +61,11 @@ public class MessageServiceTest {
         Long chatId = 1L;
         Integer pageNumber = 1;
 
-        given(chatRepository.getById(anyLong())).willReturn(Optional.of(new ChatJpa()));
+        given(chatRepository.findByIdIs(anyLong())).willReturn(Optional.of(new ChatJpa()));
         given(messageRepository.getMessagesByChatId(anyLong())).willReturn(Collections.emptyList());
 
         Assertions.assertThrows(InvalidRequestParameter.class, () -> messageService.getMessages(chatId, pageNumber));
-        verify(chatRepository, times(1)).getById(anyLong());
+        verify(chatRepository, times(1)).findByIdIs(anyLong());
         verify(messageRepository, times(1)).getMessagesByChatId(anyLong());
     }
 
@@ -78,12 +78,12 @@ public class MessageServiceTest {
             messages.add(new MessageJpa());
         }
 
-        given(chatRepository.getById(anyLong())).willReturn(Optional.of(new ChatJpa()));
+        given(chatRepository.findByIdIs(anyLong())).willReturn(Optional.of(new ChatJpa()));
         given(messageRepository.getMessagesByChatId(anyLong())).willReturn(messages);
 
         List<Message> result = messageService.getMessages(chatId, pageNumber);
 
-        verify(chatRepository, times(1)).getById(anyLong());
+        verify(chatRepository, times(1)).findByIdIs(anyLong());
         verify(messageRepository, times(1)).getMessagesByChatId(anyLong());
         List<Message> expectedResult = messages.stream().map(converter::convertMessageJpaToMessage).toList();
         Assertions.assertEquals(expectedResult.size(), result.size());
@@ -98,12 +98,12 @@ public class MessageServiceTest {
             messages.add(new MessageJpa());
         }
 
-        given(chatRepository.getById(anyLong())).willReturn(Optional.of(new ChatJpa()));
+        given(chatRepository.findByIdIs(anyLong())).willReturn(Optional.of(new ChatJpa()));
         given(messageRepository.getMessagesByChatId(anyLong())).willReturn(messages);
 
         List<Message> result = messageService.getMessages(chatId, pageNumber);
 
-        verify(chatRepository, times(1)).getById(anyLong());
+        verify(chatRepository, times(1)).findByIdIs(anyLong());
         verify(messageRepository, times(1)).getMessagesByChatId(anyLong());
         List<Message> expectedResult = messages.stream().map(converter::convertMessageJpaToMessage).toList();
         Assertions.assertEquals(expectedResult.size(), result.size());
@@ -118,12 +118,12 @@ public class MessageServiceTest {
             messages.add(new MessageJpa());
         }
 
-        given(chatRepository.getById(anyLong())).willReturn(Optional.of(new ChatJpa()));
+        given(chatRepository.findByIdIs(anyLong())).willReturn(Optional.of(new ChatJpa()));
         given(messageRepository.getMessagesByChatId(anyLong())).willReturn(messages);
 
         List<Message> result = messageService.getMessages(chatId, pageNumber);
 
-        verify(chatRepository, times(1)).getById(anyLong());
+        verify(chatRepository, times(1)).findByIdIs(anyLong());
         verify(messageRepository, times(1)).getMessagesByChatId(anyLong());
         List<Message> expectedResult = new ArrayList<>();
         expectedResult.add(converter.convertMessageJpaToMessage(messages.get(messages.size() - 1)));
@@ -139,7 +139,7 @@ public class MessageServiceTest {
 
         Assertions.assertThrows(ResourceNotFound.class, () -> messageService.sendMessage(request));
         verify(userRepository, times(1)).getByLogin(anyString());
-        verify(chatRepository, never()).getById(anyLong());
+        verify(chatRepository, never()).findByIdIs(anyLong());
         verify(messageRepository, never()).save(any());
     }
 
@@ -154,7 +154,7 @@ public class MessageServiceTest {
 
         Assertions.assertThrows(ResourceNotFound.class, () -> messageService.sendMessage(request));
         verify(userRepository, times(2)).getByLogin(anyString());
-        verify(chatRepository, never()).getById(anyLong());
+        verify(chatRepository, never()).findByIdIs(anyLong());
         verify(messageRepository, never()).save(any());
     }
 
@@ -166,11 +166,11 @@ public class MessageServiceTest {
         request.setChat_id(1L);
 
         given(userRepository.getByLogin(anyString())).willReturn(Optional.of(new UserJpa()));
-        given(chatRepository.getById(anyLong())).willReturn(Optional.empty());
+        given(chatRepository.findByIdIs(anyLong())).willReturn(Optional.empty());
 
         Assertions.assertThrows(ResourceNotFound.class, () -> messageService.sendMessage(request));
         verify(userRepository, times(2)).getByLogin(anyString());
-        verify(chatRepository, times(1)).getById(anyLong());
+        verify(chatRepository, times(1)).findByIdIs(anyLong());
         verify(messageRepository, never()).save(any());
     }
 
@@ -186,12 +186,12 @@ public class MessageServiceTest {
         ChatJpa chatJpa = new ChatJpa(1L, "name");
 
         given(userRepository.getByLogin(anyString())).willReturn(Optional.of(userJpa));
-        given(chatRepository.getById(anyLong())).willReturn(Optional.of(chatJpa));
+        given(chatRepository.findByIdIs(anyLong())).willReturn(Optional.of(chatJpa));
 
         messageService.sendMessage(request);
 
         verify(userRepository, times(2)).getByLogin(anyString());
-        verify(chatRepository, times(1)).getById(anyLong());
+        verify(chatRepository, times(1)).findByIdIs(anyLong());
         verify(messageRepository, times(1)).save(any());
         ArgumentCaptor<MessageJpa> captor = ArgumentCaptor.forClass(MessageJpa.class);
         verify(messageRepository).save(captor.capture());
@@ -208,10 +208,10 @@ public class MessageServiceTest {
     public void deleteMessage_InvalidMessageId() {
         Long messageId = 1L;
 
-        given(messageRepository.getById(anyLong())).willReturn(Optional.empty());
+        given(messageRepository.findByIdIs(anyLong())).willReturn(Optional.empty());
 
         Assertions.assertThrows(ResourceNotFound.class, () -> messageService.deleteMessage(messageId));
-        verify(messageRepository, times(1)).getById(anyLong());
+        verify(messageRepository, times(1)).findByIdIs(anyLong());
         verify(messageRepository, never()).deleteMessage(anyLong());
     }
 
@@ -220,10 +220,10 @@ public class MessageServiceTest {
         Long messageId = 1L;
         MessageJpa messageJpa = new MessageJpa(1L, null, "content", false, false, false, null, null, null);
 
-        given(messageRepository.getById(anyLong())).willReturn(Optional.of(messageJpa));
+        given(messageRepository.findByIdIs(anyLong())).willReturn(Optional.of(messageJpa));
 
         messageService.deleteMessage(messageId);
-        verify(messageRepository, times(1)).getById(anyLong());
+        verify(messageRepository, times(1)).findByIdIs(anyLong());
         verify(messageRepository, times(1)).deleteMessage(anyLong());
     }
 
@@ -233,12 +233,12 @@ public class MessageServiceTest {
         String senderLogin = "login";
         Long chatId = 1L;
 
-        given(messageRepository.getById(anyLong())).willReturn(Optional.empty());
+        given(messageRepository.findByIdIs(anyLong())).willReturn(Optional.empty());
 
         Assertions.assertThrows(ResourceNotFound.class, () -> messageService.forwardMessage(messageId, senderLogin, chatId));
-        verify(messageRepository, times(1)).getById(anyLong());
+        verify(messageRepository, times(1)).findByIdIs(anyLong());
         verify(userRepository, never()).getByLogin(anyString());
-        verify(chatRepository, never()).getById(anyLong());
+        verify(chatRepository, never()).findByIdIs(anyLong());
         verify(messageRepository, never()).save(any());
     }
 
@@ -248,13 +248,13 @@ public class MessageServiceTest {
         String senderLogin = "login";
         Long chatId = 1L;
 
-        given(messageRepository.getById(anyLong())).willReturn(Optional.of(new MessageJpa()));
+        given(messageRepository.findByIdIs(anyLong())).willReturn(Optional.of(new MessageJpa()));
         given(userRepository.getByLogin(anyString())).willReturn(Optional.empty());
 
         Assertions.assertThrows(ResourceNotFound.class, () -> messageService.forwardMessage(messageId, senderLogin, chatId));
-        verify(messageRepository, times(1)).getById(anyLong());
+        verify(messageRepository, times(1)).findByIdIs(anyLong());
         verify(userRepository, times(1)).getByLogin(anyString());
-        verify(chatRepository, never()).getById(anyLong());
+        verify(chatRepository, never()).findByIdIs(anyLong());
         verify(messageRepository, never()).save(any());
     }
 
@@ -264,14 +264,14 @@ public class MessageServiceTest {
         String senderLogin = "login";
         Long chatId = 1L;
 
-        given(messageRepository.getById(anyLong())).willReturn(Optional.of(new MessageJpa()));
+        given(messageRepository.findByIdIs(anyLong())).willReturn(Optional.of(new MessageJpa()));
         given(userRepository.getByLogin(anyString())).willReturn(Optional.of(new UserJpa()));
-        given(chatRepository.getById(anyLong())).willReturn(Optional.empty());
+        given(chatRepository.findByIdIs(anyLong())).willReturn(Optional.empty());
 
         Assertions.assertThrows(ResourceNotFound.class, () -> messageService.forwardMessage(messageId, senderLogin, chatId));
-        verify(messageRepository, times(1)).getById(anyLong());
+        verify(messageRepository, times(1)).findByIdIs(anyLong());
         verify(userRepository, times(1)).getByLogin(anyString());
-        verify(chatRepository, times(1)).getById(anyLong());
+        verify(chatRepository, times(1)).findByIdIs(anyLong());
         verify(messageRepository, never()).save(any());
     }
 
@@ -286,14 +286,14 @@ public class MessageServiceTest {
         String senderLogin = "login";
         Long chatId = 1L;
 
-        given(messageRepository.getById(anyLong())).willReturn(Optional.of(messageJpa));
+        given(messageRepository.findByIdIs(anyLong())).willReturn(Optional.of(messageJpa));
         given(userRepository.getByLogin(anyString())).willReturn(Optional.of(new UserJpa()));
-        given(chatRepository.getById(anyLong())).willReturn(Optional.of(new ChatJpa()));
+        given(chatRepository.findByIdIs(anyLong())).willReturn(Optional.of(new ChatJpa()));
 
         messageService.forwardMessage(messageId, senderLogin, chatId);
-        verify(messageRepository, times(1)).getById(anyLong());
+        verify(messageRepository, times(1)).findByIdIs(anyLong());
         verify(userRepository, times(1)).getByLogin(anyString());
-        verify(chatRepository, times(1)).getById(anyLong());
+        verify(chatRepository, times(1)).findByIdIs(anyLong());
         verify(messageRepository, times(1)).save(any());
         ArgumentCaptor<MessageJpa> captor = ArgumentCaptor.forClass(MessageJpa.class);
         verify(messageRepository).save(captor.capture());
@@ -310,10 +310,10 @@ public class MessageServiceTest {
         request.setMessage_id(1L);
         request.setNew_content("new content");
 
-        given(messageRepository.getById(anyLong())).willReturn(Optional.empty());
+        given(messageRepository.findByIdIs(anyLong())).willReturn(Optional.empty());
 
         Assertions.assertThrows(ResourceNotFound.class, () -> messageService.editMessage(request));
-        verify(messageRepository, times(1)).getById(anyLong());
+        verify(messageRepository, times(1)).findByIdIs(anyLong());
         verify(messageRepository, never()).editMessage(anyLong(), anyString());
     }
 
@@ -323,10 +323,10 @@ public class MessageServiceTest {
         request.setMessage_id(1L);
         request.setNew_content("new content");
 
-        given(messageRepository.getById(anyLong())).willReturn(Optional.of(new MessageJpa()));
+        given(messageRepository.findByIdIs(anyLong())).willReturn(Optional.of(new MessageJpa()));
 
         messageService.editMessage(request);
-        verify(messageRepository, times(1)).getById(anyLong());
+        verify(messageRepository, times(1)).findByIdIs(anyLong());
         verify(messageRepository, times(1)).editMessage(anyLong(), anyString());
     }
 }

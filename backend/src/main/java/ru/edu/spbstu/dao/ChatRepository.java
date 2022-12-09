@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface ChatRepository extends CrudRepository<ChatJpa, Long> {
 
-    Optional<ChatJpa> getById(Long id);
+    Optional<ChatJpa> findByIdIs(Long id);
 
     @Query("select ucd.chat from UserChatDetailsJpa ucd where ucd.user.id = :userId")
     List<ChatJpa> getChatsByUserId(@Param("userId") Long userId);

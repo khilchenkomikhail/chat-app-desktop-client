@@ -11,10 +11,8 @@ import ru.edu.spbstu.model.jpa.UserJpa;
 public class JpaToModelConverter {
     public User convertUserJpaToUser(UserJpa userJpa) {
         User user = new User();
-        user.setId(userJpa.getId());
         user.setLogin(userJpa.getLogin());
         user.setEmail(userJpa.getEmail());
-        user.setImage(userJpa.getImage());
         user.setPassword(userJpa.getPassword());
         return user;
     }

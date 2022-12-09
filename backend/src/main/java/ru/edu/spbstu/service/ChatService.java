@@ -51,7 +51,7 @@ public class ChatService {
     }
 
     public List<ChatUser> getChatMembers(Long chatId) {
-        chatRepository.getById(chatId)
+        chatRepository.findByIdIs(chatId)
                 .orElseThrow(() -> new ResourceNotFound("Chat with id '" + chatId + "' was not found"));
         List<UserChatDetailsJpa> userChatDetailsJpaList = userChatDetailsRepository.getChatMembers(chatId);
         return userChatDetailsJpaList.stream().map(converter::convertUserChatDetailsJpaToChatUser)
@@ -60,7 +60,7 @@ public class ChatService {
 
     @Transactional
     public void deleteChat(Long chatId) {
-        chatRepository.getById(chatId)
+        chatRepository.findByIdIs(chatId)
                 .orElseThrow(() -> new ResourceNotFound("Chat with id '" + chatId + "' was not found"));
         userChatDetailsRepository.deleteAllByChat_Id(chatId);
         messageRepository.deleteAllByChat_Id(chatId);
@@ -98,7 +98,7 @@ public class ChatService {
 
     @Transactional
     public void deleteUsersFromChat(ChatUpdateRequest request) {
-        ChatJpa chatJpa = chatRepository.getById(request.getChat_id())
+        ChatJpa chatJpa = chatRepository.findByIdIs(request.getChat_id())
                 .orElseThrow(() -> new ResourceNotFound("Chat with id '" + request.getChat_id() + "' was not found"));
         for (String login: request.getUser_logins()) {
             UserJpa userJpa = userRepository.getByLogin(login)
@@ -109,7 +109,7 @@ public class ChatService {
 
     @Transactional
     public void addUsersToChat(ChatUpdateRequest request) {
-        ChatJpa chatJpa = chatRepository.getById(request.getChat_id())
+        ChatJpa chatJpa = chatRepository.findByIdIs(request.getChat_id())
                 .orElseThrow(() -> new ResourceNotFound("Chat with id '" + request.getChat_id() + "' was not found"));
         for (String login: request.getUser_logins()) {
             UserChatDetailsJpa userChatDetailsJpa = new UserChatDetailsJpa();
@@ -124,7 +124,7 @@ public class ChatService {
 
     @Transactional
     public void makeUsersAdmins(ChatUpdateRequest request) {
-        ChatJpa chatJpa = chatRepository.getById(request.getChat_id())
+        ChatJpa chatJpa = chatRepository.findByIdIs(request.getChat_id())
                 .orElseThrow(() -> new ResourceNotFound("Chat with id '" + request.getChat_id() + "' was not found"));
         for (String login: request.getUser_logins()) {
             UserJpa userJpa = userRepository.getByLogin(login)

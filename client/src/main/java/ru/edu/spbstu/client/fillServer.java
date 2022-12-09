@@ -118,10 +118,10 @@ public class fillServer {
         List<String> temp1=loggins.subList(1,loggins.size());
         addChat("AllInChat",temp1);
 
-        for (Integer i=1;i<10;i++)
+        for (int i = 1; i<10; i++)
         {
             //temp1=loggins.subList(1,loggins.size()-i);
-            addChat("chat"+i.toString(),temp1);
+            addChat("chat"+ i,temp1);
         }
         List<Chat> chats=getChats(1);
         Collections.reverse(chats);
@@ -162,9 +162,7 @@ public class fillServer {
     //private String lo;
 
     public  void register(String login,String password,String email) throws IOException {
-        String image = "image "+ login;//TODO когда будет поддержка
-
-        int regStatus = register(login, password, email, image);
+        int regStatus = registerImplementation(login, password, email);
         //System.out.println(regStatus);
 
         if (regStatus != 200) {
@@ -181,8 +179,8 @@ public class fillServer {
         this.login=login;
     }
 
-    private static int register(String login, String password, String email, String image) throws IOException {
-        SignUpRequest signUpRequest = new SignUpRequest(login, password, email, image);
+    private int registerImplementation(String login, String password, String email) throws IOException {
+        SignUpRequest signUpRequest = new SignUpRequest(login, password, email);
 
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpPost signUpReq = new HttpPost("http://localhost:8080/register");
@@ -192,7 +190,7 @@ public class fillServer {
         }
     }
 
-    private  static List<Chat> getAllChats(CredentialsProvider provider, String login, Integer page) throws IOException {
+    private List<Chat> getAllChats(CredentialsProvider provider, String login, Integer page) throws IOException {
 
         String getChatsUrlBlueprint = "http://localhost:8080/get_chats?login=%s&page_number=%d";
 
@@ -212,7 +210,7 @@ public class fillServer {
         }
     }
 
-    private static int createChat(CredentialsProvider provider, String chatName, List<String> users, String admin) throws IOException {
+    private int createChat(CredentialsProvider provider, String chatName, List<String> users, String admin) throws IOException {
         CreateChatRequest request = new CreateChatRequest();
         request.setAdmin_login(admin);
         request.setChat_name(chatName);
@@ -233,7 +231,7 @@ public class fillServer {
 
 
     public List<Chat> find(String name) {
-        List<Chat>res=Collections.emptyList();
+        List<Chat> res=Collections.emptyList();
 
         return res;
     }

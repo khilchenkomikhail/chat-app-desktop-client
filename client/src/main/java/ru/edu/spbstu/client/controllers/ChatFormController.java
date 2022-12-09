@@ -50,6 +50,10 @@ public class ChatFormController {
     public Button profileButton;
     public ComboBox<Button> LanguageComboBox;
     public Button logOutButton;
+    boolean EditMode=false;
+    private int messageToEdit =-1;
+    private Message messageToEditVal;
+
     boolean findMode=false;//пока я решил, что в заивимости от режима у нас буду заполняться список чатов
     private int chatsPage = 1;
     private int chatsOffset = 0;
@@ -257,12 +261,18 @@ public class ChatFormController {
     }
 
     private void forwardMessageAction(ActionEvent actionEvent) {
+        if(EditMode) {
+            exitEditMode();
+        }
         System.out.println("Forward");
         //TODo open forward message form
     }
 
 
     private void exitAction(javafx.event.ActionEvent actionEvent) {
+        if(EditMode) {
+            exitEditMode();
+        }
         Chat chat=chatsListView.getSelectionModel().getSelectedItem();
         Long chatId = chatsListView.getSelectionModel().getSelectedItem().getId();
         String login = service.getLogin();
@@ -272,18 +282,6 @@ public class ChatFormController {
             showError("Error while delete ! + " + e.getMessage() + " !");
             return;
         }
-
-
-
-
-
-        //List<Chat>temp;
-        /*try {
-            chatList = service.getChats(1);
-        } catch (IOException e) {
-            showError("Error while getChats ! + " + e.getMessage() + " !");
-            return;
-        }*/
 
         if(!findMode) {
             chatsListView.setItems(FXCollections.observableList(chatList));
@@ -313,6 +311,9 @@ public class ChatFormController {
     }
 
     private void configAction(javafx.event.ActionEvent actionEvent) {
+        if(EditMode) {
+            exitEditMode();
+        }
         try {
             FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/configure_chat_form.fxml"));
             Parent window;
@@ -342,39 +343,47 @@ public class ChatFormController {
         messageTextArea.setText(messagesListView.getSelectionModel().getSelectedItem().getContent());
         sendMessageButton.setText("Отредактировать");
         sendMessageButton.setOnAction(this::editMessageButtonAction);
+        messageToEdit =messagesListView.getSelectionModel().getSelectedIndex();
+        messageToEditVal=messagesListView.getSelectionModel().getSelectedItem();
+        EditMode =true;
+    }
+    private void exitEditMode()
+    {
+        sendMessageButton.setText("Отправить");
+        messageTextArea.setText("");
+        sendMessageButton.setDisable(true);
+        sendMessageButton.setOnAction(this::sendMessageButtonClick);
+
+        EditMode=false;
+        messageToEdit=-1;
+        messageToEditVal=null;
     }
 
     private void editMessageButtonAction(ActionEvent actionEvent) {
-        var message = messagesListView.getSelectionModel().getSelectedItem();
+        //var message = messagesListView.getSelectionModel().getSelectedItem();
+        //if(EditMode)
+       // {
+        Message message=messageToEditVal;
+        //}
         try {
             service.editMessage(message.getId(), messageTextArea.getText());
         } catch (IOException e) {
             showError("Внутрення ошибка сервера!");
             return;
         }
-
-        // try {
         int id = messageList.indexOf(message);
-        //Message temp=new Message();
-
-
         message.setIs_edited(true);
         message.setContent(messageTextArea.getText());
         messageList.set(id, message);
-
-        //messagesListView.setItems(FXCollections.observableList(service.getMessages(chatsListView.getSelectionModel().getSelectedItem().getId(),1)));
-        //todo 1-получить страницу сообщения 2-Узнать индекс в общем массиве, подгрузить(потребуется новый endpoint)
-        //3 присвоить новое значение сообщения исходному
-        //} catch (IOException e) {
-        //     showError("Внутрення ошибка сервера!");
-        // }
-        sendMessageButton.setText("Отправить");
-        messageTextArea.setText("");
-        sendMessageButton.setOnAction(this::sendMessageButtonClick);
+        exitEditMode();
         messagesListView.setItems(FXCollections.observableList(messageList));
+
     }
 
     private void deleteMessageAction(javafx.event.ActionEvent actionEvent) {
+        if(EditMode) {
+            exitEditMode();
+        }
         var message = messagesListView.getSelectionModel().getSelectedItem();
         try {
             service.deleteMessage(message.getId());
@@ -382,18 +391,10 @@ public class ChatFormController {
             showError("Внутрення ошибка сервера!");
             return;
         }
-        //try {
         int id = messageList.indexOf(message);
 
         message.setIs_deleted(true);
         messageList.set(id, message);
-
-        //messagesListView.setItems(FXCollections.observableList(service.getMessages(chatsListView.getSelectionModel().getSelectedItem().getId(),1)));
-        //todo 1-получить страницу сообщения 2-Узнать индекс в общем массиве, подгрузить(потребуется новый endpoint)
-        //3 присвоить новое значение сообщения исходному
-       /* } catch (IOException e) {
-            showError("Внутрення ошибка сервера!");
-        }*/
         messagesListView.setItems(FXCollections.observableList(messageList));
     }
 
@@ -426,6 +427,9 @@ public class ChatFormController {
                 messagesPage = 1;
                 messageOffset = 0;
                 messagesListView.setItems(FXCollections.observableList(messageList));
+                if(EditMode) {
+                    exitEditMode();
+                }
             } else {
                 messagesListView.setItems(FXCollections.observableList(new ArrayList<>()));
             }
@@ -496,11 +500,11 @@ public class ChatFormController {
         }
 
     }
-
+    @Deprecated
     void update() {
         try {
 
-            chatList = service.getChats(1);//Todo вот тут надо получить(и добавлять к общему списку) последнюю страницу
+            chatList = service.getChats(1);
         } catch (IOException e) {
             showError("Ошибка при получении чатов" + e.getMessage() + " !");
             return;
@@ -513,15 +517,6 @@ public class ChatFormController {
         try {
             messagesPage++;
             List<Message> temp = service.getMessages(chat_id, messagesPage);
-           /* if(temp.size()<MESSAGE_PAGE_SIZE)//Todo page size
-            {
-                messagesPage--;
-
-            }
-            else
-            {
-
-            }*/
             if (temp.size() != 0) {
                 temp = temp.subList(messageOffset, temp.size());
                 messageOffset = 0;
@@ -541,19 +536,7 @@ public class ChatFormController {
             try {
                 chatsPage++;
                 List<Chat> temp = service.getChats(chatsPage);
-            /*if(temp.size()<CHATS_PAGE_SIZE)
-            {
-                chatsPage--;
-
-            }
-            else
-            {
-
-            }*/
                 if (temp.size() != 0) {
-                    //int pageOffset=messageOffset/50;
-                    // int messOff=messageOffset-pageOffset*50;
-                    //  if(messagesPage)
                     temp = temp.subList(chatsOffset, temp.size());//apply offset
                     chatsOffset = 0;
                     chatList.addAll(temp);
@@ -571,19 +554,7 @@ public class ChatFormController {
             try {
                 chatsFindPage++;
                 List<Chat> temp = service.find(newChatTextBox.getText(), (long) chatsFindPage);
-            /*if(temp.size()<CHATS_PAGE_SIZE)
-            {
-                chatsPage--;
-
-            }
-            else
-            {
-
-            }*/
                 if (temp.size() != 0) {
-                    //int pageOffset=messageOffset/50;
-                    // int messOff=messageOffset-pageOffset*50;
-                    //  if(messagesPage)
                     temp = temp.subList(chatsFindOffset, temp.size());//apply offset
                     chatsFindOffset = 0;
                     foundChatsList.addAll(temp);
@@ -601,6 +572,9 @@ public class ChatFormController {
 
 
     public void addChatButtonClick() throws IOException {
+        if(EditMode) {
+            exitEditMode();
+        }
         FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/create_chat_form.fxml"));
         Parent window = fmxlLoader.load();
         var conC = fmxlLoader.<CreateChatFormController>getController();
@@ -616,7 +590,6 @@ public class ChatFormController {
         conC.init();
 
         nstage.show();
-        //chatList = service.getChats(1);
         this.currStage.hide();
     }
 
@@ -650,24 +623,6 @@ public class ChatFormController {
             }
             chatsListView.setItems(FXCollections.observableList(foundChatsList));
         }
-        /*String name = newChatTextBox.getText();
-        if (newChatTextBox.getText().length() == 1) {
-            try {
-                chatsListView.setItems(FXCollections.observableList(service.getChats(1)));
-            } catch (IOException e) {
-                showError("Внутренняя ошибка сервера!");
-                return;
-            }
-        }
-
-        List<Chat> temp;
-        try {
-            temp = service.find(name, 1L);
-        } catch (IOException e) {
-            showError("Внутренняя ошибка сервера!");
-            return;
-        }
-        chatsListView.setItems(FXCollections.observableList(temp));*/
     }
 
     public void LanguageCBAction() {
@@ -684,17 +639,21 @@ public class ChatFormController {
         }
 
         //try {
-        messageList.add(0, service.makeMessage(curr.getId(), messageTextArea.getText()));
+        List<Message> temp;
+        try {
+            temp=service.getMessages(curr.getId(),1);
+        } catch (IOException e) {
+
+            showError("Внутренняя ошибка сервера!");
+            return;
+        }
+
+        messageList.add(0, temp.get(0));
         messageOffset++;
         if (messageOffset == MESSAGE_PAGE_SIZE) {
             messageOffset = 0;
             messagesPage++;
         }
-        //messageList = service.getMessages(curr.getId(), 1);//Todo вот тут надо получить последнюю страницу
-        //} catch (IOException e) {
-        //  showError("Внутренняя ошибка сервера!");
-        //     return;
-        // }
         messagesListView.setItems(FXCollections.observableList(messageList));
         messageTextArea.setText("");
         sendMessageButton.setDisable(true);
@@ -724,6 +683,9 @@ public class ChatFormController {
     }
 
     public void ProfileButtonMouseClick() throws IOException {
+        if(EditMode) {
+            exitEditMode();
+        }
         FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/profile_form.fxml"));
         Parent window = fmxlLoader.load();
         var conC = fmxlLoader.<ProfileFormController>getController();

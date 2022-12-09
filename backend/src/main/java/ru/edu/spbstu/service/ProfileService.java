@@ -49,7 +49,9 @@ public class ProfileService {
         }
         UserJpa userJpa = userRepository.getByLogin(request.getLogin())
                 .orElseThrow(() -> new ResourceNotFound("User with login '" + request.getLogin() + "' was not found"));
-        if (userJpa.getPassword().equals(passwordEncoder.encode(request.getOld_password()))) {
+        if (passwordEncoder.matches(request.getOld_password(),
+                userJpa.getPassword())
+        ) {
             userJpa.setPassword(passwordEncoder.encode(request.getNew_password()));
             userRepository.save(userJpa);
         } else {

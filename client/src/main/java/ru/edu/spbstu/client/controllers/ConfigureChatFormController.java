@@ -5,8 +5,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-import org.apache.http.client.CredentialsProvider;
 import ru.edu.spbstu.client.services.ConfigureChatFormService;
 import ru.edu.spbstu.clientComponents.ListViewWithButtons;
 import ru.edu.spbstu.clientComponents.ListViewWithCheckBoxes;
@@ -53,9 +51,9 @@ public class ConfigureChatFormController {
         this.bundle = bundle;
     }
     
-    public void setCredentials(CredentialsProvider prov,String login)
+    public void setLogin(String login)
     {
-        this.service.setCredentialsProvider(prov,login);
+        this.service.setLogin(login);
     }
     public void setChat(Chat selectedItem) {
         chatToConfigure=selectedItem;

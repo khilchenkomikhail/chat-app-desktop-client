@@ -2,9 +2,12 @@ package ru.edu.spbstu.client.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -15,7 +18,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import ru.edu.spbstu.client.utils.AuthScheme;
+import ru.edu.spbstu.client.utils.HttpClientFactory;
 import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.request.SignUpRequest;
 
@@ -27,12 +30,6 @@ import java.util.List;
 public class LogInService {
 
     private static final ObjectMapper jsonMapper = new ObjectMapper();
-    private CredentialsProvider prov = new BasicCredentialsProvider();
-    public CredentialsProvider getProvider()
-    {
-        return prov;
-    }
-
 
     public  void register(String login,String password,String email) throws IOException {
         int regStatus = registerImplementation(login, password, email);
@@ -41,16 +38,18 @@ public class LogInService {
             throw new HttpResponseException(regStatus,"Error while register");
         }
 
-
         UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(login, password);
-        prov.setCredentials(AuthScope.ANY, credentials);
+        CredentialsProvider provider = new BasicCredentialsProvider();
+        provider.setCredentials(AuthScope.ANY, credentials);
+        HttpClientFactory.getInstance().setCredentialsProvider(provider);
     }
-    public void logIn(String login,String password) throws IOException {
+    public void logIn(String login,String password, boolean isRememberMeChecked) throws IOException {
 
         UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(login, password);
-        prov.setCredentials(AuthScope.ANY, credentials);
-        getAllChats(prov,login,1);
-
+        CredentialsProvider provider = new BasicCredentialsProvider();
+        provider.setCredentials(AuthScope.ANY, credentials);
+        HttpClientFactory.getInstance().setCredentialsProvider(provider);
+        getAllChats(login,1, isRememberMeChecked);
     }
     public Boolean isUserPresent(String login) throws IOException {
         String getChatsUrlBlueprint = "http://localhost:8080/is_user_present?login=%s";
@@ -78,32 +77,48 @@ public class LogInService {
         }
     }
 
-    public LogInService()
-    {
-
-    }
-    private  static List<Chat> getAllChats(CredentialsProvider provider, String login, Integer page) throws IOException {
+    private  static List<Chat> getAllChats(String login, Integer page, boolean isRememberMeChecked) throws IOException {
 
         String getChatsUrlBlueprint = "http://localhost:8080/get_chats?login=%s&page_number=%d";
-
-        try (CloseableHttpClient client = HttpClientBuilder
-                .create()
-                .setDefaultAuthSchemeRegistry(AuthScheme.getAuthScheme())
-                .setDefaultCredentialsProvider(provider)
-                .build()) {
-            HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, login, page));
-            CloseableHttpResponse re = client.execute(httpGet);
-            String json = EntityUtils.toString(re.getEntity());
-            if(re.getStatusLine().getStatusCode()!=200) {
-                if (re.getStatusLine().getStatusCode() == 400) {
-                    return Collections.emptyList();
-                } else {
-                    throw new HttpResponseException(re.getStatusLine().getStatusCode(), "Error while getAllChats");
-                }
-            }
-            return jsonMapper.readValue(json, new TypeReference<>() {});
+        if (isRememberMeChecked) {
+            getChatsUrlBlueprint += "&remember-me=on";
         }
+
+        HttpClient client = HttpClientFactory.getInstance().getHttpClient();
+        HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, login, page));
+        HttpResponse re = client.execute(httpGet);
+        String json = EntityUtils.toString(re.getEntity());
+        if(re.getStatusLine().getStatusCode()!=200) {
+            if (re.getStatusLine().getStatusCode() == 400) {
+                updateRememberMe(re);
+                return Collections.emptyList();
+            } else {
+                throw new HttpResponseException(re.getStatusLine().getStatusCode(), "Error while getAllChats");
+            }
+        }
+
+        if (isRememberMeChecked) {
+            updateRememberMe(re);
+        }
+        return jsonMapper.readValue(json, new TypeReference<>() {});
     }
+
+    private static void updateRememberMe(HttpResponse re) {
+        Header[] cookies = re.getHeaders("Set-Cookie");
+        String rememberMeToken = null;
+        for (Header cookie : cookies) {
+            String content = cookie.getValue();
+            if (content.substring(0, content.indexOf('=')).trim().equals("remember-me")) {
+                rememberMeToken = content.substring(content.indexOf('=') + 1, content.indexOf(';'));
+                break;
+            }
+        }
+        if (rememberMeToken == null) {
+            throw new RuntimeException();
+        }
+        HttpClientFactory.getInstance().setRememberToken(rememberMeToken);
+    }
+
     private int registerImplementation(String login, String password, String email) throws IOException {
         SignUpRequest signUpRequest = new SignUpRequest(login, password, email);
 

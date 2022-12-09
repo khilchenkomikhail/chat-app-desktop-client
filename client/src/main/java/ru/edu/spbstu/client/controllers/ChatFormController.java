@@ -20,7 +20,6 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
-import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpResponseException;
 import ru.edu.spbstu.client.services.ChatFormService;
 import ru.edu.spbstu.client.utils.ClientProperties;
@@ -215,8 +214,8 @@ public class ChatFormController {
 
     };
 
-    public void setCredentials(CredentialsProvider prov, String login) {
-        service.setCredentialsProvider(prov, login);
+    public void setLogin(String login) {
+        service.setCredentialsProvider(login);
     }
 
     private void showError(String errorText) {
@@ -292,7 +291,7 @@ public class ChatFormController {
             var conC = fmxlLoader.<ConfigureChatFormController>getController();
             conC.setBundle(bundle);
             Scene scene = new Scene(window, 700, 500);
-            conC.setCredentials(this.service.getCredentialsProvider(), this.service.getLogin());
+            conC.setLogin(this.service.getLogin());
             Stage nstage = new Stage();
             nstage.setScene(scene);
 
@@ -595,7 +594,7 @@ public class ChatFormController {
         var conC = fmxlLoader.<CreateChatFormController>getController();
         conC.setBundle(bundle);
         Scene scene = new Scene(window, 700, 500);
-        conC.setCredentials(this.service.getCredentialsProvider(), this.service.getLogin());
+        conC.setLogin(this.service.getLogin());
 
         Stage nstage = new Stage();
         nstage.setScene(scene);

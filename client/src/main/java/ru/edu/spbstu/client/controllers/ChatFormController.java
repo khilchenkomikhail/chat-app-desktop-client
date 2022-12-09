@@ -742,7 +742,7 @@ public class ChatFormController {
         profileFormController.setBundle(bundle);
         Scene scene = new Scene(window);
 
-        profileFormController.setCredentials(service.getCredentialsProvider(), service.getLogin());
+        profileFormController.setLogin(service.getLogin());
         Stage nstage = new Stage();
         nstage.setScene(scene);
         nstage.setTitle("Profile");

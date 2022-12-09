@@ -13,7 +13,6 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.CredentialsProvider;
 import ru.edu.spbstu.client.exception.InvalidDataException;
 import ru.edu.spbstu.client.services.ProfileFormService;
 import ru.edu.spbstu.client.utils.Verifiers;
@@ -82,7 +81,7 @@ public class ProfileFormController {
         }
 
         currentStage.setOnCloseRequest(e -> {
-            prevController.setCredentials(profileFormService.getCredentialsProvider(), profileFormService.getLogin());
+            prevController.setLogin(profileFormService.getLogin());
             primaryStage.show();
             currentStage.close();
         });
@@ -151,8 +150,8 @@ public class ProfileFormController {
         }
     }
 
-    public void setCredentials(CredentialsProvider prov, String login) {
-        profileFormService.setProviderAndLogin(prov, login);
+    public void setLogin(String login) {
+        profileFormService.setLogin(login);
     }
 
     public void setCurrentStage(Stage stage) {

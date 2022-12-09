@@ -8,10 +8,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.scene.input.ScrollEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import org.apache.http.client.CredentialsProvider;
 import ru.edu.spbstu.client.services.CreateChatFormService;
 import ru.edu.spbstu.clientComponents.ListViewWithButtons;
 import ru.edu.spbstu.model.ChatUser;
@@ -62,9 +60,9 @@ public class CreateChatFormController {
         alert.setHeaderText(errorText);
         alert.show();
     }
-    public void setCredentials(CredentialsProvider prov,String login)
+    public void setLogin(String login)
     {
-        service.setCredentialsProvider(prov,login);
+        service.setLogin(login);
     }
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;

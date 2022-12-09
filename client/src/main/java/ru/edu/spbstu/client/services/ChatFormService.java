@@ -268,6 +268,7 @@ public class ChatFormService {
     }
   
     public Image getImage(String userList) {
+
         Image image;
         var res=(getClass().getResource("/images/dAvatar.bmp")).getPath().replaceFirst("/","");
         image=new Image(res);

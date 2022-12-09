@@ -140,9 +140,6 @@ public class CreateChatFormController {
         //prevController.update();
         currStage.close();
         primaryStage.show();
-
-
-
     }
 
 }

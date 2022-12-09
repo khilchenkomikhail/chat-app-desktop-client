@@ -17,7 +17,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
@@ -121,12 +120,7 @@ public class ChatFormController {
                     pictureImageView.setImage(image);
                     pictureImageView.setFitHeight(40);
                     pictureImageView.setFitWidth(40);
-                    final Rectangle clip = new Rectangle();
-                    clip.arcWidthProperty().bind(clip.heightProperty().divide(0.1));
-                    clip.arcHeightProperty().bind(clip.heightProperty().divide(0.1));
-                    clip.setWidth(pictureImageView.getLayoutBounds().getWidth());
-                    clip.setHeight(pictureImageView.getLayoutBounds().getHeight());
-                    pictureImageView.setClip(clip);
+                    ProfileFormController.cropImageToRound(pictureImageView);
 
                     GridPane.setMargin(imageHbox, new Insets(5, 5, 5, 5));
                     imageHbox.getChildren().add(pictureImageView);
@@ -732,19 +726,19 @@ public class ChatFormController {
     public void ProfileButtonMouseClick() throws IOException {
         FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/profile_form.fxml"));
         Parent window = fmxlLoader.load();
-        var conC = fmxlLoader.<ChatFormController>getController();
-        Scene scene = new Scene(window, 700, 700);
+        var conC = fmxlLoader.<ProfileFormController>getController();
+        Scene scene = new Scene(window);
 
         conC.setCredentials(service.getCredentialsProvider(), service.getLogin());
-        conC.init();
-
+        conC.setPrevController(this);
         Stage nstage = new Stage();
         nstage.setScene(scene);
         nstage.setTitle("Profile");
         conC.setCurrStage(nstage);
         conC.setPrimaryStage(this.currStage);
-
+        conC.init();
         nstage.show();
+        this.currStage.hide();
     }
 
 

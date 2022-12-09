@@ -12,6 +12,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.edu.spbstu.exception.ResourceNotFound;
+import ru.edu.spbstu.model.Language;
+import ru.edu.spbstu.request.SendTemporaryPasswordRequest;
 import ru.edu.spbstu.service.LoginService;
 
 import static org.mockito.ArgumentMatchers.isA;
@@ -37,30 +39,36 @@ class LoginControllerTest {
     @Test
     void sendTmpPassword_InvalidLogin() throws Exception {
         String bodyText = "login";
+        SendTemporaryPasswordRequest request = new SendTemporaryPasswordRequest();
+        request.setLogin(bodyText);
+        request.setLanguage(Language.ENGLISH);
 
-        doThrow(new ResourceNotFound("")).when(loginService).sendTemporaryPassword(isA(String.class));
+        doThrow(new ResourceNotFound("")).when(loginService).sendTemporaryPassword(isA(String.class), isA(Language.class));
 
         mockMvc.perform(MockMvcRequestBuilders.patch("/send-tmp-password")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(new ObjectMapper().writer().writeValueAsString(bodyText)))
+                        .content(new ObjectMapper().writer().writeValueAsString(request)))
                 .andExpect(status().isNotFound())
                 .andReturn();
 
-        verify(loginService, times(1)).sendTemporaryPassword(anyString());
+        verify(loginService, times(1)).sendTemporaryPassword(anyString(), any(Language.class));
     }
 
     @Test
     void sendTmpPassword_ValidLogin() throws Exception {
         String bodyText = "login";
+        SendTemporaryPasswordRequest request = new SendTemporaryPasswordRequest();
+        request.setLogin(bodyText);
+        request.setLanguage(Language.ENGLISH);
 
-        doNothing().when(loginService).sendTemporaryPassword(isA(String.class));
+        doNothing().when(loginService).sendTemporaryPassword(isA(String.class), isA(Language.class));
 
         mockMvc.perform(MockMvcRequestBuilders.patch("/send-tmp-password")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(new ObjectMapper().writer().writeValueAsString(bodyText)))
+                        .content(new ObjectMapper().writer().writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        verify(loginService, times(1)).sendTemporaryPassword(anyString());
+        verify(loginService, times(1)).sendTemporaryPassword(anyString(), any(Language.class));
     }
 }

@@ -30,7 +30,7 @@ public class MessageService {
     private final MessageRepository messageRepository;
 
     public List<Message> getMessages(Long chatId, Integer pageNumber) {
-        chatRepository.getById(chatId)
+        chatRepository.findByIdIs(chatId)
                 .orElseThrow(() -> new ResourceNotFound("Chat with id '" + chatId + "' was not found"));
         List<MessageJpa> messageJpaList = messageRepository.getMessagesByChatId(chatId);
         return getMessageListByPage(messageJpaList, pageNumber);
@@ -41,7 +41,7 @@ public class MessageService {
                 .orElseThrow(() -> new ResourceNotFound("User with login '" + request.getAuthor_login() + "' was not found"));
         UserJpa sender = userRepository.getByLogin(request.getSender_login())
                 .orElseThrow(() -> new ResourceNotFound("User with login '" + request.getSender_login() + "' was not found"));
-        ChatJpa chat = chatRepository.getById(request.getChat_id())
+        ChatJpa chat = chatRepository.findByIdIs(request.getChat_id())
                 .orElseThrow(() -> new ResourceNotFound("Chat with id '" + request.getChat_id() + "' was not found"));
         MessageJpa message = new MessageJpa();
         message.setDate(new Date());
@@ -57,17 +57,17 @@ public class MessageService {
 
     @Transactional
     public void deleteMessage(Long messageId) {
-        messageRepository.getById(messageId)
+        messageRepository.findByIdIs(messageId)
                 .orElseThrow(() -> new ResourceNotFound("Message with id '" + messageId + "' was not found"));
         messageRepository.deleteMessage(messageId);
     }
 
     public void forwardMessage(Long messageId, String senderLogin, Long chatId) {
-        MessageJpa originalMessage = messageRepository.getById(messageId)
+        MessageJpa originalMessage = messageRepository.findByIdIs(messageId)
                 .orElseThrow(() -> new ResourceNotFound("Message with id '" + messageId + "' was not found"));
         UserJpa sender = userRepository.getByLogin(senderLogin)
                 .orElseThrow(() -> new ResourceNotFound("User with login '" + senderLogin + "' was not found"));
-        ChatJpa chat = chatRepository.getById(chatId)
+        ChatJpa chat = chatRepository.findByIdIs(chatId)
                 .orElseThrow(() -> new ResourceNotFound("Chat with id '" + chatId + "' was not found"));
         MessageJpa newMessage = new MessageJpa();
         newMessage.setDate(new Date());
@@ -83,7 +83,7 @@ public class MessageService {
 
     @Transactional
     public void editMessage(EditMessageRequest request) {
-        messageRepository.getById(request.getMessage_id())
+        messageRepository.findByIdIs(request.getMessage_id())
                 .orElseThrow(() -> new ResourceNotFound("Message with id '" + request.getMessage_id() + "' was not found"));
         messageRepository.editMessage(request.getMessage_id(), request.getNew_content());
     }

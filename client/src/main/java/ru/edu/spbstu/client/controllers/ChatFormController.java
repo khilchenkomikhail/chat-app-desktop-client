@@ -124,7 +124,7 @@ public class ChatFormController {
                     pictureImageView.setImage(image);
                     pictureImageView.setFitHeight(40);
                     pictureImageView.setFitWidth(40);
-                    ProfileFormController.cropImageToRound(pictureImageView);
+                    //ProfileFormController.cropImageToRound(pictureImageView);//Todo uncoment
 
                     GridPane.setMargin(imageHbox, new Insets(5, 5, 5, 5));
                     imageHbox.getChildren().add(pictureImageView);
@@ -683,7 +683,7 @@ public class ChatFormController {
     }
 
     public void ProfileButtonMouseClick() throws IOException {
-        if(EditMode) {
+        /*if(EditMode) {
             exitEditMode();
         }
         FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/profile_form.fxml"));
@@ -700,7 +700,7 @@ public class ChatFormController {
         conC.setPrimaryStage(this.currStage);
         conC.init();
         nstage.show();
-        this.currStage.hide();
+        this.currStage.hide();*///Todo uncoment
     }
 
 

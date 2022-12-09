@@ -92,9 +92,10 @@ public class ChatFormService {
             });
         }
     }
-    public Message makeMessage(Long chatId, String messageContent)
+    public Message makeMessage(Long idMessage,Long chatId, String messageContent)
     {
         Message message = new Message();
+        message.setId(idMessage);
         message.setDate(new Date());
         message.setChat_id(chatId);
         message.setAuthor_login(login);
@@ -268,6 +269,7 @@ public class ChatFormService {
     }
   
     public Image getImage(String userList) {
+
         Image image;
         var res=(getClass().getResource("/images/dAvatar.bmp")).getPath().replaceFirst("/","");
         image=new Image(res);

@@ -48,15 +48,12 @@ public class LoginFormController {
     @FXML
     void initialize() {
         service=new LogInService();
-        //logInButton.setDisable(true);
+        logInButton.setDisable(true);
         registerButton.setDisable(true);
         forgetPasswordButton.setDisable(true);
         stage= ClientApplication.getStage();
-        loginTextBox.setText("olegoleg");
-        passwordTextBox.setText("olegoleg");
-        //logInButtonPress(new ActionEvent());
-
-
+        //loginTextBox.setText("olegoleg");
+        //passwordTextBox.setText("olegoleg");
     }
 
     private void clear()

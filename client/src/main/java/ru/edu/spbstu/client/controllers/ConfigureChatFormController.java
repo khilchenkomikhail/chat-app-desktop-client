@@ -16,6 +16,7 @@ import ru.edu.spbstu.model.ChatUser;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public class ConfigureChatFormController {
     public ListViewWithCheckBoxes chatMembersConfigurationLV;
@@ -41,8 +42,17 @@ public class ConfigureChatFormController {
     private ChatUser user=new ChatUser();
     private Chat chatToConfigure;
     private ChatFormController prevController;
+    private ResourceBundle bundle;
 
 
+    public ResourceBundle getBundle() {
+        return bundle;
+    }
+
+    public void setBundle(ResourceBundle bundle) {
+        this.bundle = bundle;
+    }
+    
     public void setCredentials(CredentialsProvider prov,String login)
     {
         this.service.setCredentialsProvider(prov,login);

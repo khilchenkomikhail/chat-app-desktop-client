@@ -18,10 +18,14 @@ import ru.edu.spbstu.client.services.LogInService;
 import ru.edu.spbstu.clientComponents.PasswordTextField;
 
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 import static ru.edu.spbstu.client.utils.Verifiers.isEmail;
 
 public class LoginFormController {
+
+    private ResourceBundle bundle;
+
     public CheckBox rememberMeCheckBox;
     public TextField loginTextBox;
     public PasswordTextField passwordTextBox;
@@ -37,10 +41,18 @@ public class LoginFormController {
     private LogInService service;
     private Stage stage;
 
+    public ResourceBundle getBundle() {
+        return bundle;
+    }
+
+    public void setBundle(ResourceBundle bundle) {
+        this.bundle = bundle;
+    }
 
     void showError(String errorText)
     {
         Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(bundle.getString("Error"));
         alert.setHeaderText(errorText);
         alert.show();
     }
@@ -70,8 +82,7 @@ public class LoginFormController {
     public void logInButtonPress(ActionEvent actionEvent)  {
         if(passwordTextBox.getText().length()<8||passwordTextBox.getText().length()>128)
         {
-            showError("Поле пароль должно содержать не менее 8 символов и не более 128 символов!");
-            // showError("Password filed must contain more than 7 symbols and less than 128 symbols!");
+            showError(bundle.getString("InvalidPasswordSizeError"));
 
             return;
         }
@@ -85,15 +96,13 @@ public class LoginFormController {
         {
             if(ex.getStatusCode()==401)
             {
-                showError("Неверные логин или пароль!");
-               // showError("Invalid login or password!");
+                showError(bundle.getString("InvalidLogPasswordError"));
                 return;
 
             }
         }
         catch (IOException e) {
-            showError("Внутренняя ошибка сервера!");
-           // showError("Internal server error!");
+            showError(bundle.getString("InternalErrorText"));
             return;
         }
         try {
@@ -101,8 +110,8 @@ public class LoginFormController {
 
         }
         catch (IOException e) {
-            showError("Ошибка при открытии 2-й формы");
-            //showError("Error when open second form");
+            showError(bundle.getString("SecondFormOpenError"));
+
             return;
         }
         regLoginTextBox.setText("");
@@ -112,34 +121,32 @@ public class LoginFormController {
     }
 
     public void forgotPasswordButtonPress(ActionEvent actionEvent) {
-        //getTheUserFilePath();
         try {
             boolean isPresent=service.isUserPresent(loginTextBox.getText());
             if(!isPresent)
             {
-                showError("На данный логин не зарегестрировано учётных записей!");
-               // showError("There in no account registered with this login!");
+                showError(bundle.getString("NoAccountForLoginError"));
                 return;
             }
         }
         catch (IOException e)
         {
-            showError("Внутренняя ошибка сервера");
-            //showError("Internal server error");
+            showError(bundle.getString("InternalErrorText"));
             return;
         }
 
 
-        FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/forgot_password.fxml"));
+        FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/forgot_password.fxml"),bundle);
+
         Parent window = null;
         try {
             window = (Pane) fmxlLoader.load();
         } catch (IOException e) {
-            showError("Ошибка при открытии формы сброса пароля!");
-           // showError("Error when open forgotPassword form!");
+            showError(bundle.getString("ForgotFormOpenError"));
             return;
         }
         ForgotPasswordFormController conF = fmxlLoader.<ForgotPasswordFormController>getController();
+        conF.setBundle(bundle);
         Scene scene = new Scene(window);
         conF.setLogin(loginTextBox.getText());
         Stage stage= new Stage();
@@ -153,14 +160,13 @@ public class LoginFormController {
     public void registerButtonPress(ActionEvent actionEvent) {
         if(regPasswordTextBox.getText().length()<8||regPasswordTextBox.getText().length()>128)
         {
-            showError("Поле пароль должно содержать не менее 8 символов и не более 128!");
-           // showError("Password filed must contain more than 7 symbols and less than 128 symbols!");
+            showError(bundle.getString("InvalidPasswordSizeError"));
             return;
         }
 
         if(!isEmail(emailTextBox.getText()))
         {
-            showError("Содержимое поля email не соотвествует стандарту!");
+            showError(bundle.getString("BadFormatEmailErrorText"));
            // showError("Invalid email field format!");
             return;
         }
@@ -169,29 +175,25 @@ public class LoginFormController {
 
             boolean res = service.isUserPresent(regLoginTextBox.getText());
             if (res) {
-                showError("Учётная запись с данным логином уже существует!");
-                //showError("Account with this login already exists!");
+                showError(bundle.getString("AccountWithLoginExistsError"));
                 return;
             }
             boolean res2 = service.isEmailUsed(emailTextBox.getText());
             if (res2) {
-                showError("На данный email уже зарегестрирована учётная запись!");
-                //showError("Account was already registered on this email!");
+                showError(bundle.getString("EmailInAlreadyUsedError"));
                 return;
             }
             service.register(regLoginTextBox.getText(), regPasswordTextBox.getText(), emailTextBox.getText());
         }
         catch (IOException ex)
         {
-            showError("Внутренняя ошибка сервера");
+            showError(bundle.getString("InternalErrorText"));
             return;
-            //showError("Internal server error");
         }
         try {
             openChatForm(regLoginTextBox);
         }  catch (IOException e) {
-            showError("Ошибка при открытии 2-й формы");
-            //showError("Error when open second form");
+            showError(bundle.getString("SecondFormOpenError"));
             return;
         }
         clear();
@@ -203,10 +205,11 @@ public class LoginFormController {
     }
 
     private void openChatForm(TextField regLoginTextBox) throws IOException {
-        FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/chat_form.fxml"));
+        FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/chat_form.fxml"),bundle);
         Parent window = (Pane) fmxlLoader.load();
         // private Scene scene;
         ChatFormController conC = fmxlLoader.<ChatFormController>getController();
+        conC.setBundle(bundle);
         Scene scene = new Scene(window);
         conC.setCredentials(this.service.getProvider(), regLoginTextBox.getText());
         Stage nstage= new Stage();

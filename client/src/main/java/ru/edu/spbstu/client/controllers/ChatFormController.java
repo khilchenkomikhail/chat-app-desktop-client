@@ -731,27 +731,32 @@ public class ChatFormController {
         sendMessageButton.setDisable(messageTextArea.getText().length() == 0);
     }
 
-    public void ProfileButtonMouseClick() throws IOException {
-        /*if(EditMode) {
+
+
+    public void profileButtonPress(ActionEvent actionEvent) throws IOException {
+        if(EditMode) {
             exitEditMode();
         }
         FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/profile_form.fxml"),bundle);
         Parent window = fmxlLoader.load();
-        var conC = fmxlLoader.<ProfileFormController>getController();
-        conC.setBundle(bundle);
+        ProfileFormController profileFormController = fmxlLoader.getController();
+        profileFormController.setBundle(bundle);
         Scene scene = new Scene(window);
 
-        conC.setCredentials(service.getCredentialsProvider(), service.getLogin());
-        conC.setPrevController(this);
+        profileFormController.setCredentials(service.getCredentialsProvider(), service.getLogin());
         Stage nstage = new Stage();
         nstage.setScene(scene);
         nstage.setTitle("Profile");
-        conC.setCurrStage(nstage);
-        conC.setPrimaryStage(this.currStage);
-        conC.init();
+        nstage.setMinHeight(500);
+        nstage.setMinWidth(700);
+        nstage.setMaxHeight(750);
+        nstage.setMaxWidth(1050);
+        profileFormController.setCurrentStage(nstage);
+        profileFormController.setPrimaryStage(currStage);
+        profileFormController.setPrevController(this);
+        profileFormController.init();
+
         nstage.show();
-        this.currStage.hide();*///Todo uncoment
+        currStage.hide();
     }
-
-
 }

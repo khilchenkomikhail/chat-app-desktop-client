@@ -20,7 +20,7 @@ public class ProfileController {
         return profileService.getProfilePhoto(login);
     }
 
-    @PatchMapping("/update_profile_photo")
+    @PostMapping("/update_profile_photo")
     public void updateProfilePhoto(@RequestBody ProfilePhotoUpdateRequest request) {
         profileService.updateProfilePhoto(request);
     }

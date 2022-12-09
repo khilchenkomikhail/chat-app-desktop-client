@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.edu.spbstu.dao.UserRepository;
+import ru.edu.spbstu.exception.InvalidRequestParameter;
 import ru.edu.spbstu.exception.ResourceNotFound;
 import ru.edu.spbstu.exception.UnauthorizedAccess;
 import ru.edu.spbstu.model.User;
@@ -48,8 +49,12 @@ public class ProfileService {
         }
         UserJpa userJpa = userRepository.getByLogin(request.getLogin())
                 .orElseThrow(() -> new ResourceNotFound("User with login '" + request.getLogin() + "' was not found"));
-        userJpa.setPassword(passwordEncoder.encode(request.getNew_password()));
-        userRepository.save(userJpa);
+        if (userJpa.getPassword().equals(passwordEncoder.encode(request.getOld_password()))) {
+            userJpa.setPassword(passwordEncoder.encode(request.getNew_password()));
+            userRepository.save(userJpa);
+        } else {
+            throw new InvalidRequestParameter("The old password is incorrect");
+        }
     }
 
     public String getProfilePhoto(String login) {

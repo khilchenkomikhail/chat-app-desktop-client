@@ -17,7 +17,7 @@
    <children>
       <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="240.0" prefWidth="520.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
-          <Tab text="Вход">
+          <Tab text="%logInTab">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
@@ -34,29 +34,29 @@
                               <RowConstraints maxHeight="180.0" minHeight="10.0" prefHeight="66.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <Label text="Пароль" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+                              <Label text="%passwordLabel" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
                                  <padding>
                                     <Insets right="20.0" />
                                  </padding>
                               </Label>
-                              <Label text="Логин" GridPane.halignment="RIGHT">
+                              <Label text="%loginLabel" GridPane.halignment="RIGHT">
                                  <padding>
                                     <Insets right="20.0" />
                                  </padding>
                               </Label>
                               <TextField fx:id="loginTextBox" onKeyTyped="#updateLogin" prefHeight="25.0" prefWidth="221.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-                              <Button fx:id="logInButton" mnemonicParsing="false" onAction="#logInButtonPress" prefHeight="25.0" prefWidth="139.0" text="Войти" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
+                              <Button fx:id="logInButton" mnemonicParsing="false" onAction="#logInButtonPress" prefHeight="25.0" prefWidth="139.0" text="%logInButton" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
                                  <GridPane.margin>
                                     <Insets left="5.0" right="5.0" top="10.0" />
                                  </GridPane.margin></Button>
-                              <Button fx:id="forgetPasswordButton" mnemonicParsing="false" onAction="#forgotPasswordButtonPress" prefHeight="25.0" prefWidth="139.0" text="Забыли пароль?" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
+                              <Button fx:id="forgetPasswordButton" mnemonicParsing="false" onAction="#forgotPasswordButtonPress" prefHeight="25.0" prefWidth="139.0" text="%forgotPasswordButton" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
                                  <opaqueInsets>
                                     <Insets />
                                  </opaqueInsets>
                                  <GridPane.margin>
-                                    <Insets left="5.0" right="5.0" top="10.0" />
+                                    <Insets left="3.0" right="3.0" top="10.0" />
                                  </GridPane.margin></Button>
-                              <CheckBox fx:id="rememberMeCheckBox" mnemonicParsing="false" text="Запомнить меня" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
+                              <CheckBox fx:id="rememberMeCheckBox" mnemonicParsing="false" text="%rememberMe" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
                                  <padding>
                                     <Insets right="20.0" />
                                  </padding>
@@ -74,7 +74,7 @@
                   </AnchorPane>
             </content>
           </Tab>
-          <Tab text="Регистрация">
+          <Tab text="%registerTab">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
@@ -96,19 +96,19 @@
                                     <Insets right="20.0" />
                                  </padding>
                               </Label>
-                              <Label text="Логин" GridPane.halignment="RIGHT">
+                              <Label text="%loginLabel" GridPane.halignment="RIGHT">
                                  <padding>
                                     <Insets right="20.0" />
                                  </padding>
                               </Label>
-                              <Label text="Пароль" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+                              <Label text="%passwordLabel" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
                                  <padding>
                                     <Insets right="20.0" />
                                  </padding>
                               </Label>
                               <TextField fx:id="regLoginTextBox" onKeyTyped="#updateRegisterButton" prefWidth="433.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
                               <TextField fx:id="emailTextBox" onKeyTyped="#updateRegisterButton" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <Button fx:id="registerButton" mnemonicParsing="false" onAction="#registerButtonPress" prefHeight="25.0" prefWidth="139.0" text="Зарегистрироваться" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="TOP" />
+                              <Button fx:id="registerButton" mnemonicParsing="false" onAction="#registerButtonPress" prefHeight="25.0" prefWidth="139.0" text="%registerButton" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="TOP" />
                               <PasswordTextField fx:id="regPasswordTextBox" onKeyTyped="#updateRegisterButton" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                            </children>
                            <padding>

@@ -19,6 +19,7 @@ import ru.edu.spbstu.model.ChatUser;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public class CreateChatFormController {
 
@@ -41,10 +42,20 @@ public class CreateChatFormController {
     private Stage currStage;
     private List<ChatUser> userList;
     private ChatFormController prevController;
+    private ResourceBundle bundle;
 
     public void setPrevController(ChatFormController prevController) {
         this.prevController = prevController;
     }
+
+    public ResourceBundle getBundle() {
+        return bundle;
+    }
+
+    public void setBundle(ResourceBundle bundle) {
+        this.bundle = bundle;
+    }
+    
     void showError(String errorText)
     {
         Alert alert = new Alert(Alert.AlertType.ERROR);

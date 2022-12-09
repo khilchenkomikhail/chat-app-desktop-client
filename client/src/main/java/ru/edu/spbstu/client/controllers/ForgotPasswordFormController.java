@@ -19,6 +19,7 @@ import org.apache.http.util.EntityUtils;
 import ru.edu.spbstu.request.CheckEmailRequest;
 
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 import static ru.edu.spbstu.client.utils.Verifiers.isEmail;
 
@@ -27,17 +28,25 @@ public class ForgotPasswordFormController {
     @FXML
     private Button changePasswordButton;
     public TextField emailTextBox;
-
+    private ResourceBundle bundle;
 
 
     public  void setLogin(String sLogin)
     {
         login= sLogin;
     }
+    public ResourceBundle getBundle() {
+        return bundle;
+    }
+
+    public void setBundle(ResourceBundle bundle) {
+        this.bundle = bundle;
+    }
 
     void showError(String errorText)
     {
         Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(bundle.getString("Error"));
         alert.setHeaderText(errorText);
         alert.show();
     }
@@ -48,7 +57,7 @@ public class ForgotPasswordFormController {
     public void changePasswordButtonClick(MouseEvent mouseEvent) {
         if(!isEmail(emailTextBox.getText()))
         {
-            showError("Содержимое поля email не соотвествует стандарту!");
+            showError(bundle.getString("BadFormatEmailErrorText"));
            // showError("Invalid email format!");
             return;
         }
@@ -68,15 +77,14 @@ public class ForgotPasswordFormController {
         }
         catch (IOException ex)
         {
-            showError("Внутренняя ошибка сервера");
-           // showError("Internal server error!");
+            showError(bundle.getString("InternalErrorText"));
             return;
         }
         if(isValid) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             forgotAction();
-            alert.setTitle("Пароль успешно сброшен! Временный пароль был отпрален на почту!");
-            //alert.setTitle("Password was reset successfully! Temporary password was sent to your mail!");
+            alert.setHeaderText(bundle.getString("InformationHeader"));
+            alert.setTitle(bundle.getString("MessageSendSuccess"));
             alert.showAndWait().ifPresent(rs -> {
                 if (rs == ButtonType.OK) {
                     Stage stage = (Stage) changePasswordButton.getScene().getWindow();
@@ -87,8 +95,8 @@ public class ForgotPasswordFormController {
         else
         {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Ошибка!");
-            alert.setContentText("Введена неверная почта! Попробуйте повторить запрос!");
+            alert.setTitle(bundle.getString("Error"));
+            alert.setContentText(bundle.getString("BadEmailErrorText"));
            // alert.setContentText("Invalid mail address entered! Try to repeat  request!");
             alert.show();
         }
@@ -112,8 +120,7 @@ public class ForgotPasswordFormController {
         }
         catch (IOException e)
         {
-            showError("Ошибка во время оправки письма!");
-           // showError("Error occurred during email send!");
+            showError( bundle.getString("MessageErrorText"));
         }
 
 

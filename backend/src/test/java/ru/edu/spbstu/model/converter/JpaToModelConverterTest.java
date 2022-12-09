@@ -25,11 +25,9 @@ class JpaToModelConverterTest {
         );
 
         User expectedUser = new User(
-                1L,
                 "login",
                 "password",
-                "email@mail.org",
-                "image"
+                "email@mail.org"
         );
 
         User actualUser = jpaToModelConverter.convertUserJpaToUser(userJpa);

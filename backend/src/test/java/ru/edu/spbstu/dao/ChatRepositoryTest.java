@@ -28,7 +28,7 @@ class ChatRepositoryTest {
         ChatJpa chatJpa1 = new ChatJpa();
         chatJpa1.setName("chat Id test");
         chatJpa1 = chatRepository.save(chatJpa1);
-        Optional<ChatJpa> gotten1 = chatRepository.getById(chatJpa1.getId());
+        Optional<ChatJpa> gotten1 = chatRepository.findByIdIs(chatJpa1.getId());
         Assertions.assertTrue(gotten1.isPresent());
         Assertions.assertEquals(chatJpa1, gotten1.get());
     }

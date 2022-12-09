@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface MessageRepository extends CrudRepository<MessageJpa, Long> {
 
-    Optional<MessageJpa> getById(Long messageId);
+    Optional<MessageJpa> findByIdIs(Long messageId);
 
     @Modifying
     void deleteAllByChat_Id(Long chatId);

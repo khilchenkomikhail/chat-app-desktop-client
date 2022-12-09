@@ -2,7 +2,6 @@ package ru.edu.spbstu.client.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javafx.collections.FXCollections;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
@@ -28,7 +27,7 @@ import java.util.List;
 public class LogInService {
 
     private static final ObjectMapper jsonMapper = new ObjectMapper();
-    private CredentialsProvider prov= new BasicCredentialsProvider();
+    private CredentialsProvider prov = new BasicCredentialsProvider();
     public CredentialsProvider getProvider()
     {
         return prov;
@@ -36,9 +35,7 @@ public class LogInService {
 
 
     public  void register(String login,String password,String email) throws IOException {
-        String image = "image "+ login;//TODO когда будет поддержка изображений
-
-        int regStatus = register(login, password, email, image);
+        int regStatus = registerImplementation(login, password, email);
 
         if (regStatus != 200) {
             throw new HttpResponseException(regStatus,"Error while register");
@@ -107,14 +104,14 @@ public class LogInService {
             return jsonMapper.readValue(json, new TypeReference<>() {});
         }
     }
-    private static int register(String login, String password, String email, String image) throws IOException {
-        SignUpRequest signUpRequest = new SignUpRequest(login, password, email, image);
+    private int registerImplementation(String login, String password, String email) throws IOException {
+        SignUpRequest signUpRequest = new SignUpRequest(login, password, email);
 
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpPost signUpReq = new HttpPost("http://localhost:8080/register");
             signUpReq.addHeader("content-type", "application/json");
             signUpReq.setEntity(new StringEntity(jsonMapper.writeValueAsString(signUpRequest), "UTF-8"));
-            var temp=client.execute(signUpReq);
+            var temp= client.execute(signUpReq);
             return temp.getStatusLine().getStatusCode();
         }
     }

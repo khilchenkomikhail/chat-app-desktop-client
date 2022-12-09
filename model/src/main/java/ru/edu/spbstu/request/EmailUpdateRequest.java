@@ -1,20 +1,15 @@
-package ru.edu.spbstu.model;
+package ru.edu.spbstu.request;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-@EqualsAndHashCode
-public class User {
+public class EmailUpdateRequest {
     private String login;
-    private String password;
-    private String email;
+    private String new_email;
 }

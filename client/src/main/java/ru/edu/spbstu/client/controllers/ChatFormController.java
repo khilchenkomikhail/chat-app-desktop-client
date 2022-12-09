@@ -590,9 +590,10 @@ public class ChatFormController {
         if(EditMode) {
             exitEditMode();
         }
-        FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/create_chat_form.fxml"));
+        FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/create_chat_form.fxml"),bundle);
         Parent window = fmxlLoader.load();
         var conC = fmxlLoader.<CreateChatFormController>getController();
+        conC.setBundle(bundle);
         Scene scene = new Scene(window, 700, 500);
         conC.setCredentials(this.service.getCredentialsProvider(), this.service.getLogin());
 

@@ -25,9 +25,6 @@ import java.util.Base64;
 
 public class ProfileFormService {
     private final ObjectMapper jsonMapper = new ObjectMapper();
-
-    private CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-
     private String login;
 
     public byte[] getProfilePicture() throws IOException {
@@ -36,26 +33,21 @@ public class ProfileFormService {
         String gerProfilePictureUrlBlueprint = "http://localhost:8080/get_profile_photo?login=%s";
 
         // TODO handle exception
-        try (CloseableHttpClient client = HttpClientBuilder
-                .create()
-                .setDefaultAuthSchemeRegistry(AuthScheme.getAuthScheme())
-                .setDefaultCredentialsProvider(credentialsProvider)
-                .build()) {
-            HttpGet httpGet = new HttpGet(String.format(gerProfilePictureUrlBlueprint, login));
-            CloseableHttpResponse response = client.execute(httpGet);
+        HttpClient client = HttpClientFactory.getInstance().getClient();
+        HttpGet httpGet = new HttpGet(String.format(gerProfilePictureUrlBlueprint, login));
+        HttpResponse response = client.execute(httpGet);
 
-            var entity = response.getEntity();
-            if (entity.getContentType() == null) {
-                return getClass().getResourceAsStream("/images/dAvatar.bmp").readAllBytes();
-            } else {
+        var entity = response.getEntity();
+        if (entity.getContentType() == null) {
+             return getClass().getResourceAsStream("/images/dAvatar.bmp").readAllBytes();
+        } else {
 
-                String json = EntityUtils.toString(entity);
-                return Base64.getDecoder().decode(json);
-            }
+       String json = EntityUtils.toString(entity);
+        return Base64.getDecoder().decode(json);
+       }
 
-//            String imageString = jsonMapper.readValue(json, new TypeReference<>() {});
-            // TODO for debugging, remove later
-        }
+//      String imageString = jsonMapper.readValue(json, new TypeReference<>() {});
+       // TODO for debugging, remove later
     }
 
     public void setProfilePicture(byte[] imageBytes) throws IOException {
@@ -131,7 +123,15 @@ public class ProfileFormService {
             HttpPost httpPost = new HttpPost(updatePasswordUrlBlueprint);
             httpPost.setEntity(new StringEntity(jsonMapper.writeValueAsString(updateRequest), "UTF-8"));
             httpPost.addHeader("content-type", "application/json");
-            CloseableHttpResponse checkResponse = client.execute(httpPost);
+            
+            HttpResponse checkResponse = client.execute(httpPost);
+            if (checkResponse.getStatusLine().getCode() == 200) {
+                    UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(login, newPassword);
+                    CredentialsProvider provider = new BasicCredentialsProvider();
+                    provider.setCredentials(AuthScope.ANY, credentials);
+                    HttpClientFactory.getInstance().setCredentialsProvider(provider); 
+            }
+            
             return checkResponse.getStatusLine().getStatusCode();
         }
     }

@@ -24,6 +24,8 @@ import ru.edu.spbstu.request.PasswordUpdateRequest;
 import ru.edu.spbstu.request.ProfilePhotoUpdateRequest;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class ProfileFormService {
@@ -35,7 +37,8 @@ public class ProfileFormService {
         String getProfilePictureUrlBlueprint = "http://localhost:8080/get_profile_photo?login=%s";
 
         HttpClient client = HttpClientFactory.getInstance().getHttpClient();
-        HttpGet httpGet = new HttpGet(String.format(getProfilePictureUrlBlueprint, login));
+        HttpGet httpGet = new HttpGet(String.format(getProfilePictureUrlBlueprint,
+                URLEncoder.encode(login, StandardCharsets.UTF_8)));
         HttpResponse response = client.execute(httpGet);
 
         var entity = response.getEntity();

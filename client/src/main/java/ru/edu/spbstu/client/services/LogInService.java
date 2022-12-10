@@ -23,6 +23,8 @@ import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.request.SignUpRequest;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
@@ -57,7 +59,8 @@ public class LogInService {
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()
                 .build()) {
-            HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, login));
+            HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint,
+                    URLEncoder.encode(login, StandardCharsets.UTF_8)));
             CloseableHttpResponse re = client.execute(httpGet);
             String json = EntityUtils.toString(re.getEntity());
             return jsonMapper.readValue(json, new TypeReference<>() {});
@@ -70,7 +73,8 @@ public class LogInService {
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()
                 .build()) {
-            HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, email));
+            HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint,
+                    email));
             CloseableHttpResponse re = client.execute(httpGet);
             String json = EntityUtils.toString(re.getEntity());
             return jsonMapper.readValue(json, new TypeReference<>() {});
@@ -85,7 +89,9 @@ public class LogInService {
         }
 
         HttpClient client = HttpClientFactory.getInstance().getHttpClient();
-        HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, login, page));
+        HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint,
+                URLEncoder.encode(login, StandardCharsets.UTF_8),
+                page));
         HttpResponse re = client.execute(httpGet);
         String json = EntityUtils.toString(re.getEntity());
         if(re.getStatusLine().getStatusCode()!=200) {

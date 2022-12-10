@@ -18,8 +18,12 @@ import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.model.ChatUser;
 import ru.edu.spbstu.request.ChatUpdateRequest;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 public class ConfigureChatFormService {
@@ -93,6 +97,18 @@ public class ConfigureChatFormService {
     public ArrayList<Image> getImageList(List<ChatUser> userList) {
         int size=userList.size();
         ArrayList<Image> images= new ArrayList<Image>();
+        for (int i=0;i<size;i++) {
+            Image temp;
+            try {
+                temp=getImage(userList.get(i).getLogin());
+
+            } catch (IOException e) {
+                temp=new Image((getClass().getResource("/images/dAvatar.bmp")).getPath().replaceFirst("/",""));
+            }
+            images.add(temp);
+        }
+        /*int size=userList.size();
+        ArrayList<Image> images= new ArrayList<Image>();
         for (int i=0;i<size;i++)
         {
             var resourse=getClass().getResource("/images/dAvatar.bmp");
@@ -100,14 +116,30 @@ public class ConfigureChatFormService {
             Image temp=new Image(res);
             images.add(temp);
             //images.set(i,temp);
-        }
+        }*/
         return  images;
     }
-    public Image getImage(ChatUser userList) {
-        Image image;
-        var res=(getClass().getResource("/images/dAvatar.bmp")).getPath().replaceFirst("/","");
-        image=new Image(res);
-        return  image;
+    public Image getImage(String userLogin) throws IOException {
+
+        return new Image(new ByteArrayInputStream(getProfilePicture(userLogin)),40,40,false,false);
+    }
+    public byte[] getProfilePicture(String userLogin) throws IOException {
+
+        String getProfilePictureUrlBlueprint = "http://localhost:8080/get_profile_photo?login=%s";
+
+        HttpClient client = HttpClientFactory.getInstance().getHttpClient();
+        HttpGet httpGet = new HttpGet(String.format(getProfilePictureUrlBlueprint,
+                URLEncoder.encode(userLogin, StandardCharsets.UTF_8)));
+        HttpResponse response = client.execute(httpGet);
+
+        var entity = response.getEntity();
+        if (entity.getContentType() == null) {
+            return getClass().getResourceAsStream("/images/dAvatar.bmp").readAllBytes();
+        } else {
+
+            String json = EntityUtils.toString(entity);
+            return Base64.getDecoder().decode(json);
+        }
     }
     public Boolean isUserPresent(String login) throws IOException {
         String getChatsUrlBlueprint = "http://localhost:8080/is_user_present?login=%s";
@@ -116,7 +148,8 @@ public class ConfigureChatFormService {
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()
                 .build()) {
-            HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, login));
+            HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint,
+                    URLEncoder.encode(login, StandardCharsets.UTF_8)));
             CloseableHttpResponse re = client.execute(httpGet);
             String json = EntityUtils.toString(re.getEntity());
             return jsonMapper.readValue(json, new TypeReference<>() {});

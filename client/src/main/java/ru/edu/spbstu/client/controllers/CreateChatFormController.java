@@ -128,7 +128,12 @@ public class CreateChatFormController {
         }
         ChatUser user=new ChatUser(username,false);
         userList.add(user);
-        Image image= service.getImage(user);
+        Image image= null;
+        try {
+            image = service.getImage(user.getLogin());
+        } catch (IOException e) {
+            image=new Image((getClass().getResource("/images/dAvatar.bmp")).getPath().replaceFirst("/",""));
+        }
 
         usersToAddListView.addInList(user,image);
     }

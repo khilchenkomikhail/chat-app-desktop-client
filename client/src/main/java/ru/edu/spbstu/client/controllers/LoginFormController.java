@@ -148,10 +148,12 @@ public class LoginFormController {
         }
         ForgotPasswordFormController conF = fmxlLoader.<ForgotPasswordFormController>getController();
         conF.setBundle(bundle);
+
         Scene scene = new Scene(window);
         conF.setLogin(loginTextBox.getText());
         Stage stage= new Stage();
         stage.setScene(scene);
+        conF.init();
         clear();
         regLoginTextBox.setText("");
         registerButton.setDisable(true);

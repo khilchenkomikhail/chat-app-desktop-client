@@ -70,11 +70,11 @@ public class ProfileFormController {
         changePasswordButton.setDisable(true);
     }
 
-    void init() throws IOException {
+    void init() {
         userLoginLabel.setText(profileFormService.getLogin());
         try {
             byte[] imageBytes = profileFormService.getProfilePicture();
-            Image image = new Image(new ByteArrayInputStream(imageBytes));
+            Image image = new Image(new ByteArrayInputStream(imageBytes),160,160,false,false);
             profilePictureImageView.setImage(image);
         } catch (IOException e) {
             showError(e.getMessage());
@@ -118,6 +118,7 @@ public class ProfileFormController {
                 return;
             }
             profileFormService.setProfilePicture(fileContent);
+            profilePictureImageView.setPreserveRatio(false);
             profilePictureImageView.setImage(image);
         } catch (IOException e) {
             showError(e.getMessage());

@@ -19,12 +19,11 @@ import ru.edu.spbstu.request.ChatUpdateRequest;
 import ru.edu.spbstu.request.EditMessageRequest;
 import ru.edu.spbstu.request.SendMessageRequest;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 public class ChatFormService {
 
@@ -44,7 +43,7 @@ public class ChatFormService {
         String getChatsUrlBlueprint = "http://localhost:8080/get_chats?login=%s&page_number=%d";
 
         HttpClient client = HttpClientFactory.getInstance().getHttpClient();
-        HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, login, page));
+        HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, URLEncoder.encode(login, StandardCharsets.UTF_8), page));
         HttpResponse re = client.execute(httpGet);
         String json = EntityUtils.toString(re.getEntity());
         if(re.getStatusLine().getStatusCode()!=200)
@@ -168,7 +167,9 @@ public class ChatFormService {
         String getMessagesUrlBlueprint = "http://localhost:8080/get_chats_by_search?login=%s&begin=%s&page_number=%d";
 
         HttpClient client = HttpClientFactory.getInstance().getHttpClient();
-        HttpGet httpGet = new HttpGet(String.format( getMessagesUrlBlueprint,login,name,page));
+
+        HttpGet httpGet = new HttpGet(String.format( getMessagesUrlBlueprint,URLEncoder.encode(login, StandardCharsets.UTF_8)
+                ,URLEncoder.encode(name, StandardCharsets.UTF_8),page));
         HttpResponse re = client.execute(httpGet);
         String json = EntityUtils.toString(re.getEntity());
         int code=re.getStatusLine().getStatusCode();
@@ -213,14 +214,30 @@ public class ChatFormService {
         }
         return  images;
     }
+
   
-    public Image getImage(String userList) {
+    public Image getImage(String userLogin) throws IOException {
+        return new Image(new ByteArrayInputStream(getProfilePicture(userLogin)),40,40,false,false);
+    }
+    public byte[] getProfilePicture(String userLogin) throws IOException {
 
-        Image image;
-        var res=(getClass().getResource("/images/dAvatar.bmp")).getPath().replaceFirst("/","");
-        image=new Image(res);
+        String getProfilePictureUrlBlueprint = "http://localhost:8080/get_profile_photo?login=%s";
 
-        return  image;
+        HttpClient client = HttpClientFactory.getInstance().getHttpClient();
+        HttpGet httpGet = new HttpGet(String.format(getProfilePictureUrlBlueprint,userLogin));
+        HttpResponse response = client.execute(httpGet);
+
+        var entity = response.getEntity();
+        if (entity.getContentType() == null) {
+            return getClass().getResourceAsStream("/images/dAvatar.bmp").readAllBytes();
+        } else {
+
+            String json = EntityUtils.toString(entity);
+            return Base64.getDecoder().decode(json);
+        }
+
+//      String imageString = jsonMapper.readValue(json, new TypeReference<>() {});
+        // TODO for debugging, remove later
     }
 
 

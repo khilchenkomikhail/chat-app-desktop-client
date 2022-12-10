@@ -26,12 +26,14 @@ import ru.edu.spbstu.client.utils.ClientProperties;
 import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.model.Message;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.*;
+
+import static ru.edu.spbstu.utils.ImageUtils.clipImageRound;
 
 public class ChatFormController {
 
-    private static HashMap<String,String> languages=HashMap.newHashMap(2);
+    private static HashMap<String, String> languages = HashMap.newHashMap(2);
     public ListView<Chat> chatsListView;
     public TextField newChatTextBox;
     public Button sendMessageButton;
@@ -48,11 +50,11 @@ public class ChatFormController {
     public Button profileButton;
     public ComboBox<String> LanguageComboBox;
     public Button logOutButton;
-    boolean EditMode=false;
-    private int messageToEdit =-1;
+    boolean EditMode = false;
+    private int messageToEdit = -1;
     private Message messageToEditVal;
 
-    boolean findMode=false;//пока я решил, что в заивимости от режима у нас буду заполняться список чатов
+    boolean findMode = false;//пока я решил, что в заивимости от режима у нас буду заполняться список чатов
     private int chatsPage = 1;
     private int chatsOffset = 0;
     private int chatsFindPage = 1;
@@ -74,6 +76,13 @@ public class ChatFormController {
 
     public void setBundle(ResourceBundle bundle) {
         this.bundle = bundle;
+    }
+
+    private void resetMessages() {
+        messageList = new ArrayList<>();
+        messagesListView.setItems(FXCollections.observableList(messageList));
+        messagesPage = 1;
+        messageOffset = 0;
     }
 
     private ListCell<Message> cellListFiller() {
@@ -127,22 +136,35 @@ public class ChatFormController {
                     imageHbox.setMinHeight(40);
                     imageHbox.setMinWidth(40);
                     ImageView pictureImageView = new ImageView();
-                    Image image = service.getImage(message.getAuthor_login());
+                    Image image = null;
+                    try {
+                        image = service.getImage(message.getSender_login());
+                    } catch (IOException e) {
+                        image = new Image((getClass().getResource("/images/dAvatar.bmp")).getPath().replaceFirst("/", ""));
+                    }
                     pictureImageView.setImage(image);
+
                     pictureImageView.setFitHeight(40);
                     pictureImageView.setFitWidth(40);
-                    //ProfileFormController.cropImageToRound(pictureImageView);//Todo uncoment
+                    clipImageRound(pictureImageView);
 
                     GridPane.setMargin(imageHbox, new Insets(5, 5, 5, 5));
                     imageHbox.getChildren().add(pictureImageView);
                     pane.add(imageHbox, 0, 0);
 
-
-                    Label username = new Label(message.getAuthor_login());
+                    String userText=message.getSender_login();
+                    if(message.getIs_forwarded())
+                    {
+                        userText=userText+" "+bundle.getString("ForwardText")
+                                + " "+message.getAuthor_login();
+                    }
+                    Label username = new Label(userText);
                     GridPane.setHalignment(username, HPos.LEFT);
                     GridPane.setValignment(username, VPos.TOP);
                     GridPane.setMargin(username, new Insets(0, 20, 0, 5));
                     pane.add(username, 1, 0);
+
+
 
 
                     Label date = new Label(message.getDate().toString());
@@ -174,8 +196,8 @@ public class ChatFormController {
                     imageHbox.setStyle("-fx-background-color: white");
 
                     pane.setStyle("-fx-background-color: #BEBEBE");
-                    if (!message.getAuthor_login().equals(service.getLogin())) {
-                        HBox.setMargin(pane, new Insets(0, 0, 0, 200));
+                    if (!message.getSender_login().equals(service.getLogin())) {
+                        HBox.setMargin(pane, new Insets(0, 0, 0, 180));
                     }
                     box.getChildren().add(pane);
 
@@ -185,6 +207,7 @@ public class ChatFormController {
             }
         };
     }
+
 
     private final Callback<ListView<Message>, ListCell<Message>> messageCallback = new Callback<>() {
         @Override
@@ -196,7 +219,7 @@ public class ChatFormController {
                     cell.setContextMenu(null);
                 } else {
                     cell.setOnContextMenuRequested(event -> {
-                        String s1 = cell.getItem().getAuthor_login();
+                        String s1 = cell.getItem().getAuthor_login();//Todo будем редачит пересланные сообщения
                         String s2 = service.getLogin();
                         if (cell.getItem().getIs_deleted()) {
                             return;
@@ -230,7 +253,7 @@ public class ChatFormController {
     }
 
     private void forwardMessageAction(ActionEvent actionEvent) {
-        if(EditMode) {
+        if (EditMode) {
             exitEditMode();
         }
         System.out.println("Forward");
@@ -239,37 +262,32 @@ public class ChatFormController {
 
 
     private void exitAction(javafx.event.ActionEvent actionEvent) {
-        if(EditMode) {
+        if (EditMode) {
             exitEditMode();
         }
-        Chat chat=chatsListView.getSelectionModel().getSelectedItem();
+        Chat chat = chatsListView.getSelectionModel().getSelectedItem();
         Long chatId = chatsListView.getSelectionModel().getSelectedItem().getId();
         String login = service.getLogin();
         try {
             service.leaveChat(chatId, login);
         } catch (IOException e) {
             showError(bundle.getString("InternalErrorText"));
-            //showError("Error while delete ! + " + e.getMessage() + " !");
             return;
         }
 
-        if(!findMode) {
+        if (!findMode) {
             chatsListView.setItems(FXCollections.observableList(chatList));
             chatsOffset--;
-            if(chatsOffset==-1)
-            {
-                chatsOffset = CHATS_PAGE_SIZE-1;
+            if (chatsOffset == -1) {
+                chatsOffset = CHATS_PAGE_SIZE - 1;
                 chatsPage--;
             }
             chatList.remove(chat);
             chatsListView.setItems(FXCollections.observableList(chatList));
-        }
-        else
-        {
+        } else {
             chatsFindOffset--;
-            if(chatsFindOffset==-1)
-            {
-                chatsFindOffset = CHATS_PAGE_SIZE-1;
+            if (chatsFindOffset == -1) {
+                chatsFindOffset = CHATS_PAGE_SIZE - 1;
                 chatsFindPage--;
             }
             foundChatsList.remove(chat);
@@ -281,11 +299,11 @@ public class ChatFormController {
     }
 
     private void configAction(javafx.event.ActionEvent actionEvent) {
-        if(EditMode) {
+        if (EditMode) {
             exitEditMode();
         }
         try {
-            FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/configure_chat_form.fxml"),bundle);
+            FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/configure_chat_form.fxml"), bundle);
             Parent window;
             window = fmxlLoader.load();
             var conC = fmxlLoader.<ConfigureChatFormController>getController();
@@ -295,7 +313,7 @@ public class ChatFormController {
             Stage nstage = new Stage();
             nstage.setScene(scene);
 
-            nstage.setTitle( bundle.getString("ConfigChatFormName"));
+            nstage.setTitle(bundle.getString("ConfigChatFormName"));
             var curr = chatsListView.getSelectionModel().getSelectedItem();
             conC.setChat(curr);
             conC.setCurrStage(nstage);
@@ -315,27 +333,27 @@ public class ChatFormController {
         messageTextArea.setText(messagesListView.getSelectionModel().getSelectedItem().getContent());
         sendMessageButton.setText(bundle.getString("editMessageButton"));
         sendMessageButton.setOnAction(this::editMessageButtonAction);
-        messageToEdit =messagesListView.getSelectionModel().getSelectedIndex();
-        messageToEditVal=messagesListView.getSelectionModel().getSelectedItem();
-        EditMode =true;
+        messageToEdit = messagesListView.getSelectionModel().getSelectedIndex();
+        messageToEditVal = messagesListView.getSelectionModel().getSelectedItem();
+        EditMode = true;
     }
-    private void exitEditMode()
-    {
+
+    private void exitEditMode() {
         sendMessageButton.setText(bundle.getString("SendMessageButton"));
         messageTextArea.setText("");
         sendMessageButton.setDisable(true);
         sendMessageButton.setOnAction(this::sendMessageButtonClick);
 
-        EditMode=false;
-        messageToEdit=-1;
-        messageToEditVal=null;
+        EditMode = false;
+        messageToEdit = -1;
+        messageToEditVal = null;
     }
 
     private void editMessageButtonAction(ActionEvent actionEvent) {
         //var message = messagesListView.getSelectionModel().getSelectedItem();
         //if(EditMode)
-       // {
-        Message message=messageToEditVal;
+        // {
+        Message message = messageToEditVal;
         //}
         try {
             service.editMessage(message.getId(), messageTextArea.getText());
@@ -353,7 +371,7 @@ public class ChatFormController {
     }
 
     private void deleteMessageAction(javafx.event.ActionEvent actionEvent) {
-        if(EditMode) {
+        if (EditMode) {
             exitEditMode();
         }
         var message = messagesListView.getSelectionModel().getSelectedItem();
@@ -371,8 +389,8 @@ public class ChatFormController {
     }
 
     void init() {
-        languages.put(bundle.getString("RusLangOption"),"RU");
-        languages.put(bundle.getString("EngLangOption"),"EN");
+        languages.put(bundle.getString("RusLangOption"), "RU");
+        languages.put(bundle.getString("EngLangOption"), "EN");
         LanguageComboBox.getItems().add(bundle.getString("RusLangOption"));
         LanguageComboBox.getItems().add(bundle.getString("EngLangOption"));
         javafx.scene.control.MenuItem menuItem1 = new javafx.scene.control.MenuItem(bundle.getString("ExitChatButton"));
@@ -401,7 +419,7 @@ public class ChatFormController {
 
         javafx.scene.control.MenuItem menuItem21 = new javafx.scene.control.MenuItem(bundle.getString("EditMessageButton"));
         javafx.scene.control.MenuItem menuItem22 = new javafx.scene.control.MenuItem(bundle.getString("DeleteMessageButton"));
-        javafx.scene.control.MenuItem menuItem23 = new javafx.scene.control.MenuItem();
+        javafx.scene.control.MenuItem menuItem23 = new javafx.scene.control.MenuItem(bundle.getString("ForwardMessageButton"));
         menuItem21.setOnAction(this::editMessageAction);
         menuItem22.setOnAction(this::deleteMessageAction);
         menuItem23.setOnAction(this::forwardMessageAction);
@@ -416,7 +434,7 @@ public class ChatFormController {
         try {
             chatList = service.getChats(1);
         } catch (HttpResponseException e) {
-            showError(bundle.getString("InternalErrorText")+"Http code = "+e.getStatusCode()+"!");
+            showError(bundle.getString("InternalErrorText") + "Http code = " + e.getStatusCode() + "!");
             logOutAction();
         } catch (IOException e) {
             showError(bundle.getString("InternalErrorText"));
@@ -440,7 +458,7 @@ public class ChatFormController {
                 messagesPage = 1;
                 messageOffset = 0;
                 messagesListView.setItems(FXCollections.observableList(messageList));
-                if(EditMode) {
+                if (EditMode) {
                     exitEditMode();
                 }
             } else {
@@ -492,7 +510,7 @@ public class ChatFormController {
             showError(bundle.getString("InternalErrorText"));
             return;
         }
-        if(!findMode) {
+        if (!findMode) {
             chatList.add(0, temp.get(0));
             chatsOffset++;
             if (chatsOffset == CHATS_PAGE_SIZE) {
@@ -500,9 +518,7 @@ public class ChatFormController {
                 chatsPage++;
             }
             chatsListView.setItems(FXCollections.observableList(chatList));
-        }
-        else
-        {
+        } else {
             foundChatsList.add(0, temp.get(0));
             chatsFindOffset++;
             if (chatsFindOffset == CHATS_PAGE_SIZE) {
@@ -513,6 +529,7 @@ public class ChatFormController {
         }
 
     }
+
     @Deprecated
     void update() {
         try {
@@ -562,9 +579,7 @@ public class ChatFormController {
                 chatList = new ArrayList<>();
             }
             chatsListView.setItems(FXCollections.observableList(chatList));
-        }
-        else
-        {
+        } else {
             try {
                 chatsFindPage++;
                 List<Chat> temp = service.find(newChatTextBox.getText(), (long) chatsFindPage);
@@ -577,19 +592,20 @@ public class ChatFormController {
                 }
             } catch (IOException e) {
                 showError(bundle.getString("InternalErrorText"));
-               foundChatsList= new ArrayList<>();
+                foundChatsList = new ArrayList<>();
             }
             chatsListView.setItems(FXCollections.observableList(foundChatsList));
         }
     }
 
 
-
     public void addChatButtonClick() throws IOException {
-        if(EditMode) {
+        if (EditMode) {
             exitEditMode();
         }
-        FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/create_chat_form.fxml"),bundle);
+        resetMessages();
+        chatsListView.getSelectionModel().select(-1);
+        FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/create_chat_form.fxml"), bundle);
         Parent window = fmxlLoader.load();
         var conC = fmxlLoader.<CreateChatFormController>getController();
         conC.setBundle(bundle);
@@ -609,29 +625,26 @@ public class ChatFormController {
     }
 
     public void findChatsEvent() {
-        if(newChatTextBox.getText().length()==0)
-        {
-            findMode=false;
-            foundChatsList=new ArrayList<>();
-            chatsOffset=0;
-            chatsPage=1;
+        if (newChatTextBox.getText().length() == 0) {
+            findMode = false;
+            foundChatsList = new ArrayList<>();
+            chatsOffset = 0;
+            chatsPage = 1;
             try {
-                chatList=service.getChats(1);
+                chatList = service.getChats(1);
             } catch (IOException e) {
                 showError(e.getMessage());
                 return;
             }
             chatsListView.setItems(FXCollections.observableList(chatList));
 
-        }
-        else
-        {
-            findMode=true;
-            chatList=new ArrayList<>();
-            chatsFindOffset=0;
-            chatsFindPage=1;
+        } else {
+            findMode = true;
+            chatList = new ArrayList<>();
+            chatsFindOffset = 0;
+            chatsFindPage = 1;
             try {
-                foundChatsList=service.find(newChatTextBox.getText(), 1L);
+                foundChatsList = service.find(newChatTextBox.getText(), 1L);
             } catch (IOException e) {
                 showError(e.getMessage());
                 return;
@@ -642,12 +655,11 @@ public class ChatFormController {
 
 
     public void LanguageCBAction() {
-        String prevLang=bundle.getLocale().getCountry();
-        boolean rus= prevLang.equals("RU");
-        String selected=LanguageComboBox.getSelectionModel().getSelectedItem();
-        String nextLanguage=languages.get(selected);
-        if(!nextLanguage.equals(prevLang))
-        {
+        String prevLang = bundle.getLocale().getCountry();
+        boolean rus = prevLang.equals("RU");
+        String selected = LanguageComboBox.getSelectionModel().getSelectedItem();
+        String nextLanguage = languages.get(selected);
+        if (!nextLanguage.equals(prevLang)) {
             try {
                 ClientProperties.setProperties(nextLanguage);
             } catch (IOException e) {
@@ -656,27 +668,6 @@ public class ChatFormController {
             }
             showError(bundle.getString("LanguageChange"));
         }
-        /*if(lan)
-        if(LanguageComboBox.getSelectionModel().getSelectedItem().equals(bundle.getString("RusLangOption")))
-        {
-            if(!rus)
-            {
-
-
-            }
-        }
-        else
-        {
-            if(rus) {
-                try {
-                    ClientProperties.setProperties("EN");
-                } catch (IOException e) {
-                    showError(bundle.getString("InternalErrorText"));
-                    return;
-                }
-                showError(bundle.getString("LanguageChange"));
-            }
-        }*/
     }
 
     public void sendMessageButtonClick(ActionEvent actionEvent) {
@@ -688,11 +679,9 @@ public class ChatFormController {
             showError(bundle.getString("InternalErrorText"));
             return;
         }
-
-        //try {
         List<Message> temp;
         try {
-            temp=service.getMessages(curr.getId(),1);
+            temp = service.getMessages(curr.getId(), 1);
         } catch (IOException e) {
 
             showError(bundle.getString("InternalErrorText"));
@@ -719,24 +708,36 @@ public class ChatFormController {
 
     public void messagesScroll(ScrollEvent scrollEvent) {
         if (scrollEvent.getDeltaY() < 0) {
-            if(chatsListView.getSelectionModel().getSelectedItem()!=null) {
+            if (chatsListView.getSelectionModel().getSelectedItem() != null) {
                 loadMessagePage(chatsListView.getSelectionModel().getSelectedItem().getId());
+            } else {
+                resetMessages();
             }
         }
     }
 
 
     public void textAreaKeyTyped() {
+        if (chatsListView.getSelectionModel().getSelectedIndex() < 0) {
+            messageTextArea.setText("");
+            return;
+        }
+        if (EditMode)
+            if (messageTextArea.getText().equals(messageToEditVal.getContent())) {
+                sendMessageButton.setDisable(true);
+                return;
+            }
         sendMessageButton.setDisable(messageTextArea.getText().length() == 0);
     }
 
 
-
     public void profileButtonPress(ActionEvent actionEvent) throws IOException {
-        if(EditMode) {
+        if (EditMode) {
             exitEditMode();
         }
-        FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/profile_form.fxml"),bundle);
+        resetMessages();
+        chatsListView.getSelectionModel().select(-1);
+        FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/profile_form.fxml"), bundle);
         Parent window = fmxlLoader.load();
         ProfileFormController profileFormController = fmxlLoader.getController();
         profileFormController.setBundle(bundle);
@@ -750,6 +751,8 @@ public class ChatFormController {
         nstage.setMinWidth(700);
         nstage.setMaxHeight(750);
         nstage.setMaxWidth(1050);
+
+
         profileFormController.setCurrentStage(nstage);
         profileFormController.setPrimaryStage(currStage);
         profileFormController.setPrevController(this);

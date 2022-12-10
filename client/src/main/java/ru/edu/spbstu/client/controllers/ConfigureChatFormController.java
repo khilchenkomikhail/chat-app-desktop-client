@@ -180,7 +180,12 @@ public class ConfigureChatFormController {
             return;
         }
         ChatUser user=new ChatUser(username,false);
-        Image image=service.getImage(user);
+        Image image= null;
+        try {
+            image = service.getImage(user.getLogin());
+        } catch (IOException e) {
+            image=new Image((getClass().getResource("/images/dAvatar.bmp")).getPath().replaceFirst("/",""));
+        }
         usersToAddListView.addInList(user,image);
        // mainTabPanel.getTabs().add(tabChatSettings);//Todo return second tab
     }

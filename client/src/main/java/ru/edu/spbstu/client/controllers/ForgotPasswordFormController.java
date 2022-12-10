@@ -22,6 +22,7 @@ import ru.edu.spbstu.request.CheckEmailRequest;
 import ru.edu.spbstu.request.SendTemporaryPasswordRequest;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 import static ru.edu.spbstu.client.utils.Verifiers.isEmail;
@@ -32,6 +33,7 @@ public class ForgotPasswordFormController {
     private Button changePasswordButton;
     public TextField emailTextBox;
     private ResourceBundle bundle;
+    private HashMap<String,Language> countryToEnum;
 
 
     public  void setLogin(String sLogin)
@@ -52,6 +54,12 @@ public class ForgotPasswordFormController {
         alert.setTitle(bundle.getString("Error"));
         alert.setHeaderText(errorText);
         alert.show();
+    }
+
+    void init() {
+        countryToEnum=HashMap.newHashMap(2);
+        countryToEnum.put("RU",Language.RUSSIAN);
+        countryToEnum.put("EN",Language.ENGLISH);
     }
 
 
@@ -100,7 +108,6 @@ public class ForgotPasswordFormController {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle(bundle.getString("Error"));
             alert.setContentText(bundle.getString("BadEmailErrorText"));
-           // alert.setContentText("Invalid mail address entered! Try to repeat  request!");
             alert.show();
         }
     }
@@ -134,11 +141,12 @@ public class ForgotPasswordFormController {
 
     // Надо по хорошему сделать нормально через проперти или какой-то систменый флаг, но и так сойдет
     private Language shittyCrutch() {
-        String s = bundle.getString("Error");
+        return countryToEnum.get(bundle.getLocale().getCountry());
+        /*String s = bundle.getString("Error");
         if (s.equals("Error")) {
             return Language.ENGLISH;
         } else {
             return Language.RUSSIAN;
-        }
+        }*/
     }
 }

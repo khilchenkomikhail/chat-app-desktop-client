@@ -44,6 +44,11 @@ public class SecurityConfig {
                     .rememberMeParameter("remember-me")
                     .tokenRepository(tokenRepository())
                 .and()
+                    .logout()
+                    .logoutUrl("/logout")
+                    .invalidateHttpSession(true)
+                    .deleteCookies("JSESSIONID", "remember-me")
+                .and()
                 .httpBasic();
         return http.build();
     }

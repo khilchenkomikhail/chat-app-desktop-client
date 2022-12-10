@@ -2,11 +2,7 @@ package ru.edu.spbstu.model.jpa;
 
 import java.util.Collection;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -14,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import org.checkerframework.checker.units.qual.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -32,6 +29,8 @@ public class UserJpa implements UserDetails {
     private String login;
     private String password;
     private String email;
+    @Lob
+    @Column
     private String image;
 
     @Override

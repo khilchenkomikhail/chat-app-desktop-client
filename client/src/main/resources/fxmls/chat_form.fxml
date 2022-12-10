@@ -57,7 +57,7 @@
                <GridPane.margin>
                   <Insets left="20.0" top="10.0" />
                </GridPane.margin></TextField>
-            <Button fx:id="profileButton" mnemonicParsing="false" onAction="#ProfileButtonMouseClick" prefHeight="30.0" prefWidth="70.0" text="%profileButton" GridPane.valignment="TOP">
+            <Button fx:id="profileButton" mnemonicParsing="false" onAction="#profileButtonPress" prefHeight="30.0" prefWidth="70.0" text="Профиль" GridPane.valignment="TOP">
                <GridPane.margin>
                   <Insets left="5.0" top="45.0" />
                </GridPane.margin></Button>

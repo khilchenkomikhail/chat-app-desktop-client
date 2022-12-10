@@ -83,14 +83,15 @@ public class LoginFormController {
         if(passwordTextBox.getText().length()<8||passwordTextBox.getText().length()>128)
         {
             showError(bundle.getString("InvalidPasswordSizeError"));
-
             return;
         }
 
         try {
-            service.logIn(loginTextBox.getText(),passwordTextBox.getText());
-
-
+            service.logIn(
+                    loginTextBox.getText(),
+                    passwordTextBox.getText(),
+                    rememberMeCheckBox.isSelected()
+            );
         }
         catch (HttpResponseException ex)
         {
@@ -211,7 +212,7 @@ public class LoginFormController {
         ChatFormController conC = fmxlLoader.<ChatFormController>getController();
         conC.setBundle(bundle);
         Scene scene = new Scene(window);
-        conC.setCredentials(this.service.getProvider(), regLoginTextBox.getText());
+        conC.setLogin(regLoginTextBox.getText());
         Stage nstage= new Stage();
         nstage.setScene(scene);
         nstage.setTitle("Chats");

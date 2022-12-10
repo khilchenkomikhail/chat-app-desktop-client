@@ -59,7 +59,7 @@ public class ForgotPasswordFormController {
     void init() {
         countryToEnum=HashMap.newHashMap(2);
         countryToEnum.put("RU",Language.RUSSIAN);
-        countryToEnum.put("EN",Language.ENGLISH);
+        countryToEnum.put("UK",Language.ENGLISH);
     }
 
 
@@ -124,7 +124,7 @@ public class ForgotPasswordFormController {
 
             SendTemporaryPasswordRequest sendTemporaryPasswordRequest = new SendTemporaryPasswordRequest();
             sendTemporaryPasswordRequest.setLogin(login);
-            sendTemporaryPasswordRequest.setLanguage(shittyCrutch());
+            sendTemporaryPasswordRequest.setLanguage(getLanguage());
 
             signUpReq.setEntity(new StringEntity(jsonMapper.writeValueAsString(sendTemporaryPasswordRequest), "UTF-8"));
             sendStatus= client.execute(signUpReq).getStatusLine().getStatusCode();
@@ -139,14 +139,8 @@ public class ForgotPasswordFormController {
         }
     }
 
-    // Надо по хорошему сделать нормально через проперти или какой-то систменый флаг, но и так сойдет
-    private Language shittyCrutch() {
-        return countryToEnum.get(bundle.getLocale().getCountry());
-        /*String s = bundle.getString("Error");
-        if (s.equals("Error")) {
-            return Language.ENGLISH;
-        } else {
-            return Language.RUSSIAN;
-        }*/
+    private Language getLanguage() {
+        String country=bundle.getLocale().getCountry();
+        return countryToEnum.get(country);
     }
 }

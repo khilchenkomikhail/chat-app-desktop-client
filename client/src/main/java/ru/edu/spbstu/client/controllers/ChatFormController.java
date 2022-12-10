@@ -33,7 +33,7 @@ import static ru.edu.spbstu.utils.ImageUtils.clipImageRound;
 
 public class ChatFormController {
 
-    private static HashMap<String, String> languages = HashMap.newHashMap(2);
+    private static HashMap<String, String> languageCBtoProperty = HashMap.newHashMap(2);
     public ListView<Chat> chatsListView;
     public TextField newChatTextBox;
     public Button sendMessageButton;
@@ -389,8 +389,8 @@ public class ChatFormController {
     }
 
     void init() {
-        languages.put(bundle.getString("RusLangOption"), "RU");
-        languages.put(bundle.getString("EngLangOption"), "EN");
+        languageCBtoProperty.put(bundle.getString("RusLangOption"), "RU");
+        languageCBtoProperty.put(bundle.getString("EngLangOption"), "EN");
         LanguageComboBox.getItems().add(bundle.getString("RusLangOption"));
         LanguageComboBox.getItems().add(bundle.getString("EngLangOption"));
         javafx.scene.control.MenuItem menuItem1 = new javafx.scene.control.MenuItem(bundle.getString("ExitChatButton"));
@@ -658,7 +658,7 @@ public class ChatFormController {
         String prevLang = bundle.getLocale().getCountry();
         boolean rus = prevLang.equals("RU");
         String selected = LanguageComboBox.getSelectionModel().getSelectedItem();
-        String nextLanguage = languages.get(selected);
+        String nextLanguage = languageCBtoProperty.get(selected);
         if (!nextLanguage.equals(prevLang)) {
             try {
                 ClientProperties.setProperties(nextLanguage);

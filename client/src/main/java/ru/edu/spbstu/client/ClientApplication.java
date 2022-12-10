@@ -50,6 +50,9 @@ public class ClientApplication extends Application {
         if(language.equals("RU"))
             loc=Locale.of("ru","Ru");
 
+
+
+
         ResourceBundle bundle=ResourceBundle.getBundle("local",loc);
         stage=primaryStage;
         URL fxmlUrl = this.getClass()
@@ -66,11 +69,8 @@ public class ClientApplication extends Application {
 
         Scene scene = new Scene(window);
         primaryStage.setScene(scene);
-       // System.out.println(bundle.getLocale().getCountry());
-        conC.init();
-        primaryStage.setTitle(bundle.getString("FirstForm"));
-        //primaryStage.setTitle("Authorization");
         primaryStage.show();
+        primaryStage.setTitle(bundle.getString("FirstForm"));
     }
     public static Stage getStage()
     {

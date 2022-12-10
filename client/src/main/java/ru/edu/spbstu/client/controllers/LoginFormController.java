@@ -76,11 +76,15 @@ public class LoginFormController {
     }
 
     public void init() {
+        HttpClientFactory fact=HttpClientFactory.getInstance();
         HttpClient client;
         try {
-            client = HttpClientFactory.getInstance().getHttpClient();
-
-
+            client = fact.getHttpClient();
+        }
+        catch (RuntimeException | IOException e) {
+            return;//если что-то произошло, то ничего не делаем(форма логина открывается)
+        }
+        try{
             String getChatsUrlBlueprint = "http://localhost:8080/get_login";
             HttpGet httpGet = new HttpGet(getChatsUrlBlueprint);
             HttpResponse re = client.execute(httpGet);
@@ -93,16 +97,10 @@ public class LoginFormController {
             String login1 = jsonMapper.readValue(json, new TypeReference<>() {
             });
             openChatForm(login1);//если ничего не произойдёт мы дойдём до сюда и откроем 2 форму
-            stage.hide();
+            stage.hide();//спрячем форму логина
         } catch (IOException e) {
+            fact.invalidateToken();//если что-то произошло, то токен инвалидируем
         }
-
-
-        /*@GetMapping("/get_login")
-    public String getLogin() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getName();
-    }*/
     }
 
     private void clear() {

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.edu.spbstu.model.Language;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -34,7 +35,7 @@ class EmailServiceTest {
         String email = "test@email.com";
         String text = "email text";
         String subject = "Reset password";
-        emailService.send(email, text);
+        emailService.send(email, text, Language.ENGLISH);
 
         MimeMessage[] messages = testSmtp.getReceivedMessages();
         Assertions.assertEquals(1, messages.length);

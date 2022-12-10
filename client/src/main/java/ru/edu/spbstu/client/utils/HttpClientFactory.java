@@ -48,6 +48,21 @@ public class HttpClientFactory {
     public void  setCredentialsProvider(CredentialsProvider provider) {
         this.credentialsProvider = provider;
         client = null;
+        invalidateToken();
+    }
+
+    public void invalidateToken() {
+        token = null;
+        Properties properties;
+        try {
+            properties = ClientProperties.getProperties();
+            if (properties.containsKey("token")) {
+                properties.remove("token");
+                ClientProperties.saveProperties(properties);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public HttpClient getHttpClient() throws IOException {

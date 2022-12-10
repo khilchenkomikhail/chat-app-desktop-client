@@ -90,7 +90,9 @@ public class LogInService {
         String json = EntityUtils.toString(re.getEntity());
         if(re.getStatusLine().getStatusCode()!=200) {
             if (re.getStatusLine().getStatusCode() == 400) {
-                updateRememberMe(re);
+                if (isRememberMeChecked) {
+                    updateRememberMe(re);
+                }
                 return Collections.emptyList();
             } else {
                 throw new HttpResponseException(re.getStatusLine().getStatusCode(), "Error while getAllChats");

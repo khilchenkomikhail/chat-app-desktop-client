@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.edu.spbstu.dao.UserRepository;
 import ru.edu.spbstu.exception.ResourceNotFound;
+import ru.edu.spbstu.model.Language;
 
 import java.util.Optional;
 
@@ -30,7 +31,7 @@ class LoginServiceTest {
 
         given(userRepository.getByLogin(anyString())).willReturn(Optional.empty());
 
-        assertThrows(ResourceNotFound.class, () -> loginService.sendTemporaryPassword(login));
+        assertThrows(ResourceNotFound.class, () -> loginService.sendTemporaryPassword(login, Language.RUSSIAN));
 
         verify(userRepository, times(1)).getByLogin(anyString());
     }

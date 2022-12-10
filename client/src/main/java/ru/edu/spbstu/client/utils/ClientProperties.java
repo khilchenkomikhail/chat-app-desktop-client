@@ -9,6 +9,7 @@ public class ClientProperties {
             String Language = language;
             Properties props = new Properties();
             props.setProperty("Language", Language);
+            props.setProperty("token","");
             saveProperties(props);
 
     }
@@ -17,6 +18,7 @@ public class ClientProperties {
         String Language = "RU";
         Properties props = new Properties();
         props.setProperty("Language", Language);
+        props.setProperty("token","");
         return props;
     }
     public static  void saveProperties(Properties props) throws IOException {

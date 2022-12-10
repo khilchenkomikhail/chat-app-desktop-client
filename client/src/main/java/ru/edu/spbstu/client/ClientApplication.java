@@ -63,9 +63,11 @@ public class ClientApplication extends Application {
         Parent window = (Pane) fmxlLoader.load();
         LoginFormController conC = fmxlLoader.<LoginFormController>getController();
         conC.setBundle(bundle);
+
         Scene scene = new Scene(window);
         primaryStage.setScene(scene);
        // System.out.println(bundle.getLocale().getCountry());
+        conC.init();
         primaryStage.setTitle(bundle.getString("FirstForm"));
         //primaryStage.setTitle("Authorization");
         primaryStage.show();

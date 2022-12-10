@@ -21,6 +21,11 @@ public class ChatController {
         return chatService.getChats(login, pageNumber);
     }
 
+    @GetMapping("/get_chats_by_token")
+    public List<Chat> getChats() {
+        return chatService.getChats();
+    }
+
     @GetMapping("/get_chats_by_search")
     public List<Chat> getChatsBySearch(@RequestParam("login") String login,
                                        @RequestParam("begin") String begin,

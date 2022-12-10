@@ -1,6 +1,8 @@
 package ru.edu.spbstu.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import ru.edu.spbstu.dao.MessageRepository;
 import ru.edu.spbstu.request.ChatUpdateRequest;
@@ -35,6 +37,12 @@ public class ChatService {
     private final UserRepository userRepository;
     private final MessageService messageService;
     private final ChatJpaComparator chatComparator;
+
+    public List<Chat> getChats() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String name = authentication.getName();
+        return getChats(name, 1);
+    }
 
     public List<Chat> getChats(String login, Integer pageNumber) {
         UserJpa userJpa = userRepository.getByLogin(login)

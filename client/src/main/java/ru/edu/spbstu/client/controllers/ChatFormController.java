@@ -14,6 +14,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
@@ -417,6 +419,8 @@ public class ChatFormController {
             return cell;
         });
 
+
+
         javafx.scene.control.MenuItem menuItem21 = new javafx.scene.control.MenuItem(bundle.getString("EditMessageButton"));
         javafx.scene.control.MenuItem menuItem22 = new javafx.scene.control.MenuItem(bundle.getString("DeleteMessageButton"));
         javafx.scene.control.MenuItem menuItem23 = new javafx.scene.control.MenuItem(bundle.getString("ForwardMessageButton"));
@@ -467,6 +471,14 @@ public class ChatFormController {
         });
         sendMessageButton.setDisable(true);
 
+        currStage.addEventHandler(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {
+            if (KeyCode.ESCAPE == event.getCode()) {
+                if(EditMode)
+                {
+                    exitEditMode();
+                }
+            }
+        });
 
         messagesListView.setCellFactory(messageCallback);
 
@@ -475,13 +487,10 @@ public class ChatFormController {
             currStage.close();
         });
         sendMessageButton.setDisable(true);
-        currStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent e) {
-                primaryStage.show();
-                currStage.close();
-            }
-        });
+        /*currStage.setOnCloseRequest(e -> {
+            primaryStage.show();
+            currStage.close();
+        });*/
     }
 
 
@@ -625,7 +634,7 @@ public class ChatFormController {
     }
 
     public void findChatsEvent() {
-        if (newChatTextBox.getText().length() == 0) {
+        if (newChatTextBox.getText().length() == 0) {//todo пробелы в названиях?
             findMode = false;
             foundChatsList = new ArrayList<>();
             chatsOffset = 0;

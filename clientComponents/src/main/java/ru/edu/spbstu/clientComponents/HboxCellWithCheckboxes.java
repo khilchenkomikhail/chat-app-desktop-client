@@ -56,14 +56,6 @@ public class HboxCellWithCheckboxes extends HBox {
         imageView.setFitHeight(40);
         imageView.setFitWidth(40);
         clipImageRound(imageView);
-        /*final Rectangle clip = new Rectangle();
-        clip.arcWidthProperty().bind(clip.heightProperty().divide(0.1));
-        clip.arcHeightProperty().bind(clip.heightProperty().divide(0.1));
-        clip.setWidth( imageView.getLayoutBounds().getWidth());
-        clip.setHeight( imageView.getLayoutBounds().getHeight());
-        imageView.setClip(clip);*/
-
-
         label.setAlignment(Pos.CENTER_LEFT);
         deleteCB.setAlignment(Pos.CENTER_RIGHT);
         adminCB.setAlignment(Pos.CENTER_RIGHT);

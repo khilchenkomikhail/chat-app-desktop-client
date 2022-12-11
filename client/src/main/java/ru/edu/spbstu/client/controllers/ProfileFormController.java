@@ -80,6 +80,7 @@ public class ProfileFormController {
             showError(e.getMessage());
         }
 
+
         currentStage.setOnCloseRequest(e -> {
             prevController.setLogin(profileFormService.getLogin());
             primaryStage.show();
@@ -101,7 +102,7 @@ public class ProfileFormController {
     public void changeProfilePictureButtonPress(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Выберите аватар");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG/JPEG", "*.png", "*.jpeg"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG/JPEG", "*.png", "*.jpeg","*.jpg"));
         File file = fileChooser.showOpenDialog(currentStage);
         if (file == null) {
             return;

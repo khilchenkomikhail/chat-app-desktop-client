@@ -3,7 +3,6 @@ package ru.edu.spbstu.client.controllers;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
@@ -20,12 +19,12 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import org.apache.http.client.HttpResponseException;
 import ru.edu.spbstu.client.services.ChatFormService;
 import ru.edu.spbstu.client.utils.ClientProperties;
 import ru.edu.spbstu.model.Chat;
+import ru.edu.spbstu.model.ChatUser;
 import ru.edu.spbstu.model.Message;
 
 import java.io.IOException;
@@ -37,7 +36,7 @@ public class ChatFormController {
 
     private static HashMap<String, String> languageCBtoProperty = HashMap.newHashMap(2);
     public ListView<Chat> chatsListView;
-    public TextField newChatTextBox;
+    public TextField findChatTextBox;
     public Button sendMessageButton;
     public TextArea messageTextArea;
     public ListView<Message> messagesListView;
@@ -154,19 +153,16 @@ public class ChatFormController {
                     imageHbox.getChildren().add(pictureImageView);
                     pane.add(imageHbox, 0, 0);
 
-                    String userText=message.getSender_login();
-                    if(message.getIs_forwarded())
-                    {
-                        userText=userText+" "+bundle.getString("ForwardText")
-                                + " "+message.getAuthor_login();
+                    String userText = message.getSender_login();
+                    if (message.getIs_forwarded()) {
+                        userText = userText + " " + bundle.getString("ForwardText")
+                                + " " + message.getAuthor_login();
                     }
                     Label username = new Label(userText);
                     GridPane.setHalignment(username, HPos.LEFT);
                     GridPane.setValignment(username, VPos.TOP);
                     GridPane.setMargin(username, new Insets(0, 20, 0, 5));
                     pane.add(username, 1, 0);
-
-
 
 
                     Label date = new Label(message.getDate().toString());
@@ -270,8 +266,36 @@ public class ChatFormController {
         Chat chat = chatsListView.getSelectionModel().getSelectedItem();
         Long chatId = chatsListView.getSelectionModel().getSelectedItem().getId();
         String login = service.getLogin();
+        List<ChatUser> userlist;
         try {
-            service.leaveChat(chatId, login);
+            userlist = service.getChatMembers(chat);
+        } catch (IOException e) {
+            showError(bundle.getString("InternalErrorText"));
+            return;
+        }
+        try {
+            if (userlist.size() <= 1) {
+                service.deleteChat(chat);
+            }
+            else {
+                var admins=userlist.stream().filter(ChatUser::getIs_admin).toList();
+                var users=userlist.stream().filter(user-> !user.getIs_admin()).toList();
+                boolean userL=admins.contains(new ChatUser(login,true));
+
+                if(!userL) {
+                    service.leaveChat(chatId, login);
+                }
+                else
+                {
+                    if(admins.size()==1)
+                    {
+                        Random rand = new Random();
+                        ChatUser randomUser = users.get(rand.nextInt(users.size()));
+                        service.setChatUsersAdmins(chat,randomUser.getLogin());
+                    }
+                    service.leaveChat(chatId, login);
+                }
+            }
         } catch (IOException e) {
             showError(bundle.getString("InternalErrorText"));
             return;
@@ -420,7 +444,6 @@ public class ChatFormController {
         });
 
 
-
         javafx.scene.control.MenuItem menuItem21 = new javafx.scene.control.MenuItem(bundle.getString("EditMessageButton"));
         javafx.scene.control.MenuItem menuItem22 = new javafx.scene.control.MenuItem(bundle.getString("DeleteMessageButton"));
         javafx.scene.control.MenuItem menuItem23 = new javafx.scene.control.MenuItem(bundle.getString("ForwardMessageButton"));
@@ -473,8 +496,7 @@ public class ChatFormController {
 
         currStage.addEventHandler(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {
             if (KeyCode.ESCAPE == event.getCode()) {
-                if(EditMode)
-                {
+                if (EditMode) {
                     exitEditMode();
                 }
             }
@@ -591,7 +613,7 @@ public class ChatFormController {
         } else {
             try {
                 chatsFindPage++;
-                List<Chat> temp = service.find(newChatTextBox.getText(), (long) chatsFindPage);
+                List<Chat> temp = service.find(findChatTextBox.getText(), (long) chatsFindPage);
                 if (temp.size() != 0) {
                     temp = temp.subList(chatsFindOffset, temp.size());//apply offset
                     chatsFindOffset = 0;
@@ -634,7 +656,7 @@ public class ChatFormController {
     }
 
     public void findChatsEvent() {
-        if (newChatTextBox.getText().length() == 0) {//todo пробелы в названиях?
+        if (findChatTextBox.getText().length() == 0) {//todo пробелы в названиях?
             findMode = false;
             foundChatsList = new ArrayList<>();
             chatsOffset = 0;
@@ -653,7 +675,7 @@ public class ChatFormController {
             chatsFindOffset = 0;
             chatsFindPage = 1;
             try {
-                foundChatsList = service.find(newChatTextBox.getText(), 1L);
+                foundChatsList = service.find(findChatTextBox.getText(), 1L);
             } catch (IOException e) {
                 showError(e.getMessage());
                 return;

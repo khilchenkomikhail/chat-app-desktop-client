@@ -6,6 +6,7 @@ import javafx.scene.image.Image;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
@@ -71,6 +72,7 @@ public class ChatFormService {
         return jsonMapper.readValue(json, new TypeReference<>() {
         });
     }
+    @Deprecated
     public Message makeMessage(Long idMessage,Long chatId, String messageContent)
     {
         Message message = new Message();
@@ -143,6 +145,18 @@ public class ChatFormService {
         }
 
     }
+    public void setChatUsersAdmins(Chat chatToConfigure,String login) throws IOException {
+        List<String>logins=Collections.singletonList(login);
+        ChatUpdateRequest request=new ChatUpdateRequest(chatToConfigure.getId(),logins);
+        int code=0;
+
+        HttpClient client = HttpClientFactory.getInstance().getHttpClient();
+        HttpPatch post = new HttpPatch("http://localhost:8080/make_users_admins");
+        post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request), "UTF-8"));
+        post.addHeader("content-type", "application/json");
+        HttpResponse re = client.execute(post);
+        code = re.getStatusLine().getStatusCode();
+    }
     public List<ChatUser> getChatMembers(Chat chatToConfigure) throws IOException {
         String getChatsUrlBlueprint = "http://localhost:8080/get_chat_members?chat_id=%d";
 
@@ -159,6 +173,19 @@ public class ChatFormService {
             }
         }
         return jsonMapper.readValue(json, new TypeReference<>() {});
+    }
+
+    public void deleteChat(Chat chatToDelete) throws IOException {
+        String getChatsUrlBlueprint = "http://localhost:8080/delete_chat?chat_id=%d";
+
+        HttpClient client = HttpClientFactory.getInstance().getHttpClient();
+        HttpDelete httpGet = new HttpDelete(String.format(getChatsUrlBlueprint,chatToDelete.getId()));
+        HttpResponse re = client.execute(httpGet);
+        String json = EntityUtils.toString(re.getEntity());
+        int code=re.getStatusLine().getStatusCode();
+        if(code!=200) {
+                throw new HttpResponseException(code, "Error when get chat members!");
+        }
     }
 
 

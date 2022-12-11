@@ -103,13 +103,13 @@ public class CreateChatFormController {
             boolean pres=service.isUserPresent(username);
             if(!pres)
             {
-                showError("Пользователя с данным логином не существует!");
+                showError(bundle.getString("NoUserWithSuchLoginError"));
                 return;
             }
         }
         catch(IOException e)
         {
-            showError("Внутренняя ошибка сервера!");
+            showError(bundle.getString("InternalErrorText"));
             return;
         }
 
@@ -117,13 +117,13 @@ public class CreateChatFormController {
 
         if(username.equals(userLof))
         {
-            showError("Создателя чата не нужно добавлять в список чата!");
+            showError(bundle.getString("NoNeedToAddCreatorError"));
             return;
         }
 
         if(usersToAddListView.getList().stream().anyMatch(user -> user.getLogin().equals(username)))
         {
-            showError("Данный пользователь уже был добавлен в чат!");
+            showError(bundle.getString("UserAlreadyInAddListError"));
             return;
         }
         ChatUser user=new ChatUser(username,false);
@@ -138,7 +138,7 @@ public class CreateChatFormController {
         usersToAddListView.addInList(user,image);
     }
 
-    public void createChatButtonClick(ActionEvent actionEvent) throws IOException {
+    public void createChatButtonClick(ActionEvent actionEvent) {
 
         String name=chatNameTextBox.getText();
         List<String> logins=new ArrayList<>();
@@ -146,12 +146,18 @@ public class CreateChatFormController {
         {
             logins.add(elem.getLogin());
         }
+        try {
 
-        service.addChat(name,logins);
-        //service.addChat(name,userList);
+
+            service.addChat(name, logins);
+        }
+        catch (IOException ex)
+        {
+            showError(bundle.getString("InternalErrorText"));
+            return;
+        }
         prevController.addNewChat(name);
 
-        //prevController.update();
         currStage.close();
         primaryStage.show();
     }

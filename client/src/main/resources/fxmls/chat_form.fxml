@@ -31,7 +31,7 @@
                   <Insets bottom="130.0" top="130.0" />
                </GridPane.margin>
                <padding>
-                  <Insets bottom="20.0" left="40.0" right="20.0" top="20.0" />
+                  <Insets bottom="10.0" left="40.0" right="20.0" top="10.0" />
                </padding></ListView>
             <TextArea fx:id="messageTextArea" onKeyTyped="#textAreaKeyTyped" prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
                <GridPane.margin>

@@ -2,14 +2,7 @@ package ru.edu.spbstu.model.jpa;
 
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -30,7 +23,10 @@ public class MessageJpa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Date date;
+
+    @Column(length=512)
     private String content;
+
     private Boolean isDeleted;
     private Boolean isEdited;
     private Boolean isForwarded;

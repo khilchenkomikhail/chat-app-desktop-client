@@ -32,7 +32,7 @@ public class Verifiers {
         }
 
         final String LOGIN_PATTERN =
-                "(([A-Za-z0-9A-Яа-я&&[^\\\\]])|[.\\-])+";
+                "(([A-Za-z0-9A-Яа-я&&[^\\\\\\_]])|[.\\-])+";
         Pattern pattern = Pattern.compile(LOGIN_PATTERN);
         Matcher m=pattern.matcher(login);
         if(!m.matches())
@@ -47,11 +47,11 @@ public class Verifiers {
         {
             throw new InvalidDataException("InvalidChatSizeError");
         }
-        final String LOGIN_PATTERN =
-                "^([A-Za-z0-9A-Яа-я&&[^\\\\]]|[.\\-,!?()])" +
-                        "(([A-Za-z0-9A-Яа-я&&[^\\\\]]|[.\\-,!?()])|[ ])+" +
-                        "([A-Za-z0-9A-Яа-я&&[^\\\\]]|[.\\-,!?()])$";
-        Pattern pattern = Pattern.compile(LOGIN_PATTERN);
+        final String CHAT_NAME_PATTERN =
+                "^([A-Za-z0-9A-Яа-я&&[^\\\\\\_]]|[.\\-,!?()])" +
+                        "(([A-Za-z0-9A-Яа-я&&[^\\\\\\_]]|[.\\-,!?()])|[ ])+" +
+                        "([A-Za-z0-9A-Яа-я&&[^\\\\\\_]]|[.\\-,!?()])$";
+        Pattern pattern = Pattern.compile(CHAT_NAME_PATTERN);
         Matcher m=pattern.matcher(login);
         if(!m.matches())
         {

@@ -217,16 +217,19 @@ public class ChatFormService {
     }
 
 
-    private static int forwardMessage(Long message_id, String login,String chat_id) throws IOException {
-        String getMessagesUrlBlueprint = "http://localhost:8080/forward_message?message_id=%d?sender_login=%s?chat_id=%d";
+    public  void forwardMessage(Long message_id, String login,Long chat_id) throws IOException {
+        String getMessagesUrlBlueprint = "http://localhost:8080/forward_message?message_id=%d&sender_login=%s&chat_id=%d";
 
         HttpClient client = HttpClientFactory.getInstance().getHttpClient();
         HttpPost httpGet = new HttpPost(String.format( getMessagesUrlBlueprint, message_id,login,chat_id));
         HttpResponse re = client.execute(httpGet);
         String json = EntityUtils.toString(re.getEntity());
         int code=re.getStatusLine().getStatusCode();
+        if(code!=200)
+        {
+            throw new HttpResponseException(code,"forwardMessage");
+        }
 
-        return re.getStatusLine().getStatusCode();
     }
 
 

@@ -223,7 +223,7 @@ public class ChatFormController {
                     GridPane.setValignment(messageContents, VPos.TOP);
                     int multiplier=userText.length()/60;
 
-                    GridPane.setMargin(messageContents, new Insets(20+multiplier*20, 0, 20, 5));
+                    GridPane.setMargin(messageContents, new Insets(35+multiplier*20, 0, 20, 5));
                     pane.add(messageContents, 1, 0, 2, 2);
                     messageContents.setStyle("-fx-background-radius: 5");
                     imageHbox.setStyle("-fx-background-color: white");

@@ -16,6 +16,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import ru.edu.spbstu.client.exception.InvalidDataException;
 import ru.edu.spbstu.client.utils.HttpClientFactory;
 import ru.edu.spbstu.model.Language;
 import ru.edu.spbstu.request.CheckEmailRequest;
@@ -25,7 +26,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
-import static ru.edu.spbstu.client.utils.Verifiers.isEmail;
+import static ru.edu.spbstu.client.utils.Verifiers.checkEmail;
 
 public class ForgotPasswordFormController {
     private  String login;
@@ -66,10 +67,12 @@ public class ForgotPasswordFormController {
 
 
     public void changePasswordButtonClick(MouseEvent mouseEvent) {
-        if(!isEmail(emailTextBox.getText()))
+        try {
+            checkEmail(emailTextBox.getText());
+        }
+        catch (InvalidDataException ex)
         {
-            showError(bundle.getString("BadFormatEmailErrorText"));
-           // showError("Invalid email format!");
+            showError(bundle.getString(ex.getMessage()));
             return;
         }
 

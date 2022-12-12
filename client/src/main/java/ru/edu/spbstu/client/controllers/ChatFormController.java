@@ -719,6 +719,8 @@ public class ChatFormController {
             return;
         }
 
+
+
         messageList.add(0, temp.get(0));
         messageOffset++;
         if (messageOffset == MESSAGE_PAGE_SIZE) {
@@ -728,6 +730,10 @@ public class ChatFormController {
         messagesListView.setItems(FXCollections.observableList(messageList));
         messageTextArea.setText("");
         sendMessageButton.setDisable(true);
+        chatList.remove(chatsListView.getSelectionModel().getSelectedIndex());
+        chatList.add(0,curr);
+        chatsListView.setItems(FXCollections.observableList(chatList));
+        chatsListView.getSelectionModel().select(0);
     }
 
     public void scrollMethod(ScrollEvent scrollEvent) {

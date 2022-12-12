@@ -20,6 +20,7 @@ import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 import ru.edu.spbstu.client.ClientApplication;
+import ru.edu.spbstu.client.exception.InvalidDataException;
 import ru.edu.spbstu.client.services.LogInService;
 import ru.edu.spbstu.client.utils.HttpClientFactory;
 import ru.edu.spbstu.clientComponents.PasswordTextField;
@@ -27,7 +28,8 @@ import ru.edu.spbstu.clientComponents.PasswordTextField;
 import java.io.IOException;
 import java.util.ResourceBundle;
 
-import static ru.edu.spbstu.client.utils.Verifiers.isEmail;
+import static ru.edu.spbstu.client.utils.Verifiers.checkEmail;
+import static ru.edu.spbstu.client.utils.Verifiers.checkLogin;
 
 public class LoginFormController {
 
@@ -118,6 +120,14 @@ public class LoginFormController {
             showError(bundle.getString("InvalidPasswordSizeError"));
             return;
         }
+        try {
+            checkLogin(loginTextBox.getText());
+        }
+        catch (InvalidDataException ex)
+        {
+            showError(bundle.getString(ex.getMessage()));
+            return;
+        }
 
         try {
             service.logIn(
@@ -151,15 +161,23 @@ public class LoginFormController {
 
     public void forgotPasswordButtonPress(ActionEvent actionEvent) {
         try {
+            checkLogin(loginTextBox.getText());
             boolean isPresent = service.isUserPresent(loginTextBox.getText());
             if (!isPresent) {
                 showError(bundle.getString("NoAccountForLoginError"));
                 return;
             }
-        } catch (IOException e) {
+        }
+        catch (InvalidDataException ex)
+        {
+            showError(bundle.getString(ex.getMessage()));
+            return;
+        }
+        catch (IOException e) {
             showError(bundle.getString("InternalErrorText"));
             return;
         }
+
 
 
         FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/forgot_password.fxml"), bundle);
@@ -190,16 +208,18 @@ public class LoginFormController {
             showError(bundle.getString("InvalidPasswordSizeError"));
             return;
         }
+        try {
 
-        if (!isEmail(emailTextBox.getText())) {
-            showError(bundle.getString("BadFormatEmailErrorText"));
-            // showError("Invalid email field format!");
+            checkEmail(emailTextBox.getText());
+        }
+        catch (InvalidDataException ex)
+        {
+            showError(bundle.getString(ex.getMessage()));
             return;
         }
         try {
-
-
             boolean res = service.isUserPresent(regLoginTextBox.getText());
+            checkLogin(regLoginTextBox.getText());
             if (res) {
                 showError(bundle.getString("AccountWithLoginExistsError"));
                 return;
@@ -210,7 +230,13 @@ public class LoginFormController {
                 return;
             }
             service.register(regLoginTextBox.getText(), regPasswordTextBox.getText(), emailTextBox.getText());
-        } catch (IOException ex) {
+        }
+        catch (InvalidDataException ex)
+        {
+            showError(bundle.getString(ex.getMessage()));
+            return;
+        }
+        catch (IOException ex) {
             showError(bundle.getString("InternalErrorText"));
             return;
         }

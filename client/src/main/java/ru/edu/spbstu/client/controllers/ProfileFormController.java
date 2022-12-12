@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ResourceBundle;
 
+import static ru.edu.spbstu.client.utils.Verifiers.checkEmail;
+
 public class ProfileFormController {
     @FXML
     private Button changePasswordButton;
@@ -131,8 +133,16 @@ public class ProfileFormController {
     }
 
     public void changeEmailButtonPress(ActionEvent actionEvent) {
-        if (!Verifiers.isEmail(newEmailTextField.getText())) {
+        /*if (!Verifiers.checkEmail(newEmailTextField.getText())) {
             showError("Новый email не соответствует стандарту!");
+            return;
+        }*/
+        try {
+            checkEmail(newEmailTextField.getText());
+        }
+        catch (InvalidDataException ex)
+        {
+            showError(bundle.getString(ex.getMessage()));
             return;
         }
         if (newEmailTextField.getText().equals(emailTextField.getText())) {

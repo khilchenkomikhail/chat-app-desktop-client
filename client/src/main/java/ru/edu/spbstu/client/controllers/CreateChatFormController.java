@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import ru.edu.spbstu.client.exception.InvalidDataException;
 import ru.edu.spbstu.client.services.CreateChatFormService;
 import ru.edu.spbstu.clientComponents.ListViewWithButtons;
 import ru.edu.spbstu.model.ChatUser;
@@ -18,6 +19,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import static ru.edu.spbstu.client.utils.Verifiers.checkChatName;
+import static ru.edu.spbstu.client.utils.Verifiers.checkEmail;
 
 public class CreateChatFormController {
 
@@ -141,6 +145,14 @@ public class CreateChatFormController {
     public void createChatButtonClick(ActionEvent actionEvent) {
 
         String name=chatNameTextBox.getText();
+        try {
+            checkChatName(chatNameTextBox.getText());
+        }
+        catch (InvalidDataException ex)
+        {
+            showError(bundle.getString(ex.getMessage()));
+            return;
+        }
         List<String> logins=new ArrayList<>();
         for (var elem: usersToAddListView.getList())
         {

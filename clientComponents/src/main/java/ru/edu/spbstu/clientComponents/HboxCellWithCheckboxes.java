@@ -12,6 +12,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.shape.Rectangle;
 import ru.edu.spbstu.model.ChatUser;
 
+import static ru.edu.spbstu.utils.ImageUtils.clipImageRound;
+
 public class HboxCellWithCheckboxes extends HBox {
 
     public static class MyCheckBox extends CheckBox {
@@ -53,14 +55,7 @@ public class HboxCellWithCheckboxes extends HBox {
         imageView.setImage(image);
         imageView.setFitHeight(40);
         imageView.setFitWidth(40);
-        final Rectangle clip = new Rectangle();
-        clip.arcWidthProperty().bind(clip.heightProperty().divide(0.1));
-        clip.arcHeightProperty().bind(clip.heightProperty().divide(0.1));
-        clip.setWidth( imageView.getLayoutBounds().getWidth());
-        clip.setHeight( imageView.getLayoutBounds().getHeight());
-        imageView.setClip(clip);
-
-
+        clipImageRound(imageView);
         label.setAlignment(Pos.CENTER_LEFT);
         deleteCB.setAlignment(Pos.CENTER_RIGHT);
         adminCB.setAlignment(Pos.CENTER_RIGHT);

@@ -96,6 +96,7 @@ public class ListViewWithCheckBoxes extends ListView<HboxCellWithCheckboxes> {
            {
                currentElement.deleteCB.setSelected(false);
            }
+           currentElement.deleteCB.setDisable(source.isSelected());
        }
        else
        {
@@ -103,6 +104,7 @@ public class ListViewWithCheckBoxes extends ListView<HboxCellWithCheckboxes> {
            {
                currentElement.adminCB.setSelected(false);
            }
+           currentElement.adminCB.setDisable(source.isSelected());
        }
        myObservableList.set(index,currentElement);
        this.setItems(myObservableList);

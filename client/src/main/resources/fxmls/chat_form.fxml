@@ -31,7 +31,7 @@
                   <Insets bottom="130.0" top="130.0" />
                </GridPane.margin>
                <padding>
-                  <Insets left="40.0" right="20.0" />
+                  <Insets bottom="10.0" left="40.0" right="20.0" top="10.0" />
                </padding></ListView>
             <TextArea fx:id="messageTextArea" onKeyTyped="#textAreaKeyTyped" prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
                <GridPane.margin>
@@ -53,11 +53,11 @@
                <GridPane.margin>
                   <Insets left="5.0" top="10.0" />
                </GridPane.margin></Button>
-            <TextField fx:id="newChatTextBox" maxHeight="-Infinity" maxWidth="-Infinity" onKeyTyped="#findChatsEvent" prefHeight="30.0" prefWidth="101.0" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+            <TextField fx:id="findChatTextBox" maxHeight="-Infinity" maxWidth="-Infinity" onKeyTyped="#findChatsEvent" prefHeight="30.0" prefWidth="101.0" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                <GridPane.margin>
                   <Insets left="20.0" top="10.0" />
                </GridPane.margin></TextField>
-            <Button fx:id="profileButton" mnemonicParsing="false" onAction="#profileButtonPress" prefHeight="30.0" prefWidth="70.0" text="Профиль" GridPane.valignment="TOP">
+            <Button fx:id="profileButton" mnemonicParsing="false" onAction="#profileButtonPress" prefHeight="30.0" prefWidth="70.0" text="%profileButton" GridPane.valignment="TOP">
                <GridPane.margin>
                   <Insets left="5.0" top="45.0" />
                </GridPane.margin></Button>
@@ -67,7 +67,7 @@
                </GridPane.margin></ComboBox>
             <ListView fx:id="messagesListView" onScroll="#messagesScroll" GridPane.columnIndex="1" GridPane.rowSpan="4">
                <GridPane.margin>
-                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                  <Insets bottom="20.0" left="10.0" right="20.0" top="20.0" />
                </GridPane.margin></ListView>
          </children>
          <padding>

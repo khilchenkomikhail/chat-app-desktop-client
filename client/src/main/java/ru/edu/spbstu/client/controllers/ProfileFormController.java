@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ResourceBundle;
 
+import static ru.edu.spbstu.client.utils.Verifiers.checkEmail;
+
 public class ProfileFormController {
     @FXML
     private Button changePasswordButton;
@@ -70,15 +72,16 @@ public class ProfileFormController {
         changePasswordButton.setDisable(true);
     }
 
-    void init() throws IOException {
+    void init() {
         userLoginLabel.setText(profileFormService.getLogin());
         try {
             byte[] imageBytes = profileFormService.getProfilePicture();
-            Image image = new Image(new ByteArrayInputStream(imageBytes));
+            Image image = new Image(new ByteArrayInputStream(imageBytes),160,160,false,false);
             profilePictureImageView.setImage(image);
         } catch (IOException e) {
             showError(e.getMessage());
         }
+
 
         currentStage.setOnCloseRequest(e -> {
             prevController.setLogin(profileFormService.getLogin());
@@ -101,7 +104,7 @@ public class ProfileFormController {
     public void changeProfilePictureButtonPress(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Выберите аватар");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG/JPEG", "*.png", "*.jpeg"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG/JPEG", "*.png", "*.jpeg","*.jpg"));
         File file = fileChooser.showOpenDialog(currentStage);
         if (file == null) {
             return;
@@ -118,6 +121,7 @@ public class ProfileFormController {
                 return;
             }
             profileFormService.setProfilePicture(fileContent);
+            profilePictureImageView.setPreserveRatio(false);
             profilePictureImageView.setImage(image);
         } catch (IOException e) {
             showError(e.getMessage());
@@ -129,8 +133,16 @@ public class ProfileFormController {
     }
 
     public void changeEmailButtonPress(ActionEvent actionEvent) {
-        if (!Verifiers.isEmail(newEmailTextField.getText())) {
+        /*if (!Verifiers.checkEmail(newEmailTextField.getText())) {
             showError("Новый email не соответствует стандарту!");
+            return;
+        }*/
+        try {
+            checkEmail(newEmailTextField.getText());
+        }
+        catch (InvalidDataException ex)
+        {
+            showError(bundle.getString(ex.getMessage()));
             return;
         }
         if (newEmailTextField.getText().equals(emailTextField.getText())) {

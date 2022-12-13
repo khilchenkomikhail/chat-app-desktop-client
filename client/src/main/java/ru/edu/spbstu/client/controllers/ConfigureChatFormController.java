@@ -138,10 +138,18 @@ public class ConfigureChatFormController {
         chatMembersConfigurationLV.resetList(userList,images);
     }
 
-    public void confirmSettingsButtonPress() throws IOException {
-        service.deleteChatUsers(chatToConfigure,chatMembersConfigurationLV.getUsersToDelete());
-        service.setChatUsersAdmins(chatToConfigure,chatMembersConfigurationLV.getUsersToMakeAdmins());
-        update();
+    public void confirmSettingsButtonPress() {
+        try {
+
+            service.deleteChatUsers(chatToConfigure, chatMembersConfigurationLV.getUsersToDelete());
+            service.setChatUsersAdmins(chatToConfigure, chatMembersConfigurationLV.getUsersToMakeAdmins());
+            update();
+        }
+        catch (IOException e)
+        {
+            showError(bundle.getString("InternalErrorText"));
+            return;
+        }
     }
 
     public void AddUserButtonClick() {
@@ -151,13 +159,13 @@ public class ConfigureChatFormController {
             boolean pres=service.isUserPresent(username);
             if(!pres)
             {
-                showError("Пользователя с данным логином не существует!");
+                showError(bundle.getString("NoUserWithSuchLoginError"));
                 return;
             }
         }
         catch(IOException e)
         {
-            showError("Внутренняя ошибка сервера!");
+            showError(bundle.getString("InternalErrorText"));
             return;
         }
 
@@ -165,28 +173,34 @@ public class ConfigureChatFormController {
 
         if(username.equals(userLof))
         {
-            showError("Создателя чата не нужно добавлять в список чата!");
+            showError(bundle.getString("yourselfNotToAddError"));
             return;
         }
         var userList=chatMembersConfigurationLV.getUsers();
         if(userList.stream().anyMatch(user -> user.getLogin().equals(username)))
         {
-            showError("Данный пользователь уже есть в чате!");
+            showError(bundle.getString("UserAlreadyChatMemberError"));
             return;
         }
         if(usersToAddListView.getList().stream().anyMatch(user -> user.getLogin().equals(username)))
         {
-            showError("Данный пользователь уже есть в списке на добавление!");
+            showError(bundle.getString("UserAlreadyInAddListError"));
             return;
         }
         ChatUser user=new ChatUser(username,false);
-        Image image=service.getImage(user);
+        Image image= null;
+        try {
+            image = service.getImage(user.getLogin());
+        } catch (IOException e) {
+            image=new Image((getClass().getResource("/images/dAvatar.bmp")).getPath().replaceFirst("/",""));
+        }
         usersToAddListView.addInList(user,image);
        // mainTabPanel.getTabs().add(tabChatSettings);//Todo return second tab
     }
 
     private void showError(String s) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(bundle.getString("Error"));
         alert.setHeaderText(s);
         alert.show();
     }

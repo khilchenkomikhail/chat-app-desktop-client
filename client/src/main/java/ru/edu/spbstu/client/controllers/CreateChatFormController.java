@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import ru.edu.spbstu.client.exception.InvalidDataException;
 import ru.edu.spbstu.client.services.CreateChatFormService;
 import ru.edu.spbstu.clientComponents.ListViewWithButtons;
 import ru.edu.spbstu.model.ChatUser;
@@ -18,6 +19,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import static ru.edu.spbstu.client.utils.Verifiers.checkChatName;
+import static ru.edu.spbstu.client.utils.Verifiers.checkEmail;
 
 public class CreateChatFormController {
 
@@ -103,13 +107,13 @@ public class CreateChatFormController {
             boolean pres=service.isUserPresent(username);
             if(!pres)
             {
-                showError("Пользователя с данным логином не существует!");
+                showError(bundle.getString("NoUserWithSuchLoginError"));
                 return;
             }
         }
         catch(IOException e)
         {
-            showError("Внутренняя ошибка сервера!");
+            showError(bundle.getString("InternalErrorText"));
             return;
         }
 
@@ -117,36 +121,55 @@ public class CreateChatFormController {
 
         if(username.equals(userLof))
         {
-            showError("Создателя чата не нужно добавлять в список чата!");
+            showError(bundle.getString("NoNeedToAddCreatorError"));
             return;
         }
 
         if(usersToAddListView.getList().stream().anyMatch(user -> user.getLogin().equals(username)))
         {
-            showError("Данный пользователь уже был добавлен в чат!");
+            showError(bundle.getString("UserAlreadyInAddListError"));
             return;
         }
         ChatUser user=new ChatUser(username,false);
         userList.add(user);
-        Image image= service.getImage(user);
+        Image image= null;
+        try {
+            image = service.getImage(user.getLogin());
+        } catch (IOException e) {
+            image=new Image((getClass().getResource("/images/dAvatar.bmp")).getPath().replaceFirst("/",""));
+        }
 
         usersToAddListView.addInList(user,image);
     }
 
-    public void createChatButtonClick(ActionEvent actionEvent) throws IOException {
+    public void createChatButtonClick(ActionEvent actionEvent) {
 
         String name=chatNameTextBox.getText();
+        try {
+            checkChatName(chatNameTextBox.getText());
+        }
+        catch (InvalidDataException ex)
+        {
+            showError(bundle.getString(ex.getMessage()));
+            return;
+        }
         List<String> logins=new ArrayList<>();
         for (var elem: usersToAddListView.getList())
         {
             logins.add(elem.getLogin());
         }
+        try {
 
-        service.addChat(name,logins);
-        //service.addChat(name,userList);
+
+            service.addChat(name, logins);
+        }
+        catch (IOException ex)
+        {
+            showError(bundle.getString("InternalErrorText"));
+            return;
+        }
         prevController.addNewChat(name);
 
-        //prevController.update();
         currStage.close();
         primaryStage.show();
     }

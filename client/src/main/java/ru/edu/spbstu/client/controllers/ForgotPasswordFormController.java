@@ -16,15 +16,17 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import ru.edu.spbstu.client.exception.InvalidDataException;
 import ru.edu.spbstu.client.utils.HttpClientFactory;
 import ru.edu.spbstu.model.Language;
 import ru.edu.spbstu.request.CheckEmailRequest;
 import ru.edu.spbstu.request.SendTemporaryPasswordRequest;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
-import static ru.edu.spbstu.client.utils.Verifiers.isEmail;
+import static ru.edu.spbstu.client.utils.Verifiers.checkEmail;
 
 public class ForgotPasswordFormController {
     private  String login;
@@ -32,6 +34,7 @@ public class ForgotPasswordFormController {
     private Button changePasswordButton;
     public TextField emailTextBox;
     private ResourceBundle bundle;
+    private HashMap<String,Language> countryToEnum;
 
 
     public  void setLogin(String sLogin)
@@ -54,14 +57,22 @@ public class ForgotPasswordFormController {
         alert.show();
     }
 
+    void init() {
+        countryToEnum=HashMap.newHashMap(2);
+        countryToEnum.put("RU",Language.RUSSIAN);
+        countryToEnum.put("UK",Language.ENGLISH);
+    }
+
 
 
 
     public void changePasswordButtonClick(MouseEvent mouseEvent) {
-        if(!isEmail(emailTextBox.getText()))
+        try {
+            checkEmail(emailTextBox.getText());
+        }
+        catch (InvalidDataException ex)
         {
-            showError(bundle.getString("BadFormatEmailErrorText"));
-           // showError("Invalid email format!");
+            showError(bundle.getString(ex.getMessage()));
             return;
         }
 
@@ -100,7 +111,6 @@ public class ForgotPasswordFormController {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle(bundle.getString("Error"));
             alert.setContentText(bundle.getString("BadEmailErrorText"));
-           // alert.setContentText("Invalid mail address entered! Try to repeat  request!");
             alert.show();
         }
     }
@@ -117,7 +127,7 @@ public class ForgotPasswordFormController {
 
             SendTemporaryPasswordRequest sendTemporaryPasswordRequest = new SendTemporaryPasswordRequest();
             sendTemporaryPasswordRequest.setLogin(login);
-            sendTemporaryPasswordRequest.setLanguage(shittyCrutch());
+            sendTemporaryPasswordRequest.setLanguage(getLanguage());
 
             signUpReq.setEntity(new StringEntity(jsonMapper.writeValueAsString(sendTemporaryPasswordRequest), "UTF-8"));
             sendStatus= client.execute(signUpReq).getStatusLine().getStatusCode();
@@ -132,13 +142,8 @@ public class ForgotPasswordFormController {
         }
     }
 
-    // Надо по хорошему сделать нормально через проперти или какой-то систменый флаг, но и так сойдет
-    private Language shittyCrutch() {
-        String s = bundle.getString("Error");
-        if (s.equals("Error")) {
-            return Language.ENGLISH;
-        } else {
-            return Language.RUSSIAN;
-        }
+    private Language getLanguage() {
+        String country=bundle.getLocale().getCountry();
+        return countryToEnum.get(country);
     }
 }

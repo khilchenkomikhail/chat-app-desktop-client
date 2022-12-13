@@ -1,5 +1,7 @@
 package ru.edu.spbstu.client.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,15 +14,22 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
 import ru.edu.spbstu.client.ClientApplication;
+import ru.edu.spbstu.client.exception.InvalidDataException;
 import ru.edu.spbstu.client.services.LogInService;
+import ru.edu.spbstu.client.utils.HttpClientFactory;
 import ru.edu.spbstu.clientComponents.PasswordTextField;
 
 import java.io.IOException;
 import java.util.ResourceBundle;
 
-import static ru.edu.spbstu.client.utils.Verifiers.isEmail;
+import static ru.edu.spbstu.client.utils.Verifiers.checkEmail;
+import static ru.edu.spbstu.client.utils.Verifiers.checkLogin;
 
 public class LoginFormController {
 
@@ -41,6 +50,7 @@ public class LoginFormController {
     private LogInService service;
     private Stage stage;
 
+
     public ResourceBundle getBundle() {
         return bundle;
     }
@@ -49,8 +59,7 @@ public class LoginFormController {
         this.bundle = bundle;
     }
 
-    void showError(String errorText)
-    {
+    void showError(String errorText) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(bundle.getString("Error"));
         alert.setHeaderText(errorText);
@@ -59,17 +68,44 @@ public class LoginFormController {
 
     @FXML
     void initialize() {
-        service=new LogInService();
+        service = new LogInService();
         logInButton.setDisable(true);
         registerButton.setDisable(true);
         forgetPasswordButton.setDisable(true);
-        stage= ClientApplication.getStage();
+        stage = ClientApplication.getStage();
         //loginTextBox.setText("olegoleg");
         //passwordTextBox.setText("olegoleg");
     }
 
-    private void clear()
-    {
+    public void init() {
+        HttpClientFactory fact=HttpClientFactory.getInstance();
+        HttpClient client;
+        try {
+            client = fact.getHttpClient();
+        }
+        catch (RuntimeException | IOException e) {
+            return;//если что-то произошло, то ничего не делаем(форма логина открывается)
+        }
+        try{
+            String getChatsUrlBlueprint = "http://localhost:8080/get_login";
+            HttpGet httpGet = new HttpGet(getChatsUrlBlueprint);
+            HttpResponse re = client.execute(httpGet);
+            String json = EntityUtils.toString(re.getEntity());
+            if (re.getStatusLine().getStatusCode() != 200) {
+                //тут даже при наличии токена он кидает 401 ошибку
+                throw new HttpResponseException(re.getStatusLine().getStatusCode(), "Error getLogin");
+            }
+            ObjectMapper jsonMapper = new ObjectMapper();
+            String login1 = jsonMapper.readValue(json, new TypeReference<>() {
+            });
+            openChatForm(login1);//если ничего не произойдёт мы дойдём до сюда и откроем 2 форму
+            stage.hide();//спрячем форму логина
+        } catch (IOException e) {
+            fact.invalidateToken();//если что-то произошло, то токен инвалидируем
+        }
+    }
+
+    private void clear() {
         passwordTextBox.setText("");
         emailTextBox.setText("");
         regPasswordTextBox.setText("");
@@ -79,10 +115,17 @@ public class LoginFormController {
     }
 
 
-    public void logInButtonPress(ActionEvent actionEvent)  {
-        if(passwordTextBox.getText().length()<8||passwordTextBox.getText().length()>128)
-        {
+    public void logInButtonPress(ActionEvent actionEvent) {
+        if (passwordTextBox.getText().length() < 8 || passwordTextBox.getText().length() > 128) {
             showError(bundle.getString("InvalidPasswordSizeError"));
+            return;
+        }
+        try {
+            checkLogin(loginTextBox.getText());
+        }
+        catch (InvalidDataException ex)
+        {
+            showError(bundle.getString(ex.getMessage()));
             return;
         }
 
@@ -92,25 +135,20 @@ public class LoginFormController {
                     passwordTextBox.getText(),
                     rememberMeCheckBox.isSelected()
             );
-        }
-        catch (HttpResponseException ex)
-        {
-            if(ex.getStatusCode()==401)
-            {
+        } catch (HttpResponseException ex) {
+            if (ex.getStatusCode() == 401) {
                 showError(bundle.getString("InvalidLogPasswordError"));
                 return;
 
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             showError(bundle.getString("InternalErrorText"));
             return;
         }
         try {
-            openChatForm(loginTextBox);
+            openChatForm(loginTextBox.getText());
 
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             showError(bundle.getString("SecondFormOpenError"));
 
             return;
@@ -123,21 +161,26 @@ public class LoginFormController {
 
     public void forgotPasswordButtonPress(ActionEvent actionEvent) {
         try {
-            boolean isPresent=service.isUserPresent(loginTextBox.getText());
-            if(!isPresent)
-            {
+            checkLogin(loginTextBox.getText());
+            boolean isPresent = service.isUserPresent(loginTextBox.getText());
+            if (!isPresent) {
                 showError(bundle.getString("NoAccountForLoginError"));
                 return;
             }
         }
-        catch (IOException e)
+        catch (InvalidDataException ex)
         {
+            showError(bundle.getString(ex.getMessage()));
+            return;
+        }
+        catch (IOException e) {
             showError(bundle.getString("InternalErrorText"));
             return;
         }
 
 
-        FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/forgot_password.fxml"),bundle);
+
+        FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/forgot_password.fxml"), bundle);
 
         Parent window = null;
         try {
@@ -148,10 +191,12 @@ public class LoginFormController {
         }
         ForgotPasswordFormController conF = fmxlLoader.<ForgotPasswordFormController>getController();
         conF.setBundle(bundle);
+
         Scene scene = new Scene(window);
         conF.setLogin(loginTextBox.getText());
-        Stage stage= new Stage();
+        Stage stage = new Stage();
         stage.setScene(scene);
+        conF.init();
         clear();
         regLoginTextBox.setText("");
         registerButton.setDisable(true);
@@ -159,22 +204,22 @@ public class LoginFormController {
     }
 
     public void registerButtonPress(ActionEvent actionEvent) {
-        if(regPasswordTextBox.getText().length()<8||regPasswordTextBox.getText().length()>128)
-        {
+        if (regPasswordTextBox.getText().length() < 8 || regPasswordTextBox.getText().length() > 128) {
             showError(bundle.getString("InvalidPasswordSizeError"));
-            return;
-        }
-
-        if(!isEmail(emailTextBox.getText()))
-        {
-            showError(bundle.getString("BadFormatEmailErrorText"));
-           // showError("Invalid email field format!");
             return;
         }
         try {
 
-
+            checkEmail(emailTextBox.getText());
+        }
+        catch (InvalidDataException ex)
+        {
+            showError(bundle.getString(ex.getMessage()));
+            return;
+        }
+        try {
             boolean res = service.isUserPresent(regLoginTextBox.getText());
+            checkLogin(regLoginTextBox.getText());
             if (res) {
                 showError(bundle.getString("AccountWithLoginExistsError"));
                 return;
@@ -186,14 +231,18 @@ public class LoginFormController {
             }
             service.register(regLoginTextBox.getText(), regPasswordTextBox.getText(), emailTextBox.getText());
         }
-        catch (IOException ex)
+        catch (InvalidDataException ex)
         {
+            showError(bundle.getString(ex.getMessage()));
+            return;
+        }
+        catch (IOException ex) {
             showError(bundle.getString("InternalErrorText"));
             return;
         }
         try {
-            openChatForm(regLoginTextBox);
-        }  catch (IOException e) {
+            openChatForm(regLoginTextBox.getText());
+        } catch (IOException e) {
             showError(bundle.getString("SecondFormOpenError"));
             return;
         }
@@ -205,15 +254,15 @@ public class LoginFormController {
 
     }
 
-    private void openChatForm(TextField regLoginTextBox) throws IOException {
-        FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/chat_form.fxml"),bundle);
+    private void openChatForm(String regLoginTextBox) throws IOException {
+        FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/chat_form.fxml"), bundle);
         Parent window = (Pane) fmxlLoader.load();
         // private Scene scene;
         ChatFormController conC = fmxlLoader.<ChatFormController>getController();
         conC.setBundle(bundle);
         Scene scene = new Scene(window);
-        conC.setLogin(regLoginTextBox.getText());
-        Stage nstage= new Stage();
+        conC.setLogin(regLoginTextBox);
+        Stage nstage = new Stage();
         nstage.setScene(scene);
         nstage.setTitle("Chats");
         conC.setCurrStage(nstage);
@@ -223,35 +272,30 @@ public class LoginFormController {
     }
 
     public void updateLogin(KeyEvent keyEvent) {
-        if(loginTextBox.getText().length()==0)
-        {
+        if (loginTextBox.getText().length() == 0) {
             logInButton.setDisable(true);
             forgetPasswordButton.setDisable(true);
             return;
         }
         forgetPasswordButton.setDisable(false);
-        if(passwordTextBox.getText().length()==0)
-        {
+        if (passwordTextBox.getText().length() == 0) {
             logInButton.setDisable(true);
             return;
         }
         logInButton.setDisable(false);
     }
-    public void updateRegisterButton(KeyEvent keyEvent)
-    {
-        if(emailTextBox.getText().length()==0)
-        {
+
+    public void updateRegisterButton(KeyEvent keyEvent) {
+        if (emailTextBox.getText().length() == 0) {
             registerButton.setDisable(true);
             return;
         }
-        if(regLoginTextBox.getText().length()==0)
-        {
+        if (regLoginTextBox.getText().length() == 0) {
             registerButton.setDisable(true);
             return;
         }
 
-        if(regPasswordTextBox.getText().length()==0)
-        {
+        if (regPasswordTextBox.getText().length() == 0) {
             registerButton.setDisable(true);
             return;
         }
@@ -262,6 +306,5 @@ public class LoginFormController {
     public void setStage(Stage stage) {
         this.stage = stage;
     }
-
 
 }

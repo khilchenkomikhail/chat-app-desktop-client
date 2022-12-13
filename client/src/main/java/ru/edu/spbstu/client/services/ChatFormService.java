@@ -6,6 +6,7 @@ import javafx.scene.image.Image;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
@@ -19,12 +20,11 @@ import ru.edu.spbstu.request.ChatUpdateRequest;
 import ru.edu.spbstu.request.EditMessageRequest;
 import ru.edu.spbstu.request.SendMessageRequest;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 public class ChatFormService {
 
@@ -44,7 +44,7 @@ public class ChatFormService {
         String getChatsUrlBlueprint = "http://localhost:8080/get_chats?login=%s&page_number=%d";
 
         HttpClient client = HttpClientFactory.getInstance().getHttpClient();
-        HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, login, page));
+        HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, URLEncoder.encode(login, StandardCharsets.UTF_8), page));
         HttpResponse re = client.execute(httpGet);
         String json = EntityUtils.toString(re.getEntity());
         if(re.getStatusLine().getStatusCode()!=200)
@@ -72,6 +72,7 @@ public class ChatFormService {
         return jsonMapper.readValue(json, new TypeReference<>() {
         });
     }
+    @Deprecated
     public Message makeMessage(Long idMessage,Long chatId, String messageContent)
     {
         Message message = new Message();
@@ -144,6 +145,18 @@ public class ChatFormService {
         }
 
     }
+    public void setChatUsersAdmins(Chat chatToConfigure,String login) throws IOException {
+        List<String>logins=Collections.singletonList(login);
+        ChatUpdateRequest request=new ChatUpdateRequest(chatToConfigure.getId(),logins);
+        int code=0;
+
+        HttpClient client = HttpClientFactory.getInstance().getHttpClient();
+        HttpPatch post = new HttpPatch("http://localhost:8080/make_users_admins");
+        post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request), "UTF-8"));
+        post.addHeader("content-type", "application/json");
+        HttpResponse re = client.execute(post);
+        code = re.getStatusLine().getStatusCode();
+    }
     public List<ChatUser> getChatMembers(Chat chatToConfigure) throws IOException {
         String getChatsUrlBlueprint = "http://localhost:8080/get_chat_members?chat_id=%d";
 
@@ -162,13 +175,28 @@ public class ChatFormService {
         return jsonMapper.readValue(json, new TypeReference<>() {});
     }
 
+    public void deleteChat(Chat chatToDelete) throws IOException {
+        String getChatsUrlBlueprint = "http://localhost:8080/delete_chat?chat_id=%d";
+
+        HttpClient client = HttpClientFactory.getInstance().getHttpClient();
+        HttpDelete httpGet = new HttpDelete(String.format(getChatsUrlBlueprint,chatToDelete.getId()));
+        HttpResponse re = client.execute(httpGet);
+        String json = EntityUtils.toString(re.getEntity());
+        int code=re.getStatusLine().getStatusCode();
+        if(code!=200) {
+                throw new HttpResponseException(code, "Error when get chat members!");
+        }
+    }
+
 
 
     public List<Chat> find(String name,Long page) throws IOException {
         String getMessagesUrlBlueprint = "http://localhost:8080/get_chats_by_search?login=%s&begin=%s&page_number=%d";
 
         HttpClient client = HttpClientFactory.getInstance().getHttpClient();
-        HttpGet httpGet = new HttpGet(String.format( getMessagesUrlBlueprint,login,name,page));
+
+        HttpGet httpGet = new HttpGet(String.format( getMessagesUrlBlueprint,URLEncoder.encode(login, StandardCharsets.UTF_8)
+                ,URLEncoder.encode(name, StandardCharsets.UTF_8),page));
         HttpResponse re = client.execute(httpGet);
         String json = EntityUtils.toString(re.getEntity());
         int code=re.getStatusLine().getStatusCode();
@@ -189,16 +217,19 @@ public class ChatFormService {
     }
 
 
-    private static int forwardMessage(Long message_id, String login,String chat_id) throws IOException {
-        String getMessagesUrlBlueprint = "http://localhost:8080/forward_message?message_id=%d?sender_login=%s?chat_id=%d";
+    public  void forwardMessage(Long message_id, String login,Long chat_id) throws IOException {
+        String getMessagesUrlBlueprint = "http://localhost:8080/forward_message?message_id=%d&sender_login=%s&chat_id=%d";
 
         HttpClient client = HttpClientFactory.getInstance().getHttpClient();
         HttpPost httpGet = new HttpPost(String.format( getMessagesUrlBlueprint, message_id,login,chat_id));
         HttpResponse re = client.execute(httpGet);
         String json = EntityUtils.toString(re.getEntity());
         int code=re.getStatusLine().getStatusCode();
+        if(code!=200)
+        {
+            throw new HttpResponseException(code,"forwardMessage");
+        }
 
-        return re.getStatusLine().getStatusCode();
     }
 
 
@@ -213,14 +244,30 @@ public class ChatFormService {
         }
         return  images;
     }
+
   
-    public Image getImage(String userList) {
+    public Image getImage(String userLogin) throws IOException {
+        return new Image(new ByteArrayInputStream(getProfilePicture(userLogin)),40,40,false,false);
+    }
+    public byte[] getProfilePicture(String userLogin) throws IOException {
 
-        Image image;
-        var res=(getClass().getResource("/images/dAvatar.bmp")).getPath().replaceFirst("/","");
-        image=new Image(res);
+        String getProfilePictureUrlBlueprint = "http://localhost:8080/get_profile_photo?login=%s";
 
-        return  image;
+        HttpClient client = HttpClientFactory.getInstance().getHttpClient();
+        HttpGet httpGet = new HttpGet(String.format(getProfilePictureUrlBlueprint,userLogin));
+        HttpResponse response = client.execute(httpGet);
+
+        var entity = response.getEntity();
+        if (entity.getContentType() == null) {
+            return getClass().getResourceAsStream("/images/dAvatar.bmp").readAllBytes();
+        } else {
+
+            String json = EntityUtils.toString(entity);
+            return Base64.getDecoder().decode(json);
+        }
+
+//      String imageString = jsonMapper.readValue(json, new TypeReference<>() {});
+        // TODO for debugging, remove later
     }
 
 

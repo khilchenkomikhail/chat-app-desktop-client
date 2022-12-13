@@ -2,6 +2,8 @@ package ru.edu.spbstu.controller;
 
 import lombok.AllArgsConstructor;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import ru.edu.spbstu.request.CheckEmailRequest;
@@ -38,5 +40,11 @@ public class LoginController {
     @GetMapping("/is_email_used")
     public Boolean isEmailUsed(@RequestParam String email) {
         return loginService.isEmailUsed(email);
+    }
+
+    @GetMapping("/get_login")
+    public String getLogin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
     }
 }

@@ -27,7 +27,7 @@
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
          </padding>
          <children>
-            <Label fx:id="ChatNameLabel" text="Название чата" GridPane.valignment="TOP">
+            <Label fx:id="ChatNameLabel" text="%chatNameLabel" GridPane.valignment="TOP">
                <GridPane.margin>
                   <Insets left="20.0" top="10.0" />
                </GridPane.margin></Label>
@@ -35,7 +35,7 @@
                <GridPane.margin>
                   <Insets left="153.0" top="10.0" />
                </GridPane.margin></TextField>
-            <Label fx:id="loginLabel" text="Логин пользователя">
+            <Label fx:id="loginLabel" text="%userLoginLabel">
                <padding>
                   <Insets left="20.0" />
                </padding>
@@ -47,11 +47,11 @@
                   <Insets right="80.0" top="20.0" />
                </GridPane.margin>
             </TextField>
-            <Button fx:id="AddUserButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#AddUserButtonClick" prefHeight="30.0" prefWidth="156.0" text="Добавить пользователя" GridPane.halignment="RIGHT">
+            <Button fx:id="AddUserButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#AddUserButtonClick" prefHeight="30.0" prefWidth="156.0" text="%addUserButton" GridPane.halignment="RIGHT">
                <GridPane.margin>
                   <Insets right="20.0" top="20.0" />
                </GridPane.margin></Button>
-            <Label fx:id="chatUsersLabel" text="Участники чата" GridPane.valignment="BOTTOM">
+            <Label fx:id="chatUsersLabel" text="%chatMembersLabel" GridPane.valignment="BOTTOM">
                <GridPane.margin>
                   <Insets bottom="5.0" left="20.0" />
                </GridPane.margin></Label>
@@ -60,7 +60,7 @@
                   <Insets bottom="50.0" left="20.0" right="20.0" />
                </GridPane.margin>
             </ListViewWithButtons>
-            <Button fx:id="createChatButton" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#createChatButtonClick" prefHeight="30.0" prefWidth="156.0" text="СоздатьЧат" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="BOTTOM">
+            <Button fx:id="createChatButton" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#createChatButtonClick" prefHeight="30.0" prefWidth="156.0" text="%createChatLabel" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="BOTTOM">
                <GridPane.margin>
                   <Insets bottom="10.0" right="10.0" />
                </GridPane.margin></Button>

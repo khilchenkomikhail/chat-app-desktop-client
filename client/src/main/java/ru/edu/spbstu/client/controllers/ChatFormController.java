@@ -82,6 +82,7 @@ public class ChatFormController {
     private final ContextMenu messageMenu = new ContextMenu();
     private final ContextMenu messageMenu2 = new ContextMenu();
     private ResourceBundle bundle;
+    private String curGreatestMessage = "";
 
     public ResourceBundle getBundle() {
         return bundle;
@@ -466,11 +467,6 @@ public class ChatFormController {
     }
 
     private void editMessageButtonAction(ActionEvent actionEvent) {
-        if(messageTextArea.getText().length()>512)
-        {
-            showError(bundle.getString("MessageToBigError"));
-            return;
-        }
         Message message = messageToEditVal;
         try {
             service.editMessage(message.getId(), messageTextArea.getText());
@@ -879,6 +875,7 @@ public class ChatFormController {
                 return;
             }
         sendMessageButton.setDisable(messageTextArea.getText().length() == 0);
+        messageKeyTyped();
     }
 
 
@@ -911,5 +908,29 @@ public class ChatFormController {
 
         nstage.show();
         currStage.hide();
+    }
+
+    private void messageKeyTyped() {
+        if (messageTextArea.getText().length() == 512) {
+            curGreatestMessage = messageTextArea.getText();
+        }
+        else if (messageTextArea.getText().length() > 512) {
+            if (curGreatestMessage.length() == 0) {
+                curGreatestMessage = messageTextArea.getText().substring(0, 512);
+                messageTextArea.setText(curGreatestMessage);
+                messageTextArea.positionCaret(512);
+                messageTextArea.setScrollTop(100.);
+            }
+            else {
+                int caretPosition = messageTextArea.getCaretPosition();
+                double scrollTop = messageTextArea.getScrollTop();
+                messageTextArea.setText(curGreatestMessage);
+                messageTextArea.positionCaret(caretPosition - 1);
+                messageTextArea.setScrollTop(scrollTop);
+            }
+        }
+        else {
+            curGreatestMessage = "";
+        }
     }
 }

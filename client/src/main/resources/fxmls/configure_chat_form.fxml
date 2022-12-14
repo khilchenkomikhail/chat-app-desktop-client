@@ -41,7 +41,7 @@
                                  <GridPane.margin>
                                     <Insets left="20.0" />
                                  </GridPane.margin></Label>
-                              <TextField fx:id="loginTextField" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="292.0" GridPane.halignment="LEFT">
+                              <TextField fx:id="loginTextField" maxHeight="-Infinity" maxWidth="-Infinity" onKeyTyped="#userLoginTextTypedAction" prefHeight="25.0" prefWidth="292.0" GridPane.halignment="LEFT">
                                  <GridPane.margin>
                                     <Insets left="160.0" />
                                  </GridPane.margin>

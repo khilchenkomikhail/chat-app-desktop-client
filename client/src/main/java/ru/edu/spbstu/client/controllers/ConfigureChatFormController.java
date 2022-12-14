@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import ru.edu.spbstu.client.exception.InvalidDataException;
 import ru.edu.spbstu.client.services.ConfigureChatFormService;
@@ -74,6 +75,7 @@ public class ConfigureChatFormController {
 
     }
     void init() throws IOException {
+        AddUserButton.setDisable(true);
         List<ChatUser> userList=service.getChatMembers(chatToConfigure);
         for(var elem:userList)
         {
@@ -222,4 +224,7 @@ public class ConfigureChatFormController {
     }
 
 
+    public void userLoginTextTypedAction(KeyEvent keyEvent) {
+        AddUserButton.setDisable(loginTextField.getText().length()==0);
+    }
 }

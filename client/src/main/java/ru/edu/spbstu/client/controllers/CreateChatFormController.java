@@ -80,6 +80,7 @@ public class CreateChatFormController {
     }
 
     void init() throws IOException {
+        AddUserButton.setDisable(true);
         createChatButton.setDisable(true);
         currStage.setOnCloseRequest(event -> {
             primaryStage.show();
@@ -186,5 +187,9 @@ public class CreateChatFormController {
 
     public void chatnameKeyTyped(KeyEvent keyEvent) {
         createChatButton.setDisable(chatNameTextBox.getText().length() == 0);
+    }
+
+    public void userLoginTextTypedAction(KeyEvent keyEvent) {
+        AddUserButton.setDisable(loginTextField.getText().length()==0);
     }
 }

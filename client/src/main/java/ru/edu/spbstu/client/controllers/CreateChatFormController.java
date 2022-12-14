@@ -20,7 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static ru.edu.spbstu.client.utils.Verifiers.*;
+import static ru.edu.spbstu.client.utils.Verifiers.checkChatName;
+import static ru.edu.spbstu.client.utils.Verifiers.checkEmail;
 
 public class CreateChatFormController {
 
@@ -60,7 +61,6 @@ public class CreateChatFormController {
     void showError(String errorText)
     {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(bundle.getString("Error"));
         alert.setHeaderText(errorText);
         alert.show();
     }
@@ -103,14 +103,6 @@ public class CreateChatFormController {
 
     public void AddUserButtonClick(ActionEvent actionEvent) {
         String username= loginTextField.getText();
-        try {
-            checkLogin(loginTextField.getText());
-        }
-        catch (InvalidDataException dat)
-        {
-            showError(bundle.getString(dat.getMessage()));
-            return;
-        }
         try {
             boolean pres=service.isUserPresent(username);
             if(!pres)

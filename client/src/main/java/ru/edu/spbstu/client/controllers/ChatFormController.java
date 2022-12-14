@@ -3,7 +3,6 @@ package ru.edu.spbstu.client.controllers;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
@@ -793,20 +792,7 @@ public class ChatFormController {
                 showError(bundle.getString("InternalErrorText"));
                 return;
             }
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            //alert.setWidth(200);
-            alert.setTitle(bundle.getString("InformationHeader"));
-            alert.setHeaderText(bundle.getString("LanguageChange"));
-            /*alert.setOnCloseRequest(dialogEvent -> {
-                this.currStage.close();
-                this.primaryStage.close();
-            });*/
-            alert.showAndWait().ifPresent(rs -> {
-                if (rs == ButtonType.OK) {
-                    this.currStage.close();
-                    this.primaryStage.close();
-                }
-            });
+            showError(bundle.getString("LanguageChange"));
         }
     }
 

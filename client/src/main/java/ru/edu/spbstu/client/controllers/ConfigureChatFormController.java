@@ -4,7 +4,9 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import ru.edu.spbstu.client.exception.InvalidDataException;
 import ru.edu.spbstu.client.services.ConfigureChatFormService;
 import ru.edu.spbstu.clientComponents.ListViewWithButtons;
 import ru.edu.spbstu.clientComponents.ListViewWithCheckBoxes;
@@ -15,6 +17,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import static ru.edu.spbstu.client.utils.Verifiers.checkLogin;
 
 public class ConfigureChatFormController {
     public ListViewWithCheckBoxes chatMembersConfigurationLV;
@@ -71,6 +75,7 @@ public class ConfigureChatFormController {
 
     }
     void init() throws IOException {
+        AddUserButton.setDisable(true);
         List<ChatUser> userList=service.getChatMembers(chatToConfigure);
         for(var elem:userList)
         {
@@ -156,6 +161,14 @@ public class ConfigureChatFormController {
 
         String username= loginTextField.getText();
         try {
+            checkLogin(loginTextField.getText());
+        }
+        catch (InvalidDataException dat)
+        {
+            showError(bundle.getString(dat.getMessage()));
+            return;
+        }
+        try {
             boolean pres=service.isUserPresent(username);
             if(!pres)
             {
@@ -211,4 +224,7 @@ public class ConfigureChatFormController {
     }
 
 
+    public void userLoginTextTypedAction(KeyEvent keyEvent) {
+        AddUserButton.setDisable(loginTextField.getText().length()==0);
+    }
 }

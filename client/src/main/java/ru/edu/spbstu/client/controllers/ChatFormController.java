@@ -3,6 +3,7 @@ package ru.edu.spbstu.client.controllers;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
@@ -81,6 +82,7 @@ public class ChatFormController {
     private final ContextMenu messageMenu = new ContextMenu();
     private final ContextMenu messageMenu2 = new ContextMenu();
     private ResourceBundle bundle;
+    private String curGreatestMessage = "";
 
     public ResourceBundle getBundle() {
         return bundle;
@@ -132,7 +134,7 @@ public class ChatFormController {
                     RowConstraints row1 = new RowConstraints();
                     row1.setMaxHeight(-Double.MAX_VALUE);
                     row1.setValignment(VPos.TOP);
-                   // row1.setMinHeight(50);
+                    // row1.setMinHeight(50);
                     //row1.setPrefHeight(50);//Todo перепроверить
                     row1.setVgrow(Priority.SOMETIMES);
 
@@ -198,8 +200,8 @@ public class ChatFormController {
                     GridPane.setHalignment(date, HPos.RIGHT);
                     GridPane.setValignment(date, VPos.TOP);
                     if (message.getIs_forwarded()) {
-                      //  date.setFont(new Font(10));
-                      //  username.setFont(new Font(10));
+                        //  date.setFont(new Font(10));
+                        //  username.setFont(new Font(10));
                     }
                     GridPane.setMargin(date, new Insets(0, 5, 0, 0));
                     pane.add(date, 2, 0);
@@ -465,11 +467,6 @@ public class ChatFormController {
     }
 
     private void editMessageButtonAction(ActionEvent actionEvent) {
-        if(messageTextArea.getText().length()>512)
-        {
-            showError(bundle.getString("MessageToBigError"));
-            return;
-        }
         Message message = messageToEditVal;
         try {
             service.editMessage(message.getId(), messageTextArea.getText());
@@ -601,7 +598,7 @@ public class ChatFormController {
             primaryStage.show();
             currStage.close();
         });
-       // sendMessageButton.setDisable(true);
+        // sendMessageButton.setDisable(true);
         /*currStage.setOnCloseRequest(e -> {
             primaryStage.show();
             currStage.close();
@@ -792,7 +789,20 @@ public class ChatFormController {
                 showError(bundle.getString("InternalErrorText"));
                 return;
             }
-            showError(bundle.getString("LanguageChange"));
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            //alert.setWidth(200);
+            alert.setTitle(bundle.getString("InformationHeader"));
+            alert.setHeaderText(bundle.getString("LanguageChange"));
+            /*alert.setOnCloseRequest(dialogEvent -> {
+                this.currStage.close();
+                this.primaryStage.close();
+            });*/
+            alert.showAndWait().ifPresent(rs -> {
+                if (rs == ButtonType.OK) {
+                    this.currStage.close();
+                    this.primaryStage.close();
+                }
+            });
         }
     }
 
@@ -865,6 +875,7 @@ public class ChatFormController {
                 return;
             }
         sendMessageButton.setDisable(messageTextArea.getText().length() == 0);
+        messageKeyTyped();
     }
 
 
@@ -897,5 +908,29 @@ public class ChatFormController {
 
         nstage.show();
         currStage.hide();
+    }
+
+    private void messageKeyTyped() {
+        if (messageTextArea.getText().length() == 512) {
+            curGreatestMessage = messageTextArea.getText();
+        }
+        else if (messageTextArea.getText().length() > 512) {
+            if (curGreatestMessage.length() == 0) {
+                curGreatestMessage = messageTextArea.getText().substring(0, 512);
+                messageTextArea.setText(curGreatestMessage);
+                messageTextArea.positionCaret(512);
+                messageTextArea.setScrollTop(100.);
+            }
+            else {
+                int caretPosition = messageTextArea.getCaretPosition();
+                double scrollTop = messageTextArea.getScrollTop();
+                messageTextArea.setText(curGreatestMessage);
+                messageTextArea.positionCaret(caretPosition - 1);
+                messageTextArea.setScrollTop(scrollTop);
+            }
+        }
+        else {
+            curGreatestMessage = "";
+        }
     }
 }

@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import ru.edu.spbstu.client.exception.InvalidDataException;
@@ -20,8 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static ru.edu.spbstu.client.utils.Verifiers.checkChatName;
-import static ru.edu.spbstu.client.utils.Verifiers.checkEmail;
+import static ru.edu.spbstu.client.utils.Verifiers.*;
 
 public class CreateChatFormController {
 
@@ -57,10 +57,11 @@ public class CreateChatFormController {
     public void setBundle(ResourceBundle bundle) {
         this.bundle = bundle;
     }
-    
+
     void showError(String errorText)
     {
         Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(bundle.getString("Error"));
         alert.setHeaderText(errorText);
         alert.show();
     }
@@ -79,6 +80,8 @@ public class CreateChatFormController {
     }
 
     void init() throws IOException {
+        AddUserButton.setDisable(true);
+        createChatButton.setDisable(true);
         currStage.setOnCloseRequest(event -> {
             primaryStage.show();
         });
@@ -103,6 +106,14 @@ public class CreateChatFormController {
 
     public void AddUserButtonClick(ActionEvent actionEvent) {
         String username= loginTextField.getText();
+        try {
+            checkLogin(loginTextField.getText());
+        }
+        catch (InvalidDataException dat)
+        {
+            showError(bundle.getString(dat.getMessage()));
+            return;
+        }
         try {
             boolean pres=service.isUserPresent(username);
             if(!pres)
@@ -174,4 +185,11 @@ public class CreateChatFormController {
         primaryStage.show();
     }
 
+    public void chatnameKeyTyped(KeyEvent keyEvent) {
+        createChatButton.setDisable(chatNameTextBox.getText().length() == 0);
+    }
+
+    public void userLoginTextTypedAction(KeyEvent keyEvent) {
+        AddUserButton.setDisable(loginTextField.getText().length()==0);
+    }
 }

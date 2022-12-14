@@ -97,8 +97,8 @@ public class ForgotPasswordFormController {
         if(isValid) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             forgotAction();
-            alert.setHeaderText(bundle.getString("InformationHeader"));
-            alert.setTitle(bundle.getString("MessageSendSuccess"));
+            alert.setTitle(bundle.getString("InformationHeader"));
+            alert.setHeaderText(bundle.getString("MessageSendSuccess"));
             alert.showAndWait().ifPresent(rs -> {
                 if (rs == ButtonType.OK) {
                     Stage stage = (Stage) changePasswordButton.getScene().getWindow();

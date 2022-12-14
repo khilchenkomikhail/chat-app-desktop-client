@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import ru.edu.spbstu.client.exception.InvalidDataException;
 import ru.edu.spbstu.client.services.ConfigureChatFormService;
 import ru.edu.spbstu.clientComponents.ListViewWithButtons;
 import ru.edu.spbstu.clientComponents.ListViewWithCheckBoxes;
@@ -15,6 +16,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import static ru.edu.spbstu.client.utils.Verifiers.checkLogin;
 
 public class ConfigureChatFormController {
     public ListViewWithCheckBoxes chatMembersConfigurationLV;
@@ -155,6 +158,14 @@ public class ConfigureChatFormController {
     public void AddUserButtonClick() {
 
         String username= loginTextField.getText();
+        try {
+            checkLogin(loginTextField.getText());
+        }
+        catch (InvalidDataException dat)
+        {
+            showError(bundle.getString(dat.getMessage()));
+            return;
+        }
         try {
             boolean pres=service.isUserPresent(username);
             if(!pres)

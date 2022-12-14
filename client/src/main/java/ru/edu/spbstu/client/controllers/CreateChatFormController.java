@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import ru.edu.spbstu.client.exception.InvalidDataException;
@@ -79,6 +80,7 @@ public class CreateChatFormController {
     }
 
     void init() throws IOException {
+        createChatButton.setDisable(true);
         currStage.setOnCloseRequest(event -> {
             primaryStage.show();
         });
@@ -182,4 +184,7 @@ public class CreateChatFormController {
         primaryStage.show();
     }
 
+    public void chatnameKeyTyped(KeyEvent keyEvent) {
+        createChatButton.setDisable(chatNameTextBox.getText().length() == 0);
+    }
 }

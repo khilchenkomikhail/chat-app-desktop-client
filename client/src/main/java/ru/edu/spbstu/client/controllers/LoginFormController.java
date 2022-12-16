@@ -1,6 +1,5 @@
 package ru.edu.spbstu.client.controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,6 +20,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 import ru.edu.spbstu.client.ClientApplication;
 import ru.edu.spbstu.client.exception.InvalidDataException;
+import ru.edu.spbstu.client.exception.InvalidHttpClientFactoryStateException;
 import ru.edu.spbstu.client.services.LogInService;
 import ru.edu.spbstu.client.utils.HttpClientFactory;
 import ru.edu.spbstu.clientComponents.PasswordTextField;
@@ -78,26 +78,26 @@ public class LoginFormController {
     }
 
     public void init() {
-        HttpClientFactory fact=HttpClientFactory.getInstance();
+        HttpClientFactory fact = HttpClientFactory.getInstance();
         HttpClient client;
         try {
             client = fact.getHttpClient();
         }
-        catch (RuntimeException | IOException e) {
+        catch (InvalidHttpClientFactoryStateException | IOException e) {
             return;//если что-то произошло, то ничего не делаем(форма логина открывается)
         }
         try{
             String getChatsUrlBlueprint = "http://localhost:8080/get_login";
             HttpGet httpGet = new HttpGet(getChatsUrlBlueprint);
             HttpResponse re = client.execute(httpGet);
+            HttpClientFactory.tryUpdateRememberMe(re);
             String json = EntityUtils.toString(re.getEntity());
             if (re.getStatusLine().getStatusCode() != 200) {
                 //тут даже при наличии токена он кидает 401 ошибку
                 throw new HttpResponseException(re.getStatusLine().getStatusCode(), "Error getLogin");
             }
             ObjectMapper jsonMapper = new ObjectMapper();
-            String login1 = jsonMapper.readValue(json, new TypeReference<>() {
-            });
+            String login1 = json;
             openChatForm(login1);//если ничего не произойдёт мы дойдём до сюда и откроем 2 форму
             stage.hide();//спрячем форму логина
         } catch (IOException e) {

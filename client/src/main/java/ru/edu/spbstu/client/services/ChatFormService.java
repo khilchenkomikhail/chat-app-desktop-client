@@ -46,6 +46,7 @@ public class ChatFormService {
         HttpClient client = HttpClientFactory.getInstance().getHttpClient();
         HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, URLEncoder.encode(login, StandardCharsets.UTF_8), page));
         HttpResponse re = client.execute(httpGet);
+        HttpClientFactory.tryUpdateRememberMe(re);
         String json = EntityUtils.toString(re.getEntity());
         if(re.getStatusLine().getStatusCode()!=200)
         {
@@ -64,6 +65,7 @@ public class ChatFormService {
         HttpClient client = HttpClientFactory.getInstance().getHttpClient();
         HttpGet httpGet = new HttpGet(String.format(getMessagesUrlBlueprint, chat_id, page));
         HttpResponse re = client.execute(httpGet);
+        HttpClientFactory.tryUpdateRememberMe(re);
         String json = EntityUtils.toString(re.getEntity());
         int code = re.getStatusLine().getStatusCode();
         if (code == 400) {
@@ -96,6 +98,7 @@ public class ChatFormService {
         post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request), "UTF-8"));
         post.addHeader("content-type", "application/json");
         HttpResponse re = client.execute(post);
+        HttpClientFactory.tryUpdateRememberMe(re);
         reqStatusCreateChat= re.getStatusLine().getStatusCode();
         if (reqStatusCreateChat != 200) {
             throw new HttpResponseException(reqStatusCreateChat,"Error while send message");
@@ -108,6 +111,7 @@ public class ChatFormService {
         HttpClient client = HttpClientFactory.getInstance().getHttpClient();
         HttpPatch httpGet = new HttpPatch(String.format( getMessagesUrlBlueprint, message_id));
         HttpResponse re = client.execute(httpGet);
+        HttpClientFactory.tryUpdateRememberMe(re);
         String json = EntityUtils.toString(re.getEntity());
         reqStatusCreateChat=re.getStatusLine().getStatusCode();
         if (reqStatusCreateChat != 200) {
@@ -124,6 +128,7 @@ public class ChatFormService {
         post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request), "UTF-8"));
         post.addHeader("content-type", "application/json");
         HttpResponse re = client.execute(post);
+        HttpClientFactory.tryUpdateRememberMe(re);
         reqStatusCreateChat = re.getStatusLine().getStatusCode();
         if (reqStatusCreateChat != 200) {
             throw new HttpResponseException(reqStatusCreateChat,"Error while edit message");
@@ -138,6 +143,7 @@ public class ChatFormService {
         post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request), "UTF-8"));
         post.addHeader("content-type", "application/json");
         HttpResponse re = client.execute(post);
+        HttpClientFactory.tryUpdateRememberMe(re);
         reqStatusCreateChat=re.getStatusLine().getStatusCode();
 
         if (reqStatusCreateChat != 200) {
@@ -155,6 +161,7 @@ public class ChatFormService {
         post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request), "UTF-8"));
         post.addHeader("content-type", "application/json");
         HttpResponse re = client.execute(post);
+        HttpClientFactory.tryUpdateRememberMe(re);
         code = re.getStatusLine().getStatusCode();
     }
     public List<ChatUser> getChatMembers(Chat chatToConfigure) throws IOException {
@@ -163,6 +170,7 @@ public class ChatFormService {
         HttpClient client = HttpClientFactory.getInstance().getHttpClient();
         HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint,chatToConfigure.getId()));
         HttpResponse re = client.execute(httpGet);
+        HttpClientFactory.tryUpdateRememberMe(re);
         String json = EntityUtils.toString(re.getEntity());
         int code=re.getStatusLine().getStatusCode();
         if(code!=200) {
@@ -181,6 +189,7 @@ public class ChatFormService {
         HttpClient client = HttpClientFactory.getInstance().getHttpClient();
         HttpDelete httpGet = new HttpDelete(String.format(getChatsUrlBlueprint,chatToDelete.getId()));
         HttpResponse re = client.execute(httpGet);
+        HttpClientFactory.tryUpdateRememberMe(re);
         String json = EntityUtils.toString(re.getEntity());
         int code=re.getStatusLine().getStatusCode();
         if(code!=200) {
@@ -198,6 +207,7 @@ public class ChatFormService {
         HttpGet httpGet = new HttpGet(String.format( getMessagesUrlBlueprint,URLEncoder.encode(login, StandardCharsets.UTF_8)
                 ,URLEncoder.encode(name, StandardCharsets.UTF_8),page));
         HttpResponse re = client.execute(httpGet);
+        HttpClientFactory.tryUpdateRememberMe(re);
         String json = EntityUtils.toString(re.getEntity());
         int code=re.getStatusLine().getStatusCode();
         if(code!=200)
@@ -223,6 +233,7 @@ public class ChatFormService {
         HttpClient client = HttpClientFactory.getInstance().getHttpClient();
         HttpPost httpGet = new HttpPost(String.format( getMessagesUrlBlueprint, message_id,login,chat_id));
         HttpResponse re = client.execute(httpGet);
+        HttpClientFactory.tryUpdateRememberMe(re);
         String json = EntityUtils.toString(re.getEntity());
         int code=re.getStatusLine().getStatusCode();
         if(code!=200)
@@ -256,6 +267,7 @@ public class ChatFormService {
         HttpClient client = HttpClientFactory.getInstance().getHttpClient();
         HttpGet httpGet = new HttpGet(String.format(getProfilePictureUrlBlueprint,userLogin));
         HttpResponse response = client.execute(httpGet);
+        HttpClientFactory.tryUpdateRememberMe(response);
 
         var entity = response.getEntity();
         if (entity.getContentType() == null) {

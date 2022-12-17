@@ -61,6 +61,7 @@ public class CreateChatFormService {
         HttpClient client = HttpClientFactory.getInstance().getHttpClient();
         HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, login, page));
         HttpResponse re = client.execute(httpGet);
+        HttpClientFactory.tryUpdateRememberMe(re);
         String json = EntityUtils.toString(re.getEntity());
         return jsonMapper.readValue(json, new TypeReference<>() {});
     }
@@ -76,6 +77,7 @@ public class CreateChatFormService {
         post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request), "UTF-8"));
         post.addHeader("content-type", "application/json");
         HttpResponse re = client.execute(post);
+        HttpClientFactory.tryUpdateRememberMe(re);
         return re.getStatusLine().getStatusCode();
     }
 
@@ -120,6 +122,7 @@ public class CreateChatFormService {
         HttpGet httpGet = new HttpGet(String.format(getProfilePictureUrlBlueprint,
                 URLEncoder.encode(userLogin, StandardCharsets.UTF_8)));
         HttpResponse response = client.execute(httpGet);
+        HttpClientFactory.tryUpdateRememberMe(response);
 
         var entity = response.getEntity();
         if (entity.getContentType() == null) {

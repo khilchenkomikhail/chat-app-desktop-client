@@ -2,7 +2,6 @@ package ru.edu.spbstu.client.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -93,38 +92,16 @@ public class LogInService {
                 URLEncoder.encode(login, StandardCharsets.UTF_8),
                 page));
         HttpResponse re = client.execute(httpGet);
+        HttpClientFactory.tryUpdateRememberMe(re);
         String json = EntityUtils.toString(re.getEntity());
         if(re.getStatusLine().getStatusCode()!=200) {
             if (re.getStatusLine().getStatusCode() == 400) {
-                if (isRememberMeChecked) {
-                    updateRememberMe(re);
-                }
                 return Collections.emptyList();
             } else {
                 throw new HttpResponseException(re.getStatusLine().getStatusCode(), "Error while getAllChats");
             }
         }
-
-        if (isRememberMeChecked) {
-            updateRememberMe(re);
-        }
         return jsonMapper.readValue(json, new TypeReference<>() {});
-    }
-
-    private static void updateRememberMe(HttpResponse re) {
-        Header[] cookies = re.getHeaders("Set-Cookie");
-        String rememberMeToken = null;
-        for (Header cookie : cookies) {
-            String content = cookie.getValue();
-            if (content.substring(0, content.indexOf('=')).trim().equals("remember-me")) {
-                rememberMeToken = content.substring(content.indexOf('=') + 1, content.indexOf(';'));
-                break;
-            }
-        }
-        if (rememberMeToken == null) {
-            throw new RuntimeException();
-        }
-        HttpClientFactory.getInstance().setRememberToken(rememberMeToken);
     }
 
     private int registerImplementation(String login, String password, String email) throws IOException {

@@ -1,10 +1,13 @@
 package ru.edu.spbstu.client.utils;
 
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.cookie.BasicClientCookie;
+import ru.edu.spbstu.client.exception.InvalidHttpClientFactoryStateException;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -31,6 +34,22 @@ public class HttpClientFactory {
             }
         }
         return httpClientManagementFactory;
+    }
+
+    public static void tryUpdateRememberMe(HttpResponse re) {
+        Header[] cookies = re.getHeaders("Set-Cookie");
+        String rememberMeToken = null;
+        for (Header cookie : cookies) {
+            String content = cookie.getValue();
+            if (content.substring(0, content.indexOf('=')).trim().equals("remember-me")) {
+                rememberMeToken = content.substring(content.indexOf('=') + 1, content.indexOf(';'));
+                break;
+            }
+        }
+        if (rememberMeToken == null) {
+            return;
+        }
+        HttpClientFactory.getInstance().setRememberToken(rememberMeToken);
     }
 
     public void setRememberToken(String token) {
@@ -95,7 +114,7 @@ public class HttpClientFactory {
                                 .setDefaultCredentialsProvider(credentialsProvider)
                                 .build();
                     } else {
-                        throw new RuntimeException("can't build client, specify credential provider or token");
+                        throw new InvalidHttpClientFactoryStateException("can't build client, specify credential provider or token");
                     }
                 }
             }

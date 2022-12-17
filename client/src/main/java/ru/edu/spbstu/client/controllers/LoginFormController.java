@@ -73,18 +73,16 @@ public class LoginFormController {
         registerButton.setDisable(true);
         forgetPasswordButton.setDisable(true);
         stage = ClientApplication.getStage();
-        //loginTextBox.setText("olegoleg");
-        //passwordTextBox.setText("olegoleg");
     }
 
-    public void init() {
+    public boolean skipLoginViaToken() {
         HttpClientFactory fact = HttpClientFactory.getInstance();
         HttpClient client;
         try {
             client = fact.getHttpClient();
         }
         catch (InvalidHttpClientFactoryStateException | IOException e) {
-            return;//если что-то произошло, то ничего не делаем(форма логина открывается)
+            return false;//если что-то произошло, то ничего не делаем(форма логина открывается)
         }
         try{
             String getChatsUrlBlueprint = "http://localhost:8080/get_login";
@@ -93,15 +91,15 @@ public class LoginFormController {
             HttpClientFactory.tryUpdateRememberMe(re);
             String json = EntityUtils.toString(re.getEntity());
             if (re.getStatusLine().getStatusCode() != 200) {
-                //тут даже при наличии токена он кидает 401 ошибку
                 throw new HttpResponseException(re.getStatusLine().getStatusCode(), "Error getLogin");
             }
             ObjectMapper jsonMapper = new ObjectMapper();
             String login1 = json;
             openChatForm(login1);//если ничего не произойдёт мы дойдём до сюда и откроем 2 форму
-            stage.hide();//спрячем форму логина
+            return true;
         } catch (IOException e) {
             fact.invalidateToken();//если что-то произошло, то токен инвалидируем
+            return false;
         }
     }
 

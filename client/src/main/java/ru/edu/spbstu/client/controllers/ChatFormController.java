@@ -293,6 +293,9 @@ public class ChatFormController {
         }
         System.out.println("Forward");
         //TODo open forward message form
+        //при открытии новой формы эту спрячь(hide)
+        //сама форма должна содержать в себе контроллер этой формы(чтобы использовать функцию forwardNewMessage)
+        //Скорее всего по нажатию кнопки переслать надо будет её закрыть и показать эту
     }
 
 
@@ -400,6 +403,25 @@ public class ChatFormController {
         messageToEdit = messagesListView.getSelectionModel().getSelectedIndex();
         messageToEditVal = messagesListView.getSelectionModel().getSelectedItem();
         sendButtonMode=Mode.REPLY;
+    }
+    public void forwardNewMessage(Chat chatToForward)//эту функцию вызови при пересылке сообщений форме(саму форму нужно скорее всего закрыть)
+    {
+        List<Message> temp;
+        try {
+            temp = service.getMessages(chatToForward.getId(), 1);//получим первую страницу сообщений
+        } catch (IOException e) {
+
+            showError(bundle.getString("InternalErrorText"));
+            return;
+        }
+        resetMessages();//очистим все сообщения(сбросим номер страницы)
+        messageList=temp;//заберём страницу сообщений
+        messagesListView.setItems(FXCollections.observableList(messageList));
+        //переместим чат навер в списке
+        chatList.remove(chatsListView.getSelectionModel().getSelectedIndex());
+        chatList.add(0,chatToForward);
+        chatsListView.setItems(FXCollections.observableList(chatList));
+        chatsListView.getSelectionModel().select(0);
     }
 
     private void replyMessageButtonAction(ActionEvent actionEvent) {
@@ -598,11 +620,6 @@ public class ChatFormController {
             primaryStage.show();
             currStage.close();
         });
-        // sendMessageButton.setDisable(true);
-        /*currStage.setOnCloseRequest(e -> {
-            primaryStage.show();
-            currStage.close();
-        });*/
     }
 
 
@@ -748,7 +765,7 @@ public class ChatFormController {
     }
 
     public void findChatsEvent() {
-        if (findChatTextBox.getText().length() == 0) {//todo пробелы в названиях?
+        if (findChatTextBox.getText().length() == 0) {
             findMode = false;
             foundChatsList = new ArrayList<>();
             chatsOffset = 0;

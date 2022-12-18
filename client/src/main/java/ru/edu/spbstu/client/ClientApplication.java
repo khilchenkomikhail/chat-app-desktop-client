@@ -5,17 +5,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import ru.edu.spbstu.client.controllers.ChatFormController;
 import ru.edu.spbstu.client.controllers.LoginFormController;
 import ru.edu.spbstu.client.utils.ClientProperties;
 
 import java.io.*;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class ClientApplication extends Application {
@@ -66,8 +61,10 @@ public class ClientApplication extends Application {
 
         Scene scene = new Scene(window);
         primaryStage.setScene(scene);
-        primaryStage.show();
-        conC.init();
+        boolean isSkipped =conC.skipLoginViaToken();
+        if(!isSkipped) {
+            primaryStage.show();
+        }
         primaryStage.setTitle(bundle.getString("FirstForm"));
     }
     public static Stage getStage()

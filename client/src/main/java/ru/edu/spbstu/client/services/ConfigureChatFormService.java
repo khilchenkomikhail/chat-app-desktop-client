@@ -46,6 +46,7 @@ public class ConfigureChatFormService {
         HttpClient client = HttpClientFactory.getInstance().getHttpClient();
         HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint,chatToConfigure.getId()));
         HttpResponse re = client.execute(httpGet);
+        HttpClientFactory.tryUpdateRememberMe(re);
         String json = EntityUtils.toString(re.getEntity());
         int code=re.getStatusLine().getStatusCode();
         if(code!=200) {
@@ -67,6 +68,7 @@ public class ConfigureChatFormService {
         post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request), "UTF-8"));
         post.addHeader("content-type", "application/json");
         HttpResponse re = client.execute(post);
+        HttpClientFactory.tryUpdateRememberMe(re);
         code=re.getStatusLine().getStatusCode();
     }
 
@@ -79,6 +81,7 @@ public class ConfigureChatFormService {
         post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request), "UTF-8"));
         post.addHeader("content-type", "application/json");
         HttpResponse re = client.execute(post);
+        HttpClientFactory.tryUpdateRememberMe(re);
         code = re.getStatusLine().getStatusCode();
     }
     public void addUsersToChat(Chat chatToConfigure,List<String>logins) throws IOException {
@@ -91,6 +94,7 @@ public class ConfigureChatFormService {
         post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request), "UTF-8"));
         post.addHeader("content-type", "application/json");
         HttpResponse re = client.execute(post);
+        HttpClientFactory.tryUpdateRememberMe(re);
         code = re.getStatusLine().getStatusCode();
     }
 
@@ -131,6 +135,7 @@ public class ConfigureChatFormService {
         HttpGet httpGet = new HttpGet(String.format(getProfilePictureUrlBlueprint,
                 URLEncoder.encode(userLogin, StandardCharsets.UTF_8)));
         HttpResponse response = client.execute(httpGet);
+        HttpClientFactory.tryUpdateRememberMe(response);
 
         var entity = response.getEntity();
         if (entity.getContentType() == null) {

@@ -7,16 +7,12 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import ru.edu.spbstu.client.exception.InvalidDataException;
-import ru.edu.spbstu.client.utils.AuthScheme;
 import ru.edu.spbstu.client.utils.HttpClientFactory;
 import ru.edu.spbstu.request.CheckEmailRequest;
 import ru.edu.spbstu.request.EmailUpdateRequest;
@@ -40,6 +36,7 @@ public class ProfileFormService {
         HttpGet httpGet = new HttpGet(String.format(getProfilePictureUrlBlueprint,
                 URLEncoder.encode(login, StandardCharsets.UTF_8)));
         HttpResponse response = client.execute(httpGet);
+        HttpClientFactory.tryUpdateRememberMe(response);
 
         var entity = response.getEntity();
         if (entity.getContentType() == null) {
@@ -64,6 +61,7 @@ public class ProfileFormService {
         httpPost.setEntity(new StringEntity(jsonMapper.writeValueAsString(request), "UTF-8"));
         httpPost.addHeader("content-type", "application/json");
         HttpResponse response = client.execute(httpPost);
+        HttpClientFactory.tryUpdateRememberMe(response);
         String json = EntityUtils.toString(response.getEntity());
     }
 
@@ -85,6 +83,7 @@ public class ProfileFormService {
         httpPost.setEntity(new StringEntity(jsonMapper.writeValueAsString(checkRequest), "UTF-8"));
         httpPost.addHeader("content-type", "application/json");
         HttpResponse checkResponse = client.execute(httpPost);
+        HttpClientFactory.tryUpdateRememberMe(checkResponse);
         String json = EntityUtils.toString(checkResponse.getEntity());
         Boolean isMatching = jsonMapper.readValue(json, new TypeReference<>() {
         });
@@ -109,6 +108,7 @@ public class ProfileFormService {
         httpPost.addHeader("content-type", "application/json");
 
         HttpResponse checkResponse = client.execute(httpPost);
+        HttpClientFactory.tryUpdateRememberMe(checkResponse);
         if (checkResponse.getStatusLine().getStatusCode() == 200) {
             UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(login, newPassword);
             CredentialsProvider provider = new BasicCredentialsProvider();

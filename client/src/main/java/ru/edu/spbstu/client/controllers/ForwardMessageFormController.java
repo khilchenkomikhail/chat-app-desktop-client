@@ -1,16 +1,19 @@
 package ru.edu.spbstu.client.controllers;
 
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.control.skin.ListViewSkin;
+import javafx.scene.control.skin.VirtualFlow;
+import javafx.scene.input.ScrollEvent;
 import javafx.stage.Stage;
+import org.controlsfx.control.tableview2.filter.filtereditor.SouthFilter;
 import ru.edu.spbstu.client.services.ForwardMessageFormService;
 import ru.edu.spbstu.model.Chat;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -36,6 +39,12 @@ public class ForwardMessageFormController {
 
     private ResourceBundle bundle;
 
+//    private final int CHAT_PAGE_SIZE = 20;
+
+    private int chatsPage = 1;
+    private int chatsFindPage = 1;
+    private boolean findMode = false;
+
     public void initialize() {
         forwardButton.disableProperty()
                 .bind(chatsListView.getSelectionModel().selectedItemProperty().isNull());
@@ -44,7 +53,6 @@ public class ForwardMessageFormController {
 
     public void init() {
         try {
-            // TODO all pages?
             chatsListView.getItems().setAll(service.getChats(1));
         } catch (IOException e) {
             showError(e.getMessage());
@@ -92,4 +100,65 @@ public class ForwardMessageFormController {
         currentStage.close();
     }
 
+
+    public void onScrollChatsListView(ScrollEvent scrollEvent) {
+        if (scrollEvent.getDeltaY() < 0) {
+            loadChatPage();
+        }
+    }
+
+    public void findChatsEvent() {
+        List<Chat> foundChatsList;
+        if (searchTextField.getText().isEmpty()) {
+            findMode = false;
+            try {
+                foundChatsList = service.getChats(1);
+            } catch (IOException e) {
+                showError(e.getMessage());
+                return;
+            }
+            chatsListView.getItems().setAll(foundChatsList);
+            chatsPage = 1;
+        } else {
+            findMode = true;
+            try {
+                foundChatsList = service.find(searchTextField.getText(), 1L);
+            } catch (IOException e) {
+                showError(e.getMessage());
+                return;
+            }
+            chatsListView.getItems().setAll(foundChatsList);
+            chatsFindPage = 1;
+        }
+    }
+
+    void loadChatPage() {
+        if (!findMode) {
+            try {
+                chatsPage++;
+                List<Chat> temp = service.getChats(chatsPage);
+                if (temp.size() != 0) {
+                    chatsListView.getItems().addAll(temp);
+                } else {
+                    chatsPage--;
+                }
+            } catch (IOException e) {
+                showError(bundle.getString("InternalErrorText"));
+                chatsListView.getItems().clear();
+            }
+        } else {
+            try {
+                chatsFindPage++;
+                List<Chat> temp = service.find(searchTextField.getText(), (long) chatsFindPage);
+                if (temp.size() != 0) {
+                    chatsListView.getItems().addAll(temp);
+                } else {
+                    chatsFindPage--;
+                }
+            } catch (IOException e) {
+                showError(bundle.getString("InternalErrorText"));
+                chatsListView.getItems().clear();
+            }
+        }
+    }
 }

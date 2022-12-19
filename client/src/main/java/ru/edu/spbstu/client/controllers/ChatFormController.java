@@ -75,8 +75,8 @@ public class ChatFormController {
     private int messagesPage = 1;
     private int messageOffset = 0;
 
-    final int MESSAGE_PAGE_SIZE = 50;
-    final int CHATS_PAGE_SIZE = 20;
+    private final int MESSAGE_PAGE_SIZE = 50;
+    private final int CHATS_PAGE_SIZE = 20;
 
     private final ContextMenu contextMenu = new ContextMenu();
     private final ContextMenu messageMenu = new ContextMenu();
@@ -291,11 +291,6 @@ public class ChatFormController {
         if (sendButtonMode!=Mode.SEND) {
             switchToSendMode();
         }
-//        System.out.println("Forward");
-        //TODo open forward message form
-        //при открытии новой формы эту спрячь(hide)
-        //сама форма должна содержать в себе контроллер этой формы(чтобы использовать функцию forwardNewMessage)
-        //Скорее всего по нажатию кнопки переслать надо будет её закрыть и показать эту
         FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/forward_message_form.fxml"), bundle);
         try {
             Parent window = fmxlLoader.load();
@@ -308,9 +303,9 @@ public class ChatFormController {
             nstage.setScene(scene);
             nstage.setTitle("Profile");
             nstage.setMinHeight(500);
-            nstage.setMinWidth(700);
-            nstage.setMaxHeight(750);
-            nstage.setMaxWidth(1050);
+            nstage.setMinWidth(400);
+            nstage.setMaxHeight(550);
+            nstage.setMaxWidth(500);
 
 
             forwardMessageFormController.setCurrentStage(nstage);

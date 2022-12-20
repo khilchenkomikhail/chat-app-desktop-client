@@ -75,8 +75,8 @@ public class ChatFormController {
     private int messagesPage = 1;
     private int messageOffset = 0;
 
-    final int MESSAGE_PAGE_SIZE = 50;
-    final int CHATS_PAGE_SIZE = 20;
+    private final int MESSAGE_PAGE_SIZE = 50;
+    private final int CHATS_PAGE_SIZE = 20;
 
     private final ContextMenu contextMenu = new ContextMenu();
     private final ContextMenu messageMenu = new ContextMenu();
@@ -291,11 +291,35 @@ public class ChatFormController {
         if (sendButtonMode!=Mode.SEND) {
             switchToSendMode();
         }
-        System.out.println("Forward");
-        //TODo open forward message form
-        //при открытии новой формы эту спрячь(hide)
-        //сама форма должна содержать в себе контроллер этой формы(чтобы использовать функцию forwardNewMessage)
-        //Скорее всего по нажатию кнопки переслать надо будет её закрыть и показать эту
+        FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/forward_message_form.fxml"), bundle);
+        try {
+            Parent window = fmxlLoader.load();
+            ForwardMessageFormController forwardMessageFormController = fmxlLoader.getController();
+            forwardMessageFormController.setBundle(bundle);
+            Scene scene = new Scene(window);
+
+            forwardMessageFormController.setLogin(service.getLogin());
+            Stage nstage = new Stage();
+            nstage.setScene(scene);
+            nstage.setTitle("Profile");
+            nstage.setMinHeight(500);
+            nstage.setMinWidth(400);
+            nstage.setMaxHeight(550);
+            nstage.setMaxWidth(500);
+
+
+            forwardMessageFormController.setCurrentStage(nstage);
+            forwardMessageFormController.setPrimaryStage(currStage);
+            forwardMessageFormController.setPrevController(this);
+            forwardMessageFormController.init();
+
+            nstage.show();
+            currStage.hide();
+
+        } catch (IOException e) {
+            showError(e.getMessage());
+        }
+
     }
 
 
@@ -406,8 +430,10 @@ public class ChatFormController {
     }
     public void forwardNewMessage(Chat chatToForward)//эту функцию вызови при пересылке сообщений форме(саму форму нужно скорее всего закрыть)
     {
+        Message selectedMessage = messagesListView.getSelectionModel().getSelectedItem();
         List<Message> temp;
         try {
+            service.forwardMessage(selectedMessage.getId(), service.getLogin(), chatToForward.getId());
             temp = service.getMessages(chatToForward.getId(), 1);//получим первую страницу сообщений
         } catch (IOException e) {
 
@@ -418,7 +444,7 @@ public class ChatFormController {
         messageList=temp;//заберём страницу сообщений
         messagesListView.setItems(FXCollections.observableList(messageList));
         //переместим чат навер в списке
-        chatList.remove(chatsListView.getSelectionModel().getSelectedIndex());
+        chatList.remove(chatToForward);
         chatList.add(0,chatToForward);
         chatsListView.setItems(FXCollections.observableList(chatList));
         chatsListView.getSelectionModel().select(0);

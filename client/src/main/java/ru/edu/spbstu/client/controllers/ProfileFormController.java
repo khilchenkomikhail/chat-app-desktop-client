@@ -86,6 +86,7 @@ public class ProfileFormController {
         currentStage.setOnCloseRequest(e -> {
             prevController.setLogin(profileFormService.getLogin());
             primaryStage.show();
+            prevController.resumeLoad();
             currentStage.close();
         });
     }

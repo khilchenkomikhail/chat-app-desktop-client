@@ -91,6 +91,7 @@ public class CreateChatFormController {
             @Override
             public void handle(WindowEvent e) {
                 primaryStage.show();
+                prevController.resumeLoad();
                 currStage.close();
             }
         });

@@ -1,5 +1,8 @@
 package ru.edu.spbstu.client.controllers;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,6 +11,7 @@ import javafx.scene.control.skin.ListViewSkin;
 import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.input.ScrollEvent;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.controlsfx.control.tableview2.filter.filtereditor.SouthFilter;
 import ru.edu.spbstu.client.services.ForwardMessageFormService;
 import ru.edu.spbstu.model.Chat;
@@ -39,6 +43,22 @@ public class ForwardMessageFormController {
 
     private ResourceBundle bundle;
 
+    Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), e -> loadAllChatPages()));
+
+    private void loadAllChatPages() {
+        int temp=(findMode)?chatsFindPage:chatsPage;
+        int index=chatsListView.getSelectionModel().getSelectedIndex();
+        findChatsEvent();;
+        for (int i=1;i<temp;i++)
+        {
+            loadChatPage();
+        }
+        chatsListView.getSelectionModel().select(index);
+
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.playFromStart();
+    }
+
 //    private final int CHAT_PAGE_SIZE = 20;
 
     private int chatsPage = 1;
@@ -60,6 +80,9 @@ public class ForwardMessageFormController {
         currentStage.setOnCloseRequest(e -> {
             close();
         });
+
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.playFromStart();
     }
 
     private void showError(String errorText) {
@@ -92,11 +115,15 @@ public class ForwardMessageFormController {
     public void forwardMessageButtonPress(ActionEvent event) {
         Chat chat = chatsListView.getSelectionModel().getSelectedItem();
         prevController.forwardNewMessage(chat);
+        prevController.resumeLoad();
+        this.timeline.stop();
         close();
     }
 
     private void close() {
         primaryStage.show();
+        prevController.resumeLoad();
+        this.timeline.stop();
         currentStage.close();
     }
 

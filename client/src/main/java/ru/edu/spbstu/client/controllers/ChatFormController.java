@@ -1,9 +1,11 @@
 package ru.edu.spbstu.client.controllers;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
@@ -15,13 +17,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.ScrollEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.util.Duration;
 import org.apache.http.client.HttpResponseException;
 import ru.edu.spbstu.client.services.ChatFormService;
 import ru.edu.spbstu.client.utils.ClientProperties;
@@ -37,14 +37,18 @@ import java.util.*;
 import static ru.edu.spbstu.utils.ImageUtils.clipImageRound;
 
 public class ChatFormController {
+
     public enum Mode {
         SEND,
         EDIT,
         REPLY,
     }
+    public void resumeLoad()
+    {
+        timeline.play();
+    }
 
-
-
+    Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), e -> loadAllChatPages()));
     private static HashMap<String, String> languageCBtoProperty = HashMap.newHashMap(2);
     public ListView<Chat> chatsListView;
     public TextField findChatTextBox;
@@ -97,6 +101,30 @@ public class ChatFormController {
         messagesListView.setItems(FXCollections.observableList(messageList));
         messagesPage = 1;
         messageOffset = 0;
+    }
+
+    private void handleChatSelect(MouseEvent event) {
+        if (event.getButton() != MouseButton.PRIMARY) {
+            return;
+        }
+        var curr = chatsListView.getSelectionModel().getSelectedItem();
+        if (curr != null) {
+
+            try {
+                messageList = service.getMessages(curr.getId(), 1);
+            } catch (IOException e) {
+                showError(bundle.getString("InternalErrorText"));
+                return;
+            }
+            messagesPage = 1;
+            messageOffset = 0;
+            messagesListView.setItems(FXCollections.observableList(messageList));
+            if (sendButtonMode != Mode.SEND) {
+                switchToSendMode();
+            }
+        } else {
+            messagesListView.setItems(FXCollections.observableList(new ArrayList<>()));
+        }
     }
 
     private ListCell<Message> cellListFiller() {
@@ -314,6 +342,7 @@ public class ChatFormController {
             forwardMessageFormController.init();
 
             nstage.show();
+            this.timeline.pause();
             currStage.hide();
 
         } catch (IOException e) {
@@ -397,6 +426,7 @@ public class ChatFormController {
             Parent window;
             window = fmxlLoader.load();
             var conC = fmxlLoader.<ConfigureChatFormController>getController();
+            conC.setPrevController(this);
             conC.setBundle(bundle);
             Scene scene = new Scene(window, 700, 500);
             conC.setLogin(this.service.getLogin());
@@ -410,6 +440,7 @@ public class ChatFormController {
             conC.setPrimaryStage(this.currStage);
             conC.init();
             nstage.show();
+            this.timeline.pause();
             this.currStage.hide();
         } catch (IOException e) {
             e.printStackTrace();
@@ -607,29 +638,7 @@ public class ChatFormController {
             return;
         }
         chatsListView.setItems(FXCollections.observableList(chatList));
-        chatsListView.setOnMouseClicked(event -> {
-            if (event.getButton() != MouseButton.PRIMARY) {
-                return;
-            }
-            var curr = chatsListView.getSelectionModel().getSelectedItem();
-            if (curr != null) {
-
-                try {
-                    messageList = service.getMessages(curr.getId(), 1);
-                } catch (IOException e) {
-                    showError(bundle.getString("InternalErrorText"));
-                    return;
-                }
-                messagesPage = 1;
-                messageOffset = 0;
-                messagesListView.setItems(FXCollections.observableList(messageList));
-                if (sendButtonMode!=Mode.SEND) {
-                    switchToSendMode();
-                }
-            } else {
-                messagesListView.setItems(FXCollections.observableList(new ArrayList<>()));
-            }
-        });
+        chatsListView.setOnMouseClicked(this::handleChatSelect);
         sendMessageButton.setDisable(true);
 
         currStage.addEventHandler(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {
@@ -645,7 +654,11 @@ public class ChatFormController {
         currStage.setOnCloseRequest(e -> {
             primaryStage.show();
             currStage.close();
+            timeline.stop();
         });
+
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.playFromStart();
     }
 
 
@@ -654,6 +667,7 @@ public class ChatFormController {
     private void logOutAction() {
         currStage.close();
         primaryStage.show();
+        timeline.stop();
     }
 
     public void logOutMouseClick() {
@@ -699,18 +713,16 @@ public class ChatFormController {
     @Deprecated
     void update() {
         try {
-
             chatList = service.getChats(1);
         } catch (IOException e) {
             bundle.getString("InternalErrorText");
-            //showError("Ошибка при получении чатов" + e.getMessage() + " !");
             return;
         }
 
         chatsListView.setItems(FXCollections.observableArrayList(chatList));
     }
 
-    void loadMessagePage(Long chat_id) {
+    void loadMessagePage(Long chat_id,boolean scroll) {
         try {
             messagesPage++;
             List<Message> temp = service.getMessages(chat_id, messagesPage);
@@ -725,10 +737,58 @@ public class ChatFormController {
             showError(bundle.getString("InternalErrorText"));
             messageList = new ArrayList<>();
         }
+        if(scroll)
         messagesListView.setItems(FXCollections.observableList(messageList));
     }
 
-    void loadChatPage() {
+    private void loadAllChatPages()
+    {
+        int temp=(findMode)?chatsFindPage:chatsPage;
+        int index=chatsListView.getSelectionModel().getSelectedIndex();
+        findChatsEvent();
+        for (int i=1;i<temp;i++)
+        {
+            loadChatPage(false);
+        }
+        chatsListView.setItems(FXCollections.observableList((findMode)?foundChatsList:chatList));
+        chatsListView.getSelectionModel().select(index);
+        if(index!=-1)
+        {
+
+
+            int mindex=messagesListView.getSelectionModel().getSelectedIndex();
+            int temp2=messagesPage;
+
+
+            var curr = chatsListView.getSelectionModel().getSelectedItem();
+            if (curr != null) {
+
+                try {
+                    messageList = service.getMessages(curr.getId(), 1);
+                } catch (IOException e) {
+                    showError(bundle.getString("InternalErrorText"));
+                    return;
+                }
+                messagesPage = 1;
+                messageOffset = 0;
+               // messagesListView.setItems(FXCollections.observableList(messageList));
+               /* if (sendButtonMode != Mode.SEND) {
+                    switchToSendMode();
+                }*/
+            } else {
+               // messagesListView.setItems(FXCollections.observableList(new ArrayList<>()));
+            }
+            for (int i=1;i<temp2;i++) {
+                loadMessagePage(chatsListView.getItems().get(index).getId(),false);
+            }
+            messagesListView.setItems(FXCollections.observableList(messageList));
+            messagesListView.getSelectionModel().select(mindex);
+
+        }
+    }
+
+
+    void loadChatPage(boolean scroll) {
         if (!findMode) {
             try {
                 chatsPage++;
@@ -744,7 +804,8 @@ public class ChatFormController {
                 showError(bundle.getString("InternalErrorText"));
                 chatList = new ArrayList<>();
             }
-            chatsListView.setItems(FXCollections.observableList(chatList));
+            if(scroll)
+                chatsListView.setItems(FXCollections.observableList(chatList));
         } else {
             try {
                 chatsFindPage++;
@@ -760,7 +821,8 @@ public class ChatFormController {
                 showError(bundle.getString("InternalErrorText"));
                 foundChatsList = new ArrayList<>();
             }
-            chatsListView.setItems(FXCollections.observableList(foundChatsList));
+            if(scroll)
+                chatsListView.setItems(FXCollections.observableList(foundChatsList));
         }
     }
 
@@ -787,6 +849,7 @@ public class ChatFormController {
         conC.init();
 
         nstage.show();
+        this.timeline.pause();
         this.currStage.hide();
     }
 
@@ -891,7 +954,7 @@ public class ChatFormController {
 
     public void scrollMethod(ScrollEvent scrollEvent) {
         if (scrollEvent.getDeltaY() < 0) {
-            loadChatPage();
+            loadChatPage(true);
         }
     }
 
@@ -899,7 +962,7 @@ public class ChatFormController {
     public void messagesScroll(ScrollEvent scrollEvent) {
         if (scrollEvent.getDeltaY() < 0) {
             if (chatsListView.getSelectionModel().getSelectedItem() != null) {
-                loadMessagePage(chatsListView.getSelectionModel().getSelectedItem().getId());
+                loadMessagePage(chatsListView.getSelectionModel().getSelectedItem().getId(),true);
             } else {
                 resetMessages();
             }
@@ -950,6 +1013,7 @@ public class ChatFormController {
         profileFormController.init();
 
         nstage.show();
+        this.timeline.pause();
         currStage.hide();
     }
 

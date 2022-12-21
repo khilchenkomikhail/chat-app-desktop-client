@@ -39,12 +39,15 @@ public class ListViewWithCheckBoxes extends ListView<HboxCellWithCheckboxes> {
     }
     public void resetList(List<ChatUser> arr,List<Image> avatars)
     {
+        var prev=this.getItems();
         this.setFixedCellSize(50);
         this.lst=arr;
         List<HboxCellWithCheckboxes> list = new ArrayList<>();
         for ( int i=0;i<lst.size();i++)
         {
+
             ChatUser current_item=lst.get(i);
+
             HboxCellWithCheckboxes temp=new HboxCellWithCheckboxes(current_item.getLogin(),i,avatars.get(i));
 
             temp.adminCB.setOnAction(handler);
@@ -53,6 +56,13 @@ public class ListViewWithCheckBoxes extends ListView<HboxCellWithCheckboxes> {
             {
                 temp.adminCB.setDisable(true);
                 temp.deleteCB.setDisable(true);
+            }
+            for (int j=0;j<prev.size();j++)
+            {
+                if(prev.get(j).label.getText().equals(current_item.getLogin()))
+                {
+                    temp=prev.get(j);
+                }
             }
             list.add(temp);
         }

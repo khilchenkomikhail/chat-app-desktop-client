@@ -124,15 +124,11 @@ public class fillServer {
             addChat("chat"+ i,temp1);
         }
         List<Chat> chats=getChats(1);
-        /*Collections.reverse(chats);
-        var temp=getChats(2);
-        Collections.reverse(temp);
+        /*var temp=getChats(2);
         chats.addAll(temp);
         temp=getChats(3);
-        Collections.reverse(temp);
         chats.addAll(temp);
         temp=getChats(4);
-        Collections.reverse(temp);
         chats.addAll(temp);*/
         for(int i=0;i<=0;i++)
         {

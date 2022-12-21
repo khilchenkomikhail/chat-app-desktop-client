@@ -1,11 +1,15 @@
 package ru.edu.spbstu.client.controllers;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import ru.edu.spbstu.client.exception.InvalidDataException;
 import ru.edu.spbstu.client.services.ConfigureChatFormService;
 import ru.edu.spbstu.clientComponents.ListViewWithButtons;
@@ -45,6 +49,56 @@ public class ConfigureChatFormController {
     private Chat chatToConfigure;
     private ChatFormController prevController;
     private ResourceBundle bundle;
+    Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), e -> loadAllChatMembers()));
+
+    private void loadAllChatMembers() {
+
+
+        List<ChatUser> userList= null;
+        try {
+            userList = service.getChatMembers(chatToConfigure);
+        } catch (IOException e) {
+            showError(bundle.getString("InternalErrorText"));
+            closeStage();
+            return;
+        }
+        var temp=new ChatUser();
+        for(var elem:userList)
+        {
+            if(elem.getLogin().equals(service.getLogin()))
+            {
+                temp=elem;
+                break;
+            }
+        }
+        if(temp.equals(new ChatUser()))
+        {
+            showInfo(bundle.getString("ExcludedFromChat"));
+            closeStage();
+            return;
+        }
+        user=temp;
+        if(!user.getIs_admin())
+        {
+            return;
+        }
+        if (mainTabPanel.getTabs().size() < 2) {
+            System.out.println("add tab");
+            mainTabPanel.getTabs().add(tabChatSettings);//Todo return second tab
+        }
+        if(userList.size()==1)
+        {
+            userList=new ArrayList<>();
+            tabChatSettings.setDisable(true);
+        }
+        else
+        {
+            userList.remove(user);
+        }
+        ArrayList<Image> images=service.getImageList(userList);
+        chatMembersConfigurationLV.resetList(userList,images);
+
+    }
 
 
     public ResourceBundle getBundle() {
@@ -74,9 +128,24 @@ public class ConfigureChatFormController {
 
 
     }
-    void init() throws IOException {
+    private void closeStage()
+    {
+        primaryStage.show();
+        this.timeline.stop();
+        prevController.resumeLoad();
+        currStage.close();
+    }
+    void init() {
         AddUserButton.setDisable(true);
-        List<ChatUser> userList=service.getChatMembers(chatToConfigure);
+        List<ChatUser> userList= null;
+        try {
+            userList = service.getChatMembers(chatToConfigure);
+        } catch (IOException e) {
+
+            showError(bundle.getString("InternalErrorText"));
+            closeStage();
+            return;
+        }
         for(var elem:userList)
         {
             if(elem.getLogin().equals(service.getLogin()))
@@ -103,9 +172,11 @@ public class ConfigureChatFormController {
         chatMembersConfigurationLV.resetList(userList,images);
 
         currStage.setOnCloseRequest(e -> {
-            primaryStage.show();
-            currStage.close();
+            closeStage();
         });
+        chatNameLabel.setText(chatToConfigure.getName());
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.playFromStart();
     }
 
     public void addUsersToChatButtonPress() throws IOException {
@@ -208,12 +279,19 @@ public class ConfigureChatFormController {
             image=new Image((getClass().getResource("/images/dAvatar.bmp")).getPath().replaceFirst("/",""));
         }
         usersToAddListView.addInList(user,image);
-       // mainTabPanel.getTabs().add(tabChatSettings);//Todo return second tab
+
     }
 
     private void showError(String s) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(bundle.getString("Error"));
+        alert.setHeaderText(s);
+        alert.show();
+    }
+
+    private void showInfo(String s) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(bundle.getString("InformationHeader"));
         alert.setHeaderText(s);
         alert.show();
     }

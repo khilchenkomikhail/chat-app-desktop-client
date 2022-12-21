@@ -113,7 +113,7 @@
           </Tab>
         </tabs>
       </TabPane>
-      <Label fx:id="chatNameLabel" layoutX="244.0" layoutY="4.0" prefHeight="20.0" prefWidth="213.0">
+      <Label fx:id="chatNameLabel" alignment="CENTER" layoutX="244.0" layoutY="4.0" prefHeight="20.0" prefWidth="213.0" textAlignment="CENTER">
          <font>
             <Font name="Times New Roman Bold" size="18.0" />
          </font>

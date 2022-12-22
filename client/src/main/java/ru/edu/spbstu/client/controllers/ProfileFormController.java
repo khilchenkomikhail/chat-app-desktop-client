@@ -68,7 +68,7 @@ public class ProfileFormController {
         changePasswordButton.setDisable(true);
     }
 
-    void init() {
+    void init() throws IOException {
         userLoginLabel.setText(profileFormService.getLogin());
         try {
             byte[] imageBytes = profileFormService.getProfilePicture();
@@ -78,6 +78,7 @@ public class ProfileFormController {
             showError(e.getMessage());
         }
 
+        emailTextField.setText(profileFormService.getEmail());
 
         currentStage.setOnCloseRequest(e -> {
             close();
@@ -145,11 +146,11 @@ public class ProfileFormController {
             return;
         }
         try {
-            profileFormService.changeEmail(emailTextField.getText(), newEmailTextField.getText());
+            profileFormService.changeEmail(newEmailTextField.getText());
             Alert alert = new Alert(Alert.AlertType.INFORMATION, bundle.getString("emailChangedInfo"));
             alert.setTitle(bundle.getString("emailChangedTitle"));
             alert.show();
-            emailTextField.setText("");
+            emailTextField.setText(newEmailTextField.getText());
             newEmailTextField.setText("");
             changeEmailButton.setDisable(true);
         } catch (InvalidDataException e) {

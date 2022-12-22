@@ -13,7 +13,7 @@
 <?import javafx.scene.text.Font?>
 <?import ru.edu.spbstu.clientComponents.PasswordTextField?>
 
-<AnchorPane prefHeight="547.0" prefWidth="702.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.edu.spbstu.client.controllers.ProfileFormController">
+<AnchorPane prefHeight="598.0" prefWidth="701.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.edu.spbstu.client.controllers.ProfileFormController">
    <children>
       <GridPane prefWidth="703.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>

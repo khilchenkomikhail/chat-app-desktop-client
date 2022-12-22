@@ -1000,8 +1000,8 @@ public class ChatFormController {
         profileFormController.setLogin(service.getLogin());
         Stage nstage = new Stage();
         nstage.setScene(scene);
-        nstage.setTitle("Profile");
-        nstage.setMinHeight(500);
+        nstage.setTitle(bundle.getString("profileTitle"));
+        nstage.setMinHeight(525);
         nstage.setMinWidth(700);
         nstage.setMaxHeight(750);
         nstage.setMaxWidth(1050);

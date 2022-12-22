@@ -47,8 +47,6 @@ public class ProfileFormService {
             return Base64.getDecoder().decode(json);
         }
 
-//      String imageString = jsonMapper.readValue(json, new TypeReference<>() {});
-        // TODO for debugging, remove later
     }
 
     public void setProfilePicture(byte[] imageBytes) throws IOException {

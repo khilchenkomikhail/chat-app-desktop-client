@@ -15,7 +15,6 @@ import javafx.stage.Stage;
 import org.apache.http.HttpStatus;
 import ru.edu.spbstu.client.exception.InvalidDataException;
 import ru.edu.spbstu.client.services.ProfileFormService;
-import ru.edu.spbstu.client.utils.Verifiers;
 import ru.edu.spbstu.clientComponents.PasswordTextField;
 
 import java.io.ByteArrayInputStream;
@@ -32,9 +31,6 @@ public class ProfileFormController {
 
     @FXML
     private ImageView profilePictureImageView;
-
-    @FXML
-    private Button changeProfilePictureButton;
 
     @FXML
     private TextField emailTextField;
@@ -72,7 +68,7 @@ public class ProfileFormController {
         changePasswordButton.setDisable(true);
     }
 
-    void init() {
+    void init() throws IOException {
         userLoginLabel.setText(profileFormService.getLogin());
         try {
             byte[] imageBytes = profileFormService.getProfilePicture();
@@ -82,13 +78,19 @@ public class ProfileFormController {
             showError(e.getMessage());
         }
 
+        emailTextField.setText(profileFormService.getEmail());
 
         currentStage.setOnCloseRequest(e -> {
-            prevController.setLogin(profileFormService.getLogin());
-            primaryStage.show();
-            prevController.resumeLoad();
-            currentStage.close();
+            close();
         });
+    }
+
+    @FXML
+    private void close() {
+        prevController.setLogin(profileFormService.getLogin());
+        primaryStage.show();
+        prevController.resumeLoad();
+        currentStage.close();
     }
 
     public ProfileFormController() {
@@ -98,13 +100,14 @@ public class ProfileFormController {
 
     private void showError(String errorText) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(bundle.getString("Error"));
         alert.setHeaderText(errorText);
         alert.show();
     }
 
     public void changeProfilePictureButtonPress(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Выберите аватар");
+        fileChooser.setTitle(bundle.getString("choosePicture"));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG/JPEG", "*.png", "*.jpeg","*.jpg"));
         File file = fileChooser.showOpenDialog(currentStage);
         if (file == null) {
@@ -114,11 +117,11 @@ public class ProfileFormController {
             byte[] fileContent = Files.readAllBytes(file.toPath());
             Image image = new Image(new ByteArrayInputStream(fileContent));
             if (image.getHeight() > 1000 || image.getWidth() > 1000) {
-                showError("Ширина или высота изображения превышает максимальный размер (1000)");
+                showError(bundle.getString("pictureSizeTooBigError"));
                 return;
             }
             if (image.getHeight() < 200 || image.getWidth() < 200) {
-                showError("Ширина или высота изображения не достигает минимального размера (200)");
+                showError(bundle.getString("pictureSizeTooSmallError"));
                 return;
             }
             profileFormService.setProfilePicture(fileContent);
@@ -134,10 +137,6 @@ public class ProfileFormController {
     }
 
     public void changeEmailButtonPress(ActionEvent actionEvent) {
-        /*if (!Verifiers.checkEmail(newEmailTextField.getText())) {
-            showError("Новый email не соответствует стандарту!");
-            return;
-        }*/
         try {
             checkEmail(newEmailTextField.getText());
         }
@@ -146,19 +145,17 @@ public class ProfileFormController {
             showError(bundle.getString(ex.getMessage()));
             return;
         }
-        if (newEmailTextField.getText().equals(emailTextField.getText())) {
-            showError("Указанные новый и старый email совпадают");
-            return;
-        }
         try {
-            profileFormService.changeEmail(emailTextField.getText(), newEmailTextField.getText());
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Email успешно изменен");
-            alert.setTitle("Email изменен");
+            profileFormService.changeEmail(newEmailTextField.getText());
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, bundle.getString("emailChangedInfo"));
+            alert.setTitle(bundle.getString("emailChangedTitle"));
             alert.show();
-            emailTextField.setText("");
+            emailTextField.setText(newEmailTextField.getText());
             newEmailTextField.setText("");
             changeEmailButton.setDisable(true);
-        } catch (InvalidDataException | IOException e) {
+        } catch (InvalidDataException e) {
+            showError(bundle.getString(e.getMessage()));
+        } catch (IOException e) {
             showError(e.getMessage());
         }
     }
@@ -186,25 +183,25 @@ public class ProfileFormController {
 
     public void changePasswordButtonPress(ActionEvent actionEvent) {
         if (!newPasswordTextField.getText().equals(repeatPasswordTextField.getText())) {
-            showError("Введенные пароли не совпадают");
+            showError(bundle.getString("passwordsDontMatchError"));
             return;
         }
         if (newPasswordTextField.getText().length() < 8 || newPasswordTextField.getText().length() > 128) {
-            showError("Поле пароль должно содержать не менее 8 символов и не более 128 символов!");
+            showError(bundle.getString("wrongPasswordLengthError"));
             return;
         }
         try {
             int code = profileFormService.changePassword(oldPasswordTextField.getText(), newPasswordTextField.getText());
             if (code == HttpStatus.SC_OK) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Пароль успешно изменен");
-                alert.setTitle("Пароль изменен");
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, bundle.getString("passwordChangedInfo"));
+                alert.setTitle(bundle.getString("passwordChangedTitle"));
                 alert.show();
                 oldPasswordTextField.setText("");
                 newPasswordTextField.setText("");
                 repeatPasswordTextField.setText("");
                 changePasswordButton.setDisable(true);
             } else if (code == HttpStatus.SC_BAD_REQUEST) {
-                showError("Старый пароль введен неверно");
+                showError(bundle.getString("wrongOldPasswordError"));
             }
         } catch (IOException e) {
             showError(e.getMessage());

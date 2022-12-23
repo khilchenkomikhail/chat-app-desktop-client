@@ -12,9 +12,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.util.EntityUtils;
-import ru.edu.spbstu.client.exception.InvalidDataException;
 import ru.edu.spbstu.client.utils.HttpClientFactory;
-import ru.edu.spbstu.request.CheckEmailRequest;
+import ru.edu.spbstu.model.User;
 import ru.edu.spbstu.request.EmailUpdateRequest;
 import ru.edu.spbstu.request.PasswordUpdateRequest;
 import ru.edu.spbstu.request.ProfilePhotoUpdateRequest;
@@ -47,8 +46,6 @@ public class ProfileFormService {
             return Base64.getDecoder().decode(json);
         }
 
-//      String imageString = jsonMapper.readValue(json, new TypeReference<>() {});
-        // TODO for debugging, remove later
     }
 
     public void setProfilePicture(byte[] imageBytes) throws IOException {
@@ -73,31 +70,29 @@ public class ProfileFormService {
         return login;
     }
 
-    public void changeEmail(String oldEmail, String newEmail) throws IOException {
-        String compareEmailUrlBlueprint = "http://localhost:8080/check_user_email";
+    public void changeEmail(String newEmail) throws IOException {
         String updateEmailUrlBlueprint = "http://localhost:8080/update_email";
 
         HttpClient client = HttpClientFactory.getInstance().getHttpClient();
-        CheckEmailRequest checkRequest = new CheckEmailRequest(login, oldEmail);
-        HttpPost httpPost = new HttpPost(compareEmailUrlBlueprint);
-        httpPost.setEntity(new StringEntity(jsonMapper.writeValueAsString(checkRequest), "UTF-8"));
+        EmailUpdateRequest updateRequest = new EmailUpdateRequest(login, newEmail);
+        HttpPost httpPost = new HttpPost(updateEmailUrlBlueprint);
+        httpPost.setEntity(new StringEntity(jsonMapper.writeValueAsString(updateRequest), "UTF-8"));
         httpPost.addHeader("content-type", "application/json");
-        HttpResponse checkResponse = client.execute(httpPost);
-        HttpClientFactory.tryUpdateRememberMe(checkResponse);
-        String json = EntityUtils.toString(checkResponse.getEntity());
-        Boolean isMatching = jsonMapper.readValue(json, new TypeReference<>() {
-        });
-        if (isMatching) {
-            EmailUpdateRequest updateRequest = new EmailUpdateRequest(login, newEmail);
-            httpPost = new HttpPost(updateEmailUrlBlueprint);
-            httpPost.setEntity(new StringEntity(jsonMapper.writeValueAsString(updateRequest), "UTF-8"));
-            httpPost.addHeader("content-type", "application/json");
-            HttpResponse updateResponse = client.execute(httpPost);
-        } else {
-            throw new InvalidDataException("Неверно указан старый email");
-        }
+        HttpResponse updateResponse = client.execute(httpPost);
+        HttpClientFactory.tryUpdateRememberMe(updateResponse);
     }
 
+    public String getEmail() throws IOException {
+        String updateEmailUrlBlueprint = "http://localhost:8080/get_user?login=%s";
+
+        HttpClient client = HttpClientFactory.getInstance().getHttpClient();
+        HttpGet httpGet = new HttpGet(String.format(updateEmailUrlBlueprint, login));
+        HttpResponse getEmailResponse = client.execute(httpGet);
+        HttpClientFactory.tryUpdateRememberMe(getEmailResponse);
+        String json = EntityUtils.toString(getEmailResponse.getEntity());
+        User user = jsonMapper.readValue(json, new TypeReference<>() {});
+        return user.getEmail();
+    }
     public int changePassword(String oldPassword, String newPassword) throws IOException {
         String updatePasswordUrlBlueprint = "http://localhost:8080/update_password";
 

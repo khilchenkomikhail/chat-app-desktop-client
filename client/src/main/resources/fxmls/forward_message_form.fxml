@@ -26,7 +26,7 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </GridPane.margin>
             </TextField>
-            <Button fx:id="forwardButton" mnemonicParsing="false" onAction="#forwardMessageButtonPress" prefHeight="25.0" prefWidth="115.0" text="Переслать" GridPane.columnIndex="1">
+            <Button fx:id="forwardButton" mnemonicParsing="false" onAction="#forwardMessageButtonPress" prefHeight="25.0" prefWidth="115.0" text="%forwardButton" GridPane.columnIndex="1">
                <GridPane.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </GridPane.margin></Button>

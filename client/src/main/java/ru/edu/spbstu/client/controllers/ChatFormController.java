@@ -324,7 +324,7 @@ public class ChatFormController {
             forwardMessageFormController.setLogin(service.getLogin());
             Stage nstage = new Stage();
             nstage.setScene(scene);
-            nstage.setTitle("Profile");
+            nstage.setTitle(bundle.getString("forwardTitle"));
             nstage.setMinHeight(500);
             nstage.setMinWidth(400);
             nstage.setMaxHeight(550);

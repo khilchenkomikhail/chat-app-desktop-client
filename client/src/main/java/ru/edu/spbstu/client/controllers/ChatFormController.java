@@ -43,13 +43,13 @@ public class ChatFormController {
         EDIT,
         REPLY,
     }
-    public void resumeLoad()
-    {
+
+    public void resumeLoad() {
         timeline.play();
     }
 
     Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), e -> loadAllChatPages()));
-    private static HashMap<String, String> languageCBtoProperty = HashMap.newHashMap(2);
+    private static final HashMap<String, String> languageCBtoProperty = HashMap.newHashMap(2);
     public ListView<Chat> chatsListView;
     public TextField findChatTextBox;
     public Button sendMessageButton;
@@ -67,7 +67,7 @@ public class ChatFormController {
     public ComboBox<String> LanguageComboBox;
     public Button logOutButton;
     //boolean EditMode = false;
-    private Mode sendButtonMode=Mode.SEND;
+    private Mode sendButtonMode = Mode.SEND;
     private int messageToEdit = -1;
     private Message messageToEditVal;
 
@@ -211,26 +211,21 @@ public class ChatFormController {
                     GridPane.setMargin(username, new Insets(0, 0, 20, 5));
                     pane.add(username, 1, 0);
 
-                    Date dat=message.getDate();
-
+                    Date dat = message.getDate();
                     LocalDate localDate = dat.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                    int year  = localDate.getYear();
+                    int year = localDate.getYear();
                     int month = localDate.getMonthValue();
-                    int day   = localDate.getDayOfMonth();
-                    String minute=(dat.getMinutes()<10)?String.format("0%d",dat.getMinutes()):
-                            String.format("%d",dat.getMinutes());
-                    String hour=(dat.getHours()<10)?String.format("0%d",dat.getHours()):
-                            String.format("%d",dat.getHours());
+                    int day = localDate.getDayOfMonth();
+                    String minute = (dat.getMinutes() < 10) ? String.format("0%d", dat.getMinutes()) :
+                            String.format("%d", dat.getMinutes());
+                    String hour = (dat.getHours() < 10) ? String.format("0%d", dat.getHours()) :
+                            String.format("%d", dat.getHours());
                     //dat.toString()
-                    String date2=(String.format("%d.%d.%d %s:%s",day,month,year,
-                            hour,minute));
+                    String date2 = (String.format("%d.%d.%d %s:%s", day, month, year,
+                            hour, minute));
                     Label date = new Label(date2);
                     GridPane.setHalignment(date, HPos.RIGHT);
                     GridPane.setValignment(date, VPos.TOP);
-                    if (message.getIs_forwarded()) {
-                        //  date.setFont(new Font(10));
-                        //  username.setFont(new Font(10));
-                    }
                     GridPane.setMargin(date, new Insets(0, 5, 0, 0));
                     pane.add(date, 2, 0);
 
@@ -251,9 +246,9 @@ public class ChatFormController {
 
 
                     GridPane.setValignment(messageContents, VPos.TOP);
-                    int multiplier=userText.length()/60;
+                    int multiplier = userText.length() / 60;
 
-                    GridPane.setMargin(messageContents, new Insets(35+multiplier*20, 0, 20, 5));
+                    GridPane.setMargin(messageContents, new Insets(35 + multiplier * 20, 0, 20, 5));
                     pane.add(messageContents, 1, 0, 2, 2);
                     messageContents.setStyle("-fx-background-radius: 5");
                     imageHbox.setStyle("-fx-background-color: white");
@@ -287,7 +282,7 @@ public class ChatFormController {
                         if (cell.getItem().getIs_deleted()) {
                             return;
                         }
-                        if (s1.equals(s2)&&!cell.getItem().getIs_forwarded()) {
+                        if (s1.equals(s2) && !cell.getItem().getIs_forwarded()) {
                             messageMenu.show(messagesListView.getScene().getWindow(), event.getScreenX(), event.getScreenY());
                         } else {
                             messageMenu2.show(messagesListView.getScene().getWindow(), event.getScreenX(), event.getScreenY());
@@ -316,7 +311,7 @@ public class ChatFormController {
     }
 
     private void forwardMessageAction(ActionEvent actionEvent) {
-        if (sendButtonMode!=Mode.SEND) {
+        if (sendButtonMode != Mode.SEND) {
             switchToSendMode();
         }
         FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/fxmls/forward_message_form.fxml"), bundle);
@@ -353,7 +348,7 @@ public class ChatFormController {
 
 
     private void exitAction(javafx.event.ActionEvent actionEvent) {
-        if (sendButtonMode!=Mode.SEND) {
+        if (sendButtonMode != Mode.SEND) {
             switchToSendMode();
         }
         Chat chat = chatsListView.getSelectionModel().getSelectedItem();
@@ -369,22 +364,18 @@ public class ChatFormController {
         try {
             if (userlist.size() <= 1) {
                 service.deleteChat(chat);
-            }
-            else {
-                var admins=userlist.stream().filter(ChatUser::getIs_admin).toList();
-                var users=userlist.stream().filter(user-> !user.getIs_admin()).toList();
-                boolean userL=admins.contains(new ChatUser(login,true));
+            } else {
+                var admins = userlist.stream().filter(ChatUser::getIs_admin).toList();
+                var users = userlist.stream().filter(user -> !user.getIs_admin()).toList();
+                boolean userL = admins.contains(new ChatUser(login, true));
 
-                if(!userL) {
+                if (!userL) {
                     service.leaveChat(chatId, login);
-                }
-                else
-                {
-                    if(admins.size()==1)
-                    {
+                } else {
+                    if (admins.size() == 1) {
                         Random rand = new Random();
                         ChatUser randomUser = users.get(rand.nextInt(users.size()));
-                        service.setChatUsersAdmins(chat,randomUser.getLogin());
+                        service.setChatUsersAdmins(chat, randomUser.getLogin());
                     }
                     service.leaveChat(chatId, login);
                 }
@@ -393,7 +384,6 @@ public class ChatFormController {
             showError(bundle.getString("InternalErrorText"));
             return;
         }
-
         if (!findMode) {
             chatsListView.setItems(FXCollections.observableList(chatList));
             chatsOffset--;
@@ -418,7 +408,7 @@ public class ChatFormController {
     }
 
     private void configAction(javafx.event.ActionEvent actionEvent) {
-        if (sendButtonMode!=Mode.SEND) {
+        if (sendButtonMode != Mode.SEND) {
             switchToSendMode();
         }
         try {
@@ -448,17 +438,18 @@ public class ChatFormController {
         contextMenu.hide();
 
     }
+
     private void replyMessageAction(ActionEvent actionEvent) {
-        if(sendButtonMode!=Mode.SEND)
-        {
+        if (sendButtonMode != Mode.SEND) {
             switchToSendMode();
         }
         sendMessageButton.setText(bundle.getString("AnswerMessageButton"));
         sendMessageButton.setOnAction(this::replyMessageButtonAction);
         messageToEdit = messagesListView.getSelectionModel().getSelectedIndex();
         messageToEditVal = messagesListView.getSelectionModel().getSelectedItem();
-        sendButtonMode=Mode.REPLY;
+        sendButtonMode = Mode.REPLY;
     }
+
     public void forwardNewMessage(Chat chatToForward)//эту функцию вызови при пересылке сообщений форме(саму форму нужно скорее всего закрыть)
     {
         Message selectedMessage = messagesListView.getSelectionModel().getSelectedItem();
@@ -472,27 +463,24 @@ public class ChatFormController {
             return;
         }
         resetMessages();//очистим все сообщения(сбросим номер страницы)
-        messageList=temp;//заберём страницу сообщений
+        messageList = temp;//заберём страницу сообщений
         messagesListView.setItems(FXCollections.observableList(messageList));
         //переместим чат навер в списке
         chatList.remove(chatToForward);
-        chatList.add(0,chatToForward);
+        chatList.add(0, chatToForward);
         chatsListView.setItems(FXCollections.observableList(chatList));
         chatsListView.getSelectionModel().select(0);
     }
 
     private void replyMessageButtonAction(ActionEvent actionEvent) {
-        if(messageTextArea.getText().length()>512)
-        {
+        if (messageTextArea.getText().length() > 512) {
             showError(bundle.getString("MessageToBigError"));
             return;
         }
-        var currChat=chatsListView.getSelectionModel().getSelectedItem();
+        var currChat = chatsListView.getSelectionModel().getSelectedItem();
         try {
-            service.forwardMessage(messageToEditVal.getId(),service.getLogin(),currChat.getId());
-        }
-        catch (IOException ex)
-        {
+            service.forwardMessage(messageToEditVal.getId(), service.getLogin(), currChat.getId());
+        } catch (IOException ex) {
             showError(bundle.getString("InternalErrorText"));
             return;
         }
@@ -507,7 +495,6 @@ public class ChatFormController {
         }
 
 
-
         messageList.add(0, temp.get(0));
         messageOffset++;
         if (messageOffset == MESSAGE_PAGE_SIZE) {
@@ -520,8 +507,7 @@ public class ChatFormController {
 
 
     private void editMessageAction(javafx.event.ActionEvent actionEvent) {
-        if(sendButtonMode!=Mode.SEND)
-        {
+        if (sendButtonMode != Mode.SEND) {
             switchToSendMode();
         }
         messageTextArea.setText(messagesListView.getSelectionModel().getSelectedItem().getContent());
@@ -529,18 +515,18 @@ public class ChatFormController {
         sendMessageButton.setOnAction(this::editMessageButtonAction);
         messageToEdit = messagesListView.getSelectionModel().getSelectedIndex();
         messageToEditVal = messagesListView.getSelectionModel().getSelectedItem();
-        sendButtonMode=Mode.EDIT;
+        sendButtonMode = Mode.EDIT;
         //EditMode = true;
     }
+
     private void switchToSendMode() {
         sendMessageButton.setText(bundle.getString("SendMessageButton"));
-        if(sendButtonMode==Mode.EDIT)
+        if (sendButtonMode == Mode.EDIT)
             messageTextArea.setText("");
         sendMessageButton.setDisable(true);
         sendMessageButton.setOnAction(this::sendMessageButtonClick);
 
-        //EditMode = false;
-        sendButtonMode=Mode.SEND;
+        sendButtonMode = Mode.SEND;
         messageToEdit = -1;
         messageToEditVal = null;
     }
@@ -563,7 +549,7 @@ public class ChatFormController {
     }
 
     private void deleteMessageAction(javafx.event.ActionEvent actionEvent) {
-        if (sendButtonMode!=Mode.SEND) {
+        if (sendButtonMode != Mode.SEND) {
             switchToSendMode();
         }
         var message = messagesListView.getSelectionModel().getSelectedItem();
@@ -618,14 +604,14 @@ public class ChatFormController {
         menuItem22.setOnAction(this::deleteMessageAction);
         menuItem23.setOnAction(this::forwardMessageAction);
         menuItem24.setOnAction(this::replyMessageAction);
-        messageMenu.getItems().addAll(menuItem21,menuItem22,menuItem23,menuItem24);
+        messageMenu.getItems().addAll(menuItem21, menuItem22, menuItem23, menuItem24);
 
 
         javafx.scene.control.MenuItem menu31 = new javafx.scene.control.MenuItem(bundle.getString("ForwardMessageButton"));
         javafx.scene.control.MenuItem menu32 = new javafx.scene.control.MenuItem(bundle.getString("AnswerMessageButton"));
         menu31.setOnAction(this::forwardMessageAction);
         menu32.setOnAction(this::replyMessageAction);
-        messageMenu2.getItems().addAll(menu31,menu32);
+        messageMenu2.getItems().addAll(menu31, menu32);
 
         try {
             chatList = service.getChats(1);
@@ -643,7 +629,7 @@ public class ChatFormController {
 
         currStage.addEventHandler(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {
             if (KeyCode.ESCAPE == event.getCode()) {
-                if (sendButtonMode!=Mode.SEND) {
+                if (sendButtonMode != Mode.SEND) {
                     switchToSendMode();
                 }
             }
@@ -660,8 +646,6 @@ public class ChatFormController {
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.playFromStart();
     }
-
-
 
 
     private void logOutAction() {
@@ -722,7 +706,7 @@ public class ChatFormController {
         chatsListView.setItems(FXCollections.observableArrayList(chatList));
     }
 
-    void loadMessagePage(Long chat_id,boolean scroll) {
+    void loadMessagePage(Long chat_id, boolean scroll) {
         try {
             messagesPage++;
             List<Message> temp = service.getMessages(chat_id, messagesPage);
@@ -737,53 +721,56 @@ public class ChatFormController {
             showError(bundle.getString("InternalErrorText"));
             messageList = new ArrayList<>();
         }
-        if(scroll)
-        messagesListView.setItems(FXCollections.observableList(messageList));
+        if (scroll)
+            messagesListView.setItems(FXCollections.observableList(messageList));
     }
 
-    private void loadAllChatPages()
-    {
-        int temp=(findMode)?chatsFindPage:chatsPage;
-        int index=chatsListView.getSelectionModel().getSelectedIndex();
+    private void loadAllChatPages() {
+        int temp = (findMode) ? chatsFindPage : chatsPage;
+        int index = chatsListView.getSelectionModel().getSelectedIndex();
         findChatsEvent();
-        for (int i=1;i<temp;i++)
-        {
+        for (int i = 1; i < temp; i++) {
             loadChatPage(false);
         }
-        chatsListView.setItems(FXCollections.observableList((findMode)?foundChatsList:chatList));
+        chatsListView.setItems(FXCollections.observableList((findMode) ? foundChatsList : chatList));
         chatsListView.getSelectionModel().select(index);
-        if(index!=-1)
-        {
+        if (index != -1) {
 
 
-            int mindex=messagesListView.getSelectionModel().getSelectedIndex();
-            int temp2=messagesPage;
+            int mindex = messagesListView.getSelectionModel().getSelectedIndex();
+            int temp2 = messagesPage;
 
 
             var curr = chatsListView.getSelectionModel().getSelectedItem();
-            if (curr != null) {
 
-                try {
-                    messageList = service.getMessages(curr.getId(), 1);
-                } catch (IOException e) {
-                    showError(bundle.getString("InternalErrorText"));
-                    return;
+            try {
+                messageList = service.getMessages(curr.getId(), 1);
+            } catch (IOException e) {
+                showError(bundle.getString("InternalErrorText"));
+                return;
+            }
+            messagesPage = 1;
+            messageOffset = 0;
+            for (int i = 1; i < temp2; i++) {
+                loadMessagePage(chatsListView.getItems().get(index).getId(), false);
+            }
+            var Nlist=FXCollections.observableList(messageList);
+            int diff= Nlist.size()-messagesListView.getItems().size();
+            if(diff!=0)
+                messagesListView.getItems().addAll(Nlist.subList(0,diff));
+            for(int i=diff;i<Nlist.size();i++)
+            {
+                if (!Nlist.get(i).equals(messagesListView.getItems().get(i)))
+                {
+                    messagesListView.getItems().set(i,Nlist.get(i));
                 }
-                messagesPage = 1;
-                messageOffset = 0;
-               // messagesListView.setItems(FXCollections.observableList(messageList));
-               /* if (sendButtonMode != Mode.SEND) {
-                    switchToSendMode();
-                }*/
-            } else {
-               // messagesListView.setItems(FXCollections.observableList(new ArrayList<>()));
             }
-            for (int i=1;i<temp2;i++) {
-                loadMessagePage(chatsListView.getItems().get(index).getId(),false);
-            }
-            messagesListView.setItems(FXCollections.observableList(messageList));
-            messagesListView.getSelectionModel().select(mindex);
-
+            messagesListView.getSelectionModel().select(mindex+diff);
+            /*if(!Nlist.equals(messagesListView.getItems()))
+            {
+                messagesListView.setItems(Nlist);
+                messagesListView.getSelectionModel().select(mindex+diff);
+            }*/
         }
     }
 
@@ -804,7 +791,7 @@ public class ChatFormController {
                 showError(bundle.getString("InternalErrorText"));
                 chatList = new ArrayList<>();
             }
-            if(scroll)
+            if (scroll)
                 chatsListView.setItems(FXCollections.observableList(chatList));
         } else {
             try {
@@ -821,14 +808,14 @@ public class ChatFormController {
                 showError(bundle.getString("InternalErrorText"));
                 foundChatsList = new ArrayList<>();
             }
-            if(scroll)
+            if (scroll)
                 chatsListView.setItems(FXCollections.observableList(foundChatsList));
         }
     }
 
 
     public void addChatButtonClick() throws IOException {
-        if (sendButtonMode!=Mode.SEND) {
+        if (sendButtonMode != Mode.SEND) {
             switchToSendMode();
         }
         resetMessages();
@@ -913,8 +900,7 @@ public class ChatFormController {
     }
 
     public void sendMessageButtonClick(ActionEvent actionEvent) {
-        if(messageTextArea.getText().length()>512)
-        {
+        if (messageTextArea.getText().length() > 512) {
             showError(bundle.getString("MessageToBigError"));
             return;
         }
@@ -936,7 +922,6 @@ public class ChatFormController {
         }
 
 
-
         messageList.add(0, temp.get(0));
         messageOffset++;
         if (messageOffset == MESSAGE_PAGE_SIZE) {
@@ -947,7 +932,7 @@ public class ChatFormController {
         messageTextArea.setText("");
         sendMessageButton.setDisable(true);
         chatList.remove(chatsListView.getSelectionModel().getSelectedIndex());
-        chatList.add(0,curr);
+        chatList.add(0, curr);
         chatsListView.setItems(FXCollections.observableList(chatList));
         chatsListView.getSelectionModel().select(0);
     }
@@ -962,7 +947,7 @@ public class ChatFormController {
     public void messagesScroll(ScrollEvent scrollEvent) {
         if (scrollEvent.getDeltaY() < 0) {
             if (chatsListView.getSelectionModel().getSelectedItem() != null) {
-                loadMessagePage(chatsListView.getSelectionModel().getSelectedItem().getId(),true);
+                loadMessagePage(chatsListView.getSelectionModel().getSelectedItem().getId(), true);
             } else {
                 resetMessages();
             }
@@ -975,7 +960,7 @@ public class ChatFormController {
             messageTextArea.setText("");
             return;
         }
-        if (sendButtonMode==Mode.EDIT)
+        if (sendButtonMode == Mode.EDIT)
             if (messageTextArea.getText().equals(messageToEditVal.getContent())) {
                 sendMessageButton.setDisable(true);
                 return;
@@ -986,7 +971,7 @@ public class ChatFormController {
 
 
     public void profileButtonPress(ActionEvent actionEvent) throws IOException {
-        if (sendButtonMode!=Mode.SEND) {
+        if (sendButtonMode != Mode.SEND) {
             switchToSendMode();
         }
         resetMessages();
@@ -1020,23 +1005,20 @@ public class ChatFormController {
     private void messageKeyTyped() {
         if (messageTextArea.getText().length() == 512) {
             curGreatestMessage = messageTextArea.getText();
-        }
-        else if (messageTextArea.getText().length() > 512) {
+        } else if (messageTextArea.getText().length() > 512) {
             if (curGreatestMessage.length() == 0) {
                 curGreatestMessage = messageTextArea.getText().substring(0, 512);
                 messageTextArea.setText(curGreatestMessage);
                 messageTextArea.positionCaret(512);
                 messageTextArea.setScrollTop(100.);
-            }
-            else {
+            } else {
                 int caretPosition = messageTextArea.getCaretPosition();
                 double scrollTop = messageTextArea.getScrollTop();
                 messageTextArea.setText(curGreatestMessage);
                 messageTextArea.positionCaret(caretPosition - 1);
                 messageTextArea.setScrollTop(scrollTop);
             }
-        }
-        else {
+        } else {
             curGreatestMessage = "";
         }
     }

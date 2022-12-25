@@ -6,6 +6,7 @@ import javax.sql.DataSource;
 
 import lombok.AllArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,9 +15,14 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import ru.edu.spbstu.security.datemanagement.CustomBasicAuthFilter;
+import ru.edu.spbstu.security.datemanagement.RemMeAuthSuccHand;
+import ru.edu.spbstu.security.datemanagement.TokenCreationDateRepo;
 
 @Configuration
 @EnableWebSecurity
@@ -26,23 +32,28 @@ public class SecurityConfig {
     private final ApplicationUserService applicationUserService;
     private final PasswordEncoder passwordEncoder;
     private final DataSource dataSource;
+    private final RemMeAuthSuccHand remMeAuthSuccHand;
+    private final TokenCreationDateRepo tokenCreationDateRepo;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   @Autowired AuthenticationManager authManager) throws Exception {
         http
+                .addFilterAt(new CustomBasicAuthFilter(authManager, tokenCreationDateRepo), BasicAuthenticationFilter.class)
                 .csrf().disable()
                 .headers().frameOptions().disable()
                 .and()
                     .authorizeRequests()
-                    .antMatchers("/register", "/send-tmp-password","/check_user_email", "/is_user_present","/is_email_used").permitAll()
+                    .antMatchers("/register", "/send-tmp-password","/check_user_email", "/is_user_present","/is_email_used", "h2-console/**").permitAll()
                     .anyRequest()
                     .authenticated()
                 .and()
                 .rememberMe()
                     .userDetailsService(applicationUserService)
-                    .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(30))
+                    .tokenValiditySeconds((int) TimeUnit.MINUTES.toSeconds(2))
                     .rememberMeParameter("remember-me")
                     .tokenRepository(tokenRepository())
+                    .authenticationSuccessHandler(remMeAuthSuccHand)
                 .and()
                     .logout()
                     .logoutUrl("/logout")

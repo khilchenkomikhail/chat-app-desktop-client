@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.edu.spbstu.dao.MessageRepository;
+import ru.edu.spbstu.model.Language;
 import ru.edu.spbstu.request.ChatUpdateRequest;
 import ru.edu.spbstu.request.CreateChatRequest;
 import ru.edu.spbstu.dao.ChatRepository;
@@ -275,6 +276,7 @@ public class ChatServiceTest {
         request.setChat_name("name");
         request.setUser_logins(List.of("login1", "login2"));
         request.setAdmin_login("admin");
+        request.setLanguage(Language.ENGLISH);
 
         given(chatRepository.save(any())).willReturn(new ChatJpa(1L, "name"));
         given(userRepository.getByLogin(anyString())).willReturn(Optional.of(new UserJpa()));

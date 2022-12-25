@@ -212,7 +212,7 @@ public class fillServer {
         request.setAdmin_login(admin);
         request.setChat_name(chatName);
         request.setUser_logins(users);
-        request.setLanguage(Language.RUSSIAN);
+        request.setLanguage(Language.ENGLISH);
 
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()

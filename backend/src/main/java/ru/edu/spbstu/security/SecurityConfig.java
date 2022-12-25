@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .headers().frameOptions().disable()
                 .and()
                     .authorizeRequests()
-                    .antMatchers("/register", "/send-tmp-password","/check_user_email", "/is_user_present","/is_email_used", "h2-console/**").permitAll()
+                    .antMatchers("/register", "/send-tmp-password","/check_user_email", "/is_user_present","/is_email_used").permitAll()
                     .anyRequest()
                     .authenticated()
                 .and()

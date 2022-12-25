@@ -18,6 +18,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import ru.edu.spbstu.client.utils.AuthScheme;
 import ru.edu.spbstu.model.Chat;
+import ru.edu.spbstu.model.Language;
 import ru.edu.spbstu.model.Message;
 import ru.edu.spbstu.request.CreateChatRequest;
 import ru.edu.spbstu.request.EditMessageRequest;
@@ -211,6 +212,7 @@ public class fillServer {
         request.setAdmin_login(admin);
         request.setChat_name(chatName);
         request.setUser_logins(users);
+        request.setLanguage(Language.ENGLISH);
 
         try (CloseableHttpClient client = HttpClientBuilder
                 .create()

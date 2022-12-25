@@ -124,7 +124,7 @@ public class LoginService {
                 "      <td width=\"10\" valign=\"middle\"><br></td>\n" +
                 "      <td style=\"font-family:Helvetica,Arial,sans-serif;font-size:19px;line-height:1.315789474;max-width:560px\">\n" +
                 "        \n" +
-                "            <p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\">Привет " + name + ",</p><p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\"> Твой новый временный пароль: " +  password + " . Его следует сменить при первом вход в приложение</p>" +
+                "            <p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\">Привет " + name + ",</p><p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\"> Твой новый временный пароль: " +  password + " . Его следует сменить при первом входе в приложение</p>" +
                 "        \n" +
                 "      </td>\n" +
                 "      <td width=\"10\" valign=\"middle\"><br></td>\n" +

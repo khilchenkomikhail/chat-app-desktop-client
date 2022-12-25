@@ -7,7 +7,7 @@ public class PasswordTextField extends TextField {
     public PasswordTextField() {
         super();
     }
-    String numberRegEx="([A-Za-z0-9A-Яа-я]|[!#$%?\\(\\)\\.\\\\\\/\\[\\]\\-\\_])+";
+    String numberRegEx="([A-Za-z0-9А-Яа-яёЁ]|[!#$%?\\(\\)\\.\\\\\\/\\[\\]\\-\\_])+";
     @Override
     public void replaceText(int start, int end, String text) {
         String oldValue = getText();

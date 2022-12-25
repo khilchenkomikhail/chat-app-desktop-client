@@ -17,6 +17,7 @@ import org.apache.http.util.EntityUtils;
 import ru.edu.spbstu.client.utils.HttpClientFactory;
 import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.model.ChatUser;
+import ru.edu.spbstu.model.Language;
 import ru.edu.spbstu.request.CreateChatRequest;
 
 import java.io.ByteArrayInputStream;
@@ -41,14 +42,14 @@ public class CreateChatFormService {
         this.login=login;
     }
 
-    public void addChat(String chatName, List<String>users) throws IOException {
-        int reqStatusCreateChat = createChat(chatName, users, login);
+    public void addChat(String chatName, List<String>users, Language language) throws IOException {
+        int reqStatusCreateChat = createChat(chatName, users, login, language);
         if (reqStatusCreateChat != 200) {
             throw new HttpResponseException(reqStatusCreateChat,"Error while addChat");
         }
     }
-    public void addChat(String chatName) throws IOException {
-        int reqStatusCreateChat = createChat(chatName, Collections.emptyList(), login);
+    public void addChat(String chatName, Language language) throws IOException {
+        int reqStatusCreateChat = createChat(chatName, Collections.emptyList(), login, language);
         if (reqStatusCreateChat != 200) {
             throw new HttpResponseException(reqStatusCreateChat,"Error while addChat");
         }
@@ -66,11 +67,12 @@ public class CreateChatFormService {
         return jsonMapper.readValue(json, new TypeReference<>() {});
     }
 
-    private static int createChat(String chatName, List<String> users, String admin) throws IOException {
+    private static int createChat(String chatName, List<String> users, String admin, Language language) throws IOException {
         CreateChatRequest request = new CreateChatRequest();
         request.setAdmin_login(admin);
         request.setChat_name(chatName);
         request.setUser_logins(users);
+        request.setLanguage(language);
 
         HttpClient client = HttpClientFactory.getInstance().getHttpClient();
         HttpPost post = new HttpPost("http://localhost:8080/create_chat");

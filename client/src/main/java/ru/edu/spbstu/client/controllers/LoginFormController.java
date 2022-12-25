@@ -115,7 +115,7 @@ public class LoginFormController {
 
     public void logInButtonPress(ActionEvent actionEvent) {
         if (passwordTextBox.getText().length() < 8 || passwordTextBox.getText().length() > 128) {
-            showError(bundle.getString("InvalidPasswordSizeError"));
+            showError(bundle.getString("wrongPasswordLengthError"));
             return;
         }
         try {
@@ -203,7 +203,7 @@ public class LoginFormController {
 
     public void registerButtonPress(ActionEvent actionEvent) {
         if (regPasswordTextBox.getText().length() < 8 || regPasswordTextBox.getText().length() > 128) {
-            showError(bundle.getString("InvalidPasswordSizeError"));
+            showError(bundle.getString("wrongPasswordLengthError"));
             return;
         }
         try {
@@ -262,7 +262,7 @@ public class LoginFormController {
         conC.setLogin(regLoginTextBox);
         Stage nstage = new Stage();
         nstage.setScene(scene);
-        nstage.setTitle("Chats");
+        nstage.setTitle(bundle.getString("ChatFormTitle"));
         conC.setCurrStage(nstage);
         conC.setPrimaryStage(this.stage);
         conC.init();

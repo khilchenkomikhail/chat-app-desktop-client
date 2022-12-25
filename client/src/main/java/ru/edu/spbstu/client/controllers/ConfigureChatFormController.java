@@ -193,7 +193,10 @@ public class ConfigureChatFormController {
         service.addUsersToChat(chatToConfigure,logins);
         tabChatSettings.setDisable(false);
         usersToAddListView.setItems(FXCollections.observableList(new ArrayList<>()));
+        //loadAllChatMembers();
+       // usersToAddListView.getList().clear();
         update();
+
     }
 
     private void update() throws IOException {
@@ -266,7 +269,8 @@ public class ConfigureChatFormController {
             showError(bundle.getString("UserAlreadyChatMemberError"));
             return;
         }
-        if(usersToAddListView.getList().stream().anyMatch(user -> user.getLogin().equals(username)))
+
+        if(usersToAddListView.getItems().stream().anyMatch(hbox->hbox.getLoginLabelText().equals(username)))
         {
             showError(bundle.getString("UserAlreadyInAddListError"));
             return;

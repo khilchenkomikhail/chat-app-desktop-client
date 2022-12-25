@@ -262,7 +262,7 @@ public class LoginFormController {
         conC.setLogin(regLoginTextBox);
         Stage nstage = new Stage();
         nstage.setScene(scene);
-        nstage.setTitle("Chats");
+        nstage.setTitle(bundle.getString("ChatFormTitle"));
         conC.setCurrStage(nstage);
         conC.setPrimaryStage(this.stage);
         conC.init();

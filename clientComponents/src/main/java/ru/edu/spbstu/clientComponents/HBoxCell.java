@@ -29,8 +29,8 @@ public class HBoxCell<T> extends HBox {
 
     }
     ImageView imageView;
-    Label label;
-    public MyButton button;
+    protected Label label;
+    protected MyButton button;
     public HBoxCell()
     {
         super();
@@ -38,6 +38,10 @@ public class HBoxCell<T> extends HBox {
         button= new MyButton();
         label = new Label();
 
+    }
+    public String getLoginLabelText()
+    {
+        return label.getText();
     }
 
     HBoxCell(T labelText, String buttonText, int number, Image image) {

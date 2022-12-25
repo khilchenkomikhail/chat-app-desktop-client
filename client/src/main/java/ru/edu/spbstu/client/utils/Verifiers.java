@@ -32,7 +32,7 @@ public class Verifiers {
         }
 
         final String LOGIN_PATTERN =
-                "(([A-Za-z0-9A-Яа-я&&[^\\\\\\_]])|[.\\-])+";
+                "(([A-Za-z0-9А-Яа-яёЁ&&[^\\\\\\_]])|[.\\-])+";
         Pattern pattern = Pattern.compile(LOGIN_PATTERN);
         Matcher m=pattern.matcher(login);
         if(!m.matches())
@@ -48,16 +48,16 @@ public class Verifiers {
             throw new InvalidDataException("InvalidChatSizeError");
         }
         final String CHAT_NAME_PATTERN =
-                "^([A-Za-z0-9A-Яа-я&&[^\\\\\\_]]|[.\\-,!?()])" +
-                        "(([A-Za-z0-9A-Яа-я&&[^\\\\\\_]]|[.\\-,!?()])|[ ])*" +
-                        "([A-Za-z0-9A-Яа-я&&[^\\\\\\_]]|[.\\-,!?()])$";
+                "^([A-Za-z0-9А-Яа-яёЁ&&[^\\\\\\_]]|[.\\-,!?()])" +
+                        "(([A-Za-z0-9А-Яа-яёЁ&&[^\\\\\\_]]|[.\\-,!?()])|[ ])*" +
+                        "([A-Za-z0-9А-Яа-яёЁ&&[^\\\\\\_]]|[.\\-,!?()])$";
         Pattern pattern;
         if(chatName.length()!=1) {
             pattern = Pattern.compile(CHAT_NAME_PATTERN);
         }
         else
         {
-            pattern = Pattern.compile("^([A-Za-z0-9A-Яа-я&&[^\\\\\\_]]|[.\\-,!?()])");
+            pattern = Pattern.compile("^([A-Za-z0-9А-Яа-яёЁ&&[^\\\\\\_]]|[.\\-,!?()])");
         }
         Matcher m=pattern.matcher(chatName);
         if(!m.matches())

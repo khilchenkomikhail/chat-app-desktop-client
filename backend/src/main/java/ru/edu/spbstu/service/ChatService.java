@@ -3,6 +3,7 @@ package ru.edu.spbstu.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.edu.spbstu.dao.MessageRepository;
+import ru.edu.spbstu.model.Language;
 import ru.edu.spbstu.request.ChatUpdateRequest;
 import ru.edu.spbstu.request.CreateChatRequest;
 import ru.edu.spbstu.request.SendMessageRequest;
@@ -92,7 +93,11 @@ public class ChatService {
         sendMessageRequest.setSender_login(request.getAdmin_login());
         sendMessageRequest.setAuthor_login(request.getAdmin_login());
         sendMessageRequest.setChat_id(savedChatJpa.getId());
-        sendMessageRequest.setContent("Создан новый чат");
+        if (request.getLanguage().equals(Language.RUSSIAN)) {
+            sendMessageRequest.setContent("Создан новый чат");
+        } else {
+            sendMessageRequest.setContent("New chat created");
+        }
         messageService.sendMessage(sendMessageRequest);
     }
 

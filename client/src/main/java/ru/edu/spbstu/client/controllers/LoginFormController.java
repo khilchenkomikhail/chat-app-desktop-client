@@ -203,7 +203,7 @@ public class LoginFormController {
 
     public void registerButtonPress(ActionEvent actionEvent) {
         if (regPasswordTextBox.getText().length() < 8 || regPasswordTextBox.getText().length() > 128) {
-            showError(bundle.getString("InvalidPasswordSizeError"));
+            showError(bundle.getString("wrongPasswordLengthError"));
             return;
         }
         try {

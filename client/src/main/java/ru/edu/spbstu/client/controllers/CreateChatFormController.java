@@ -15,9 +15,11 @@ import ru.edu.spbstu.client.exception.InvalidDataException;
 import ru.edu.spbstu.client.services.CreateChatFormService;
 import ru.edu.spbstu.clientComponents.ListViewWithButtons;
 import ru.edu.spbstu.model.ChatUser;
+import ru.edu.spbstu.model.Language;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -45,6 +47,8 @@ public class CreateChatFormController {
     private List<ChatUser> userList;
     private ChatFormController prevController;
     private ResourceBundle bundle;
+
+    private HashMap<String,Language> countryToEnum;
 
     public void setPrevController(ChatFormController prevController) {
         this.prevController = prevController;
@@ -95,6 +99,9 @@ public class CreateChatFormController {
                 currStage.close();
             }
         });
+        countryToEnum=HashMap.newHashMap(2);
+        countryToEnum.put("RU",Language.RUSSIAN);
+        countryToEnum.put("UK",Language.ENGLISH);
     }
 
     private void update()
@@ -171,9 +178,7 @@ public class CreateChatFormController {
             logins.add(elem.getLogin());
         }
         try {
-
-
-            service.addChat(name, logins);
+            service.addChat(name, logins, countryToEnum.get(bundle.getLocale().getCountry()));
         }
         catch (IOException ex)
         {

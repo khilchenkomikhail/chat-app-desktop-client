@@ -13,20 +13,26 @@
 <?import javafx.scene.text.Font?>
 <?import ru.edu.spbstu.clientComponents.PasswordTextField?>
 
-<AnchorPane prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.edu.spbstu.client.controllers.ProfileFormController">
+<AnchorPane prefHeight="598.0" prefWidth="701.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.edu.spbstu.client.controllers.ProfileFormController">
    <children>
-      <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <GridPane prefWidth="703.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="466.0" minWidth="10.0" percentWidth="100.0" prefWidth="452.0" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints maxHeight="69.0" minHeight="10.0" percentHeight="50.0" prefHeight="38.0" vgrow="SOMETIMES" />
-          <RowConstraints maxHeight="119.0" minHeight="10.0" percentHeight="50.0" prefHeight="25.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="119.0" minHeight="10.0" percentHeight="40.0" prefHeight="25.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="119.0" minHeight="10.0" percentHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            <Insets bottom="10.0" left="20.0" right="20.0" top="20.0" />
          </padding>
          <children>
+            <Button fx:id="backToChatsButton" mnemonicParsing="false" onAction="#close" prefHeight="25.0" prefWidth="158.0" text="%backToChatsButton" GridPane.halignment="CENTER" GridPane.rowIndex="2">
+               <GridPane.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </GridPane.margin>
+            </Button>
             <GridPane fx:id="lowerGridPane" style="-fx-border-color: #AAA; -fx-border-radius: 5;" GridPane.rowIndex="1">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="15.0" prefWidth="100.0" />
@@ -41,8 +47,7 @@
                 <RowConstraints minHeight="10.0" percentHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <Button fx:id="changePasswordButton" mnemonicParsing="false" onAction="#changePasswordButtonPress" prefHeight="37.0"
-                          prefWidth="179.0" text="Сменить пароль" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="4">
+                  <Button fx:id="changePasswordButton" mnemonicParsing="false" onAction="#changePasswordButtonPress" prefHeight="37.0" prefWidth="179.0" text="%changePasswordButton" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="4">
                      <GridPane.margin>
                         <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
                      </GridPane.margin>
@@ -50,22 +55,22 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" />
                      </padding>
                   </Button>
-                  <Label text="Старый пароль" wrapText="true" GridPane.rowIndex="1">
+                  <Label text="%oldPasswordLabel" wrapText="true" GridPane.rowIndex="1">
                      <GridPane.margin>
                         <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />
                      </GridPane.margin>
                   </Label>
-                  <Label text="Новый пароль" wrapText="true" GridPane.rowIndex="2">
+                  <Label text="%newPasswordLabel" wrapText="true" GridPane.rowIndex="2">
                      <GridPane.margin>
                         <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />
                      </GridPane.margin>
                   </Label>
-                  <Label text="Повторите новый пароль" wrapText="true" GridPane.rowIndex="3">
+                  <Label text="%repeatPasswordLabel" wrapText="true" GridPane.rowIndex="3">
                      <GridPane.margin>
                         <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />
                      </GridPane.margin>
                   </Label>
-                  <Label text="Смена пароля" GridPane.columnSpan="2">
+                  <Label text="%changePasswordLabel" GridPane.columnSpan="2">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
@@ -112,7 +117,7 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </GridPane.margin>
                   </HBox>
-                  <Button fx:id="changeProfilePictureButton" mnemonicParsing="false" onAction="#changeProfilePictureButtonPress" prefHeight="32.0" prefWidth="148.0" text="Поменять аватар" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP">
+                  <Button fx:id="changeProfilePictureButton" mnemonicParsing="false" onAction="#changeProfilePictureButtonPress" prefHeight="32.0" prefWidth="148.0" text="%changePictureButton" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP">
                      <GridPane.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </GridPane.margin>
@@ -129,7 +134,7 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <Label fx:id="changeEmailLabel" alignment="TOP_LEFT" text="Смена Email" GridPane.columnSpan="2" GridPane.valignment="TOP">
+                        <Label fx:id="changeEmailLabel" alignment="TOP_LEFT" text="%changeEmailLabel" GridPane.columnSpan="2" GridPane.valignment="TOP">
                            <font>
                               <Font name="Times New Roman Bold" size="14.0" />
                            </font>
@@ -137,7 +142,7 @@
                               <Insets bottom="5.0" left="10.0" right="5.0" top="10.0" />
                            </GridPane.margin>
                         </Label>
-                        <Label fx:id="oldEmailLabel" alignment="TOP_LEFT" prefHeight="36.0" prefWidth="38.0" text="Email:" textAlignment="JUSTIFY" wrapText="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                        <Label fx:id="oldEmailLabel" alignment="TOP_LEFT" prefHeight="36.0" prefWidth="38.0" text="%currentEmailLabel" textAlignment="JUSTIFY" wrapText="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
                            <font>
                               <Font name="Times New Roman" size="14.0" />
                            </font>
@@ -145,7 +150,7 @@
                               <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                            </GridPane.margin>
                         </Label>
-                        <Label fx:id="newEmailLabel" alignment="TOP_LEFT" prefHeight="33.0" prefWidth="82.0" text="Новый Email:" textAlignment="RIGHT" wrapText="true" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.rowSpan="2" GridPane.valignment="TOP">
+                        <Label fx:id="newEmailLabel" alignment="TOP_LEFT" prefHeight="33.0" prefWidth="82.0" text="%newEmailLabel" textAlignment="RIGHT" wrapText="true" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.rowSpan="2" GridPane.valignment="TOP">
                            <font>
                               <Font name="Times New Roman" size="14.0" />
                            </font>
@@ -153,12 +158,12 @@
                               <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />
                            </GridPane.margin>
                         </Label>
-                        <Button fx:id="changeEmailButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#changeEmailButtonPress" prefHeight="30.0" prefWidth="156.0" text="Сменить email" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="BOTTOM">
+                        <Button fx:id="changeEmailButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#changeEmailButtonPress" prefHeight="30.0" prefWidth="156.0" text="%changeEmailButton" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="BOTTOM">
                            <GridPane.margin>
                               <Insets bottom="10.0" right="10.0" />
                            </GridPane.margin>
                         </Button>
-                        <TextField fx:id="emailTextField" onKeyTyped="#changeEmailTextFieldChanged" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                        <TextField fx:id="emailTextField" disable="true" editable="false" onKeyTyped="#changeEmailTextFieldChanged" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="TOP">
                            <GridPane.margin>
                               <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
                            </GridPane.margin>

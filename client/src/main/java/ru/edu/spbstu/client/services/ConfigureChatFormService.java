@@ -111,16 +111,6 @@ public class ConfigureChatFormService {
             }
             images.add(temp);
         }
-        /*int size=userList.size();
-        ArrayList<Image> images= new ArrayList<Image>();
-        for (int i=0;i<size;i++)
-        {
-            var resourse=getClass().getResource("/images/dAvatar.bmp");
-            var res=(getClass().getResource("/images/dAvatar.bmp")).getPath().replaceFirst("/","");
-            Image temp=new Image(res);
-            images.add(temp);
-            //images.set(i,temp);
-        }*/
         return  images;
     }
     public Image getImage(String userLogin) throws IOException {

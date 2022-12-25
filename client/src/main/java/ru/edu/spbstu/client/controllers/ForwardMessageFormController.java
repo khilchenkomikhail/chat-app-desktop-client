@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class ForwardMessageFormController {
-    private List<Chat> chatList;
 
     @FXML
     private ListView<Chat> chatsListView;
@@ -59,7 +58,6 @@ public class ForwardMessageFormController {
         timeline.playFromStart();
     }
 
-//    private final int CHAT_PAGE_SIZE = 20;
 
     private int chatsPage = 1;
     private int chatsFindPage = 1;

@@ -28,8 +28,7 @@ public class ClientProperties {
     public static Properties getProperties() throws IOException {
         Properties props = new Properties();
         File f = new File("properties.prop");
-        try {
-            InputStream in = new FileInputStream(f);
+        try(InputStream in = new FileInputStream(f)) {
             props.load(in);
         }
         catch (FileNotFoundException e)

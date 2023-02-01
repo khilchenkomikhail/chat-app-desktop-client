@@ -62,6 +62,7 @@ public class ClientApplication extends Application {
         Scene scene = new Scene(window);
         primaryStage.setScene(scene);
         boolean isSkipped =conC.skipLoginViaToken();
+        scene.setUserData(fmxlLoader);//сохраним fmlloader как userdata в сцену
         if(!isSkipped) {
             primaryStage.show();
         }

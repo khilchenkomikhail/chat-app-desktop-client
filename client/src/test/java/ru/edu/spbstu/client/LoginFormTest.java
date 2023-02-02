@@ -1,20 +1,30 @@
 package ru.edu.spbstu.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.google.common.base.Strings;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.DialogPane;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.testfx.matcher.base.NodeMatchers;
-import org.testfx.service.finder.WindowFinder;
+import org.testfx.service.query.EmptyNodeQueryException;
 import ru.edu.spbstu.client.controllers.LoginFormController;
+import ru.edu.spbstu.client.exception.InvalidDataException;
+import ru.edu.spbstu.model.Chat;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import static org.testfx.api.FxAssert.verifyThat;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static org.testfx.api.FxAssert.verifyThat;
+@WireMockTest(httpPort = 8080)
 public class LoginFormTest extends BasedTest {
 
     @Test
@@ -80,7 +90,37 @@ public class LoginFormTest extends BasedTest {
         clickOn("#logInButton");
         checkAlertHeaderText("InternalErrorText");
     }
+   // @Rule
+    //public WireMockRule wireMockRule = new WireMockRule(8080);
+    @Test
+    public void testOpenSecondForm() throws Exception {
+        ObjectMapper jsonMapper = new ObjectMapper();
 
+        List<Chat> chats= Arrays.asList(new Chat(1L, "first"),
+                new Chat(2L, "first"),
+                new Chat(3L, "third"));
+        String responce=jsonMapper.writeValueAsString(chats);
+
+
+        stubFor(get(urlMatching("/get_chats\\?login=.*&page_number=\\d+"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(responce)));
+
+        clickOn("#loginTextBox").write("olegoleg");
+        verifyThat("#forgetPasswordButton", NodeMatchers.isEnabled());
+        clickOn("#passwordTextBox").write("olegoleg");
+        clickOn("#logInButton");
+        try {
+            lookup("#addChatButton").queryButton();
+        }
+        catch (EmptyNodeQueryException ex)
+        {
+            throw new InvalidDataException("Expected behaviour: second form opens. Resulting behaviour: second form is not opened");
+        }
+        sleep(5000);//Todo to check if chats are loaded
+    }
 
     private void checkAlertHeaderText(String bundledMessageId)
     {

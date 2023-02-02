@@ -19,29 +19,24 @@ public class LoginFormTest extends BasedTest {
 
     @Test
     public void testButtonActivation() throws Exception {
-        super.setUpClass();
         verifyThat("#logInButton", Node::isDisable);
         verifyThat("#forgetPasswordButton", Node::isDisable);
         clickOn("#loginTextBox").write("olegoleg");
         verifyThat("#forgetPasswordButton", NodeMatchers.isEnabled());
         clickOn("#passwordTextBox").write("olegoleg");
         verifyThat("#logInButton", NodeMatchers.isEnabled());
-        super.afterEachTest();
     }
     @Test
     public void testRegisterButtonActivation() throws Exception {
-        super.setUpClass();
         clickOn("#regTab");
         verifyThat("#registerButton", Node::isDisable);
         clickOn("#regLoginTextBox").write("olegoleg");
         clickOn("#emailTextBox").write("olegoleg@gmail.com");
         clickOn("#regPasswordTextBox").write("olegoleg");
         verifyThat("#registerButton", NodeMatchers.isEnabled());
-        super.afterEachTest();
     }
     @Test
     public void testInvalidFormatFieldsInput() throws Exception {
-        super.setUpClass();
         TextField temp=find("#loginTextBox");
         temp.setText(Strings.repeat("o",50));
         clickOn("#loginTextBox").write("o");
@@ -70,17 +65,14 @@ public class LoginFormTest extends BasedTest {
         clickOn("#passwordTextBox").write("o");
         clickOn("#logInButton");
         checkAlertHeaderText("wrongPasswordLengthError");
-        super.afterEachTest();
     }
     @Test
     public void testOpenNewFormWithNoServer() throws Exception {
-        super.setUpClass();
         clickOn("#loginTextBox").write("olegoleg");
         verifyThat("#forgetPasswordButton", NodeMatchers.isEnabled());
         clickOn("#passwordTextBox").write("olegoleg");
         clickOn("#logInButton");
         checkAlertHeaderText("InternalErrorText");
-        super.afterEachTest();
     }
 
 

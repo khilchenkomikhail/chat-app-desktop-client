@@ -48,7 +48,7 @@ public class ChatFormController {
         timeline.play();
     }
 
-    Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), e -> loadAllChatPages()));
+    public Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), e -> loadAllChatPages()));
     private static final HashMap<String, String> languageCBtoProperty = HashMap.newHashMap(2);
     public ListView<Chat> chatsListView;
     public TextField findChatTextBox;
@@ -567,6 +567,7 @@ public class ChatFormController {
     }
 
     void init() {
+        currStage.getScene().setUserData(this);
         languageCBtoProperty.put(bundle.getString("RusLangOption"), "RU");
         languageCBtoProperty.put(bundle.getString("EngLangOption"), "EN");
         LanguageComboBox.getItems().add(bundle.getString("RusLangOption"));

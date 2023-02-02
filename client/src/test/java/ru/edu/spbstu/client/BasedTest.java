@@ -1,5 +1,6 @@
 package ru.edu.spbstu.client;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -29,10 +30,10 @@ public class BasedTest extends ApplicationTest {
     }
     @AfterEach
     public void afterEachTest() throws TimeoutException {
+
         FxToolkit.hideStage();
         release(new KeyCode[]{});
         release(new MouseButton[]{});
-
     }
     public <T extends Node> T find(final String query)
     {

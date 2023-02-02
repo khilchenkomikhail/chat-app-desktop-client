@@ -11,10 +11,8 @@ import org.testfx.matcher.base.NodeMatchers;
 import org.testfx.service.finder.WindowFinder;
 import ru.edu.spbstu.client.controllers.LoginFormController;
 
-import java.util.NoSuchElementException;
-import java.util.concurrent.TimeoutException;
-
-import static com.google.common.base.Verify.verify;
+import java.util.List;
+import java.util.stream.Collectors;
 import static org.testfx.api.FxAssert.verifyThat;
 
 public class LoginFormTest extends BasedTest {
@@ -48,8 +46,8 @@ public class LoginFormTest extends BasedTest {
 
 
         temp.clear();
-        clickOn("#loginTextBox").write("");
-        clickOn("#loginTextBox").write("<fef");
+        //clickOn("#loginTextBox").write("");
+        clickOn("#loginTextBox").write("<$fef");
         clickOn("#logInButton");
         checkAlertHeaderText("BadFormatLoginErrorText");
         temp.setText("olegoleg");
@@ -81,13 +79,16 @@ public class LoginFormTest extends BasedTest {
     private void checkAlertHeaderText(String bundledMessageId)
     {
         DialogPane dialog;
-        try {
-            dialog = (DialogPane) lookup(".alert").queryAll().iterator().next();
-        }
-        catch (NoSuchElementException e)
+        List<DialogPane> lst=lookup(".alert").queryAll().stream()
+            .map(node -> (DialogPane) node)
+            .collect(Collectors.toList());
+
+        if(lst.size()<1)
         {
             throw new NoAlertFoundException();
         }
+            dialog=lst.get(0);
+            //dialog = (DialogPane) lookup(".alert").queryAll().iterator().next();
 
         String alertTitle=dialog.getHeaderText();
         clickOn("OK");

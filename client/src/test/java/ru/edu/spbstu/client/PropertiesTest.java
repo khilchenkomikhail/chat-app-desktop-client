@@ -17,16 +17,11 @@ import java.nio.file.Path;
 import static org.testfx.api.FxAssert.verifyThat;
 
 public class PropertiesTest  extends ApplicationTest {
-    static String[] languages=new String[2];
-    @BeforeAll
-    static void start()
-    {
-       languages[0]= "RU";
-       languages[1]= "EN";
-    }
+    static private String eng="EN";
+    static private String Rus="RU";
     @Test
-    void testCreateProperties() throws IOException {
-        String lang=languages[1];
+    public void testCreateProperties() throws IOException {
+        String lang=eng;
         ClientProperties.setProperties(lang);
         var props=ClientProperties.getProperties();
         String gotten=props.getProperty("Language");
@@ -37,7 +32,7 @@ public class PropertiesTest  extends ApplicationTest {
     }
 
     @Test
-    void testDefaultProperties() throws IOException {
+    public void testDefaultProperties() throws IOException {
 
         File file = new File(String.valueOf(Path.of("properties.prop")));
         if (file.delete()) {
@@ -48,9 +43,9 @@ public class PropertiesTest  extends ApplicationTest {
 
         var props=ClientProperties.getProperties();
         String gotten=props.getProperty("Language");
-        if(!gotten.equals(languages[0]))
+        if(!gotten.equals(Rus))
         {
-            throw new InvalidClassException("Expected language "+ languages[0] + String.format("! Stored language %s!",gotten));
+            throw new InvalidClassException("Expected language "+ Rus + String.format("! Stored language %s!",gotten));
         }
     }
 

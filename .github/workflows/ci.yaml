@@ -13,11 +13,12 @@ jobs:
           java-version: '19'
           distribution: 'corretto'
           cache: 'maven'
+      - name: Set up Xvfb
+        run: |
+          sudo apt-get update
+          sudo apt-get install xvfb
       - name: Build/test with Maven
-        run: mvn -B package
-      - name: emulate screen and test gui
-        test2:
-          script:
-            - Xvfb :99 -screen 0 1024x768x24 &
-            - export DISPLAY=:99
-            - mvn test -DskipTests=false
+        run: |
+          Xvfb :99 &
+          export DISPLAY=:99
+          mvn -B package

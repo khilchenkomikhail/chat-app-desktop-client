@@ -80,7 +80,7 @@ public class LoginFormTest extends BasedTest {
     private void checkAlertHeaderText(String bundledMessageId)
     {
         String alertTitle= getAlertTitle();
-        //забавный способ (используем хранящийся fxmloader) получить локализацию нашей формы дял проверки текство alert
+        //Interesting way to get loaclization for our application(via getting the fxmloader that was store previously)
         LoginFormController concC=((FXMLLoader)find("#forgetPasswordButton").getScene().getUserData()).getController();
         String expectedMessage=(concC.getBundle().getString(bundledMessageId));
         if(!expectedMessage.equals(alertTitle))

@@ -3,16 +3,18 @@ package ru.edu.spbstu.client;
 import com.google.common.base.Strings;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.control.DialogPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.junit.jupiter.api.Test;
 import org.testfx.matcher.base.NodeMatchers;
+import org.testfx.service.finder.WindowFinder;
 import ru.edu.spbstu.client.controllers.LoginFormController;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeoutException;
 
+import static com.google.common.base.Verify.verify;
 import static org.testfx.api.FxAssert.verifyThat;
 
 public class LoginFormTest extends BasedTest {
@@ -78,7 +80,18 @@ public class LoginFormTest extends BasedTest {
 
     private void checkAlertHeaderText(String bundledMessageId)
     {
-        String alertTitle= getAlertTitle();
+        DialogPane dialog;
+        try {
+            dialog = (DialogPane) lookup(".alert").queryAll().iterator().next();
+        }
+        catch (NoSuchElementException e)
+        {
+            throw new NoAlertFoundException();
+        }
+
+        String alertTitle=dialog.getHeaderText();
+        clickOn("OK");
+
         //Interesting way to get loaclization for our application(via getting the fxmloader that was store previously)
         LoginFormController concC=((FXMLLoader)find("#forgetPasswordButton").getScene().getUserData()).getController();
         String expectedMessage=(concC.getBundle().getString(bundledMessageId));
@@ -89,7 +102,7 @@ public class LoginFormTest extends BasedTest {
         }
     }
 
-
+    @Deprecated
     private String getAlertTitle() throws NoAlertFoundException {
         for (Window w : this.listWindows()) {
             if (!((Stage) w).getModality().toString().equals("NONE")) {

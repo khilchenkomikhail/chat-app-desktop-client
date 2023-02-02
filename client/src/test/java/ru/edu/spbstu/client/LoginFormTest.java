@@ -43,18 +43,24 @@ public class LoginFormTest extends BasedTest {
         clickOn("#passwordTextBox").write("olegoleg");
         clickOn("#logInButton");
         checkAlertHeaderText("InvalidLoginSizeError");
+    }
 
-
-        /*temp.clear();
+    @Test
+    public void testInvalidLoginFormat()
+    {
+        clickOn("#passwordTextBox").write("olegoleg");
         clickOn("#loginTextBox").write("");
         clickOn("#loginTextBox").write("<$fef");
         clickOn("#logInButton");
         checkAlertHeaderText("BadFormatLoginErrorText");
-        temp.setText("olegoleg");*/
-
+    }
+    @Test
+    public void testInvalidPasswordLength()
+    {
+        clickOn("#loginTextBox").write("olegoleg");
         TextField passwordFiled=find("#passwordTextBox");
         passwordFiled.clear();
-        clickOn("#passwordTextBox").write("ooooooo");
+        clickOn("#passwordTextBox").write("ooo");
 
         clickOn("#logInButton");
         checkAlertHeaderText("wrongPasswordLengthError");

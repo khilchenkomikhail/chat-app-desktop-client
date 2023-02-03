@@ -200,10 +200,19 @@ public class LoginFormController {
     }
 
     public void registerButtonPress(ActionEvent actionEvent) {
+        try {
+            checkLogin(regLoginTextBox.getText());
+        }
+        catch (InvalidDataException ex)
+        {
+            showError(bundle.getString(ex.getMessage()));
+            return;
+        }
         if (regPasswordTextBox.getText().length() < 8 || regPasswordTextBox.getText().length() > 128) {
             showError(bundle.getString("wrongPasswordLengthError"));
             return;
         }
+
         try {
 
             checkEmail(emailTextBox.getText());
@@ -215,7 +224,7 @@ public class LoginFormController {
         }
         try {
             boolean res = service.isUserPresent(regLoginTextBox.getText());
-            checkLogin(regLoginTextBox.getText());
+            //checkLogin(regLoginTextBox.getText());
             if (res) {
                 showError(bundle.getString("AccountWithLoginExistsError"));
                 return;

@@ -30,5 +30,7 @@ class UserRepositoryTest {
         Optional<UserJpa> byLogin = userRepository.getByLogin(login);
         Assertions.assertTrue(byLogin.isPresent());
         Assertions.assertEquals(userJpa, byLogin.get());
+
+        Assertions.assertTrue(userRepository.getByLogin(null).isEmpty());
     }
 }

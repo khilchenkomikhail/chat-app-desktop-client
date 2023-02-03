@@ -7,6 +7,7 @@ import com.google.common.base.Strings;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static java.sql.DriverManager.getDriver;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.internal.JavaVersionAdapter.getWindows;
 
@@ -359,7 +361,7 @@ public class LoginFormTest extends BasedTest {
         if (lst.size() < 1) {
             throw new NoAlertFoundException();
         }
-        dialog = lst.get(0);
+        dialog = lst.get(lst.size()-1);
         //dialog = (DialogPane) lookup(".alert").queryAll().iterator().next();
 
         String alertTitle = dialog.getHeaderText();

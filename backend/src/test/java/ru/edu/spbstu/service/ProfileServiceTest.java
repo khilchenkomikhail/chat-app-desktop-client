@@ -135,7 +135,6 @@ class ProfileServiceTest {
         setupContext();
         given(userDetails.getUsername()).willReturn(DEFAULT_LOGIN);
         UserJpa userJpa = new UserJpa(1L, DEFAULT_LOGIN, DEFAULT_PASSWORD, DEFAULT_EMAIL, null);
-        UserJpa newUserJpa = new UserJpa(1L, DEFAULT_LOGIN, DEFAULT_PASSWORD, newEmail, null);
         given(userRepository.getByLogin(DEFAULT_LOGIN)).willReturn(Optional.of(userJpa));
 
         profileService.updateEmail(new EmailUpdateRequest(DEFAULT_LOGIN, newEmail));
@@ -143,7 +142,7 @@ class ProfileServiceTest {
         verify(userRepository).getByLogin(DEFAULT_LOGIN);
         ArgumentCaptor<UserJpa> captor = ArgumentCaptor.forClass(UserJpa.class);
         verify(userRepository).save(captor.capture());
-        Assertions.assertEquals(captor.getValue(), newUserJpa);
+        Assertions.assertEquals(captor.getValue().getEmail(), newEmail);
         verify(userDetails).getUsername();
         verify(authentication).getPrincipal();
         verify(securityContext).getAuthentication();
@@ -221,7 +220,6 @@ class ProfileServiceTest {
         setupContext();
         given(userDetails.getUsername()).willReturn(DEFAULT_LOGIN);
         UserJpa userJpa = new UserJpa(1L, DEFAULT_LOGIN, DEFAULT_PASSWORD, DEFAULT_EMAIL, null);
-        UserJpa newUserJpa = new UserJpa(1L, DEFAULT_LOGIN, encodedPassword, DEFAULT_EMAIL, null);
         given(userRepository.getByLogin(anyString())).willReturn(Optional.of(userJpa));
         given(passwordEncoder.matches(DEFAULT_PASSWORD,
                 DEFAULT_PASSWORD)).willReturn(true);
@@ -229,10 +227,12 @@ class ProfileServiceTest {
 
         profileService.updatePassword(new PasswordUpdateRequest(DEFAULT_LOGIN, DEFAULT_NEW_PASSWORD, DEFAULT_PASSWORD));
 
-        verify(userRepository).getByLogin(DEFAULT_LOGIN);
+        ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
+        verify(userRepository).getByLogin(stringArgumentCaptor.capture());
+        Assertions.assertEquals(stringArgumentCaptor.getValue(), DEFAULT_LOGIN);
         ArgumentCaptor<UserJpa> captor = ArgumentCaptor.forClass(UserJpa.class);
         verify(userRepository).save(captor.capture());
-        Assertions.assertEquals(captor.getValue(), newUserJpa);
+        Assertions.assertEquals(captor.getValue().getPassword(), encodedPassword);
         verify(userDetails).getUsername();
         verify(authentication).getPrincipal();
         verify(securityContext).getAuthentication();

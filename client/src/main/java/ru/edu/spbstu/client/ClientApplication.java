@@ -19,22 +19,6 @@ public class ClientApplication extends Application {
     }
 
     private static Stage stage;
-    private void properties(String language)
-    {
-        try {
-            String Language = language;
-            Properties props = new Properties();
-            props.setProperty("Language", Language);
-            File f = new File("properties.prop");
-            OutputStream out = new FileOutputStream( f );
-            props.store(out, "User properties");
-            out.close();
-        }
-        catch (Exception e ) {
-
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void start(Stage primaryStage) throws IOException {

@@ -31,8 +31,13 @@ import static org.testfx.internal.JavaVersionAdapter.getWindows;
 
 public class LoginFormTest extends BasedTest {
 
+    public static final String IS_USER_PRESENT_LOGIN = "/is_user_present\\?login=.*";
+    public static final String IS_EMAIL_USED_EMAIL = "/is_email_used\\?email=.*";
+    public static final String URL_REGEX = "/register";
+    public static final String GET_CHATS_LOGIN_PAGE_NUMBER_D = "/get_chats\\?login=.*&page_number=\\d+";
+
     @Test
-    public void testButtonActivation() throws Exception {
+    public void testButtonActivation() {
         verifyThat("#logInButton", Node::isDisable);
         verifyThat("#forgetPasswordButton", Node::isDisable);
         clickOn("#loginTextBox").write("olegoleg");
@@ -42,7 +47,7 @@ public class LoginFormTest extends BasedTest {
     }
 
     @Test
-    public void testRegisterButtonActivation() throws Exception {
+    public void testRegisterButtonActivation() {
         clickOn("#regTab");
         verifyThat("#registerButton", Node::isDisable);
         clickOn("#regLoginTextBox").write("olegoleg");
@@ -52,7 +57,7 @@ public class LoginFormTest extends BasedTest {
     }
 
     @Test
-    public void testInvalidLoginSize() throws Exception {
+    public void testInvalidLoginSize() {
         TextField temp = find("#loginTextBox");
         temp.setText(Strings.repeat("o", 50));
         clickOn("#loginTextBox").write("o");
@@ -62,17 +67,18 @@ public class LoginFormTest extends BasedTest {
     }
 
     @Test
-    public void testInvalidPasswordLength() {
+    public void testPasswordTooShort() {
         clickOn("#loginTextBox").write("olegoleg");
-        TextField passwordFiled = find("#passwordTextBox");
-        //passwordFiled.clear();
         clickOn("#passwordTextBox").write("ooo");
-
         clickOn("#logInButton");
         checkAlertHeaderText("wrongPasswordLengthError");
+    }
 
-        passwordFiled.clear();
-        clickOn("#passwordTextBox").write("");
+    @Test
+    public void testPasswordTooLong() {
+        clickOn("#loginTextBox").write("olegoleg");
+        TextField passwordFiled = find("#passwordTextBox");
+
         passwordFiled.setText(Strings.repeat("o", 128));
         clickOn("#passwordTextBox").write("o");
         clickOn("#logInButton");
@@ -89,16 +95,11 @@ public class LoginFormTest extends BasedTest {
     }
 
     @Test
-    public void testInvalidLoginRegFormat() {
-
+    public void testRegLoginTooLong()
+    {
         clickOn("#regTab");
-        clickOn("#regLoginTextBox").write("<$fef");
-
         clickOn("#regPasswordTextBox").write("olegoleg");
         clickOn("#emailTextBox").write("olegoleg@gmail.com");
-        clickOn("#registerButton");
-        checkAlertHeaderText("BadFormatLoginErrorText");
-
         TextField tx=find("#regLoginTextBox");
         tx.clear();
         tx.setText(Strings.repeat("o", 50));
@@ -109,28 +110,46 @@ public class LoginFormTest extends BasedTest {
     }
 
     @Test
-    public void testInvalidPasswordRegLength() {
+    public void testInvalidLoginRegFormat() {
+
+        clickOn("#regTab");
+        clickOn("#regLoginTextBox").write("<$fef");
+
+        clickOn("#regPasswordTextBox").write("olegoleg");
+        clickOn("#emailTextBox").write("olegoleg@gmail.com");
+        clickOn("#registerButton");
+        checkAlertHeaderText("BadFormatLoginErrorText");
+    }
+
+
+    @Test
+    public void testRegPasswordTooShort() {
 
         clickOn("#regTab");
         clickOn("#regLoginTextBox").write("olegoleg");
-
         clickOn("#regPasswordTextBox").write("ooo");
         clickOn("#emailTextBox").write("olegoleg@gmail.com");
         clickOn("#registerButton");
-        checkAlertHeaderText("wrongPasswordLengthError");
-
-        TextField tx=find("#regPasswordTextBox");
-        tx.clear();
-        tx.setText(Strings.repeat("o", 128));
-        clickOn("#regPasswordTextBox").write("o");
-        clickOn("#registerButton");
-
         checkAlertHeaderText("wrongPasswordLengthError");
     }
 
 
     @Test
-    public void testInvalidEmailFormat() {
+    public void testRegPasswordTooLong() {
+
+        clickOn("#regTab");
+        clickOn("#regLoginTextBox").write("olegoleg");
+        clickOn("#emailTextBox").write("olegoleg@gmail.com");
+        clickOn("#registerButton");
+        TextField tx=find("#regPasswordTextBox");
+        tx.setText(Strings.repeat("o", 128));
+        clickOn("#regPasswordTextBox").write("o");
+        clickOn("#registerButton");
+        checkAlertHeaderText("wrongPasswordLengthError");
+    }
+
+    @Test
+    public void testEmailTooShort() {
 
         clickOn("#regTab");
         clickOn("#regLoginTextBox").write("olegoleg");
@@ -140,6 +159,14 @@ public class LoginFormTest extends BasedTest {
         clickOn("#registerButton");
         checkAlertHeaderText("InvalidEmailSizeError");
 
+    }
+    @Test
+    public void testEmailTooLong() {
+
+        clickOn("#regTab");
+        clickOn("#regLoginTextBox").write("olegoleg");
+        clickOn("#regPasswordTextBox").write("olegoleg");
+
         TextField tx=find("#emailTextBox");
         tx.clear();
         tx.setText(Strings.repeat("o", 128));
@@ -147,17 +174,26 @@ public class LoginFormTest extends BasedTest {
         clickOn("#registerButton");
 
         checkAlertHeaderText("InvalidEmailSizeError");
-
-        tx.clear();
+    }
+    @Test
+    public void testInvalidEmailFormat()
+    {
+        clickOn("#regTab");
+        clickOn("#regLoginTextBox").write("olegoleg");
+        clickOn("#regPasswordTextBox").write("olegoleg");
         clickOn("#emailTextBox").write("o@c.");
         clickOn("#registerButton");
         checkAlertHeaderText("BadFormatEmailErrorText");
-
-        tx.clear();
+    }
+    @Test
+    public void testRegisterWithoutServer()
+    {
+        clickOn("#regTab");
+        clickOn("#regLoginTextBox").write("olegoleg");
+        clickOn("#regPasswordTextBox").write("olegoleg");
         clickOn("#emailTextBox").write("olegoleg@gmail.com");
         clickOn("#registerButton");
         checkAlertHeaderText("InternalErrorText");
-
     }
 
     @Test
@@ -184,13 +220,13 @@ public class LoginFormTest extends BasedTest {
     @Test
     public void testOpenForgotPasswordForm() throws Exception {
         wireMockServer = new WireMockServer(8080);
-        wireMockServer.start();//start server
+        wireMockServer.start();
         ObjectMapper jsonMapper = new ObjectMapper();
 
 
         String responce = jsonMapper.writeValueAsString(false);
 
-        stubFor(get(urlMatching("/is_user_present\\?login=.*"))
+        stubFor(get(urlMatching(IS_USER_PRESENT_LOGIN))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -201,7 +237,7 @@ public class LoginFormTest extends BasedTest {
         checkAlertHeaderText("NoAccountForLoginError");
 
         responce = jsonMapper.writeValueAsString(true);
-        stubFor(get(urlMatching("/is_user_present\\?login=.*"))
+        stubFor(get(urlMatching(IS_USER_PRESENT_LOGIN))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -218,16 +254,16 @@ public class LoginFormTest extends BasedTest {
     @Test
     public void testOpenSecondForm() throws Exception {
         wireMockServer = new WireMockServer(8080);
-        wireMockServer.start();//start server
+        wireMockServer.start();
         ObjectMapper jsonMapper = new ObjectMapper();
 
         List<Chat> chats = Arrays.asList(new Chat(1L, "first"),
-                new Chat(2L, "first"),
+                new Chat(2L, "second"),
                 new Chat(3L, "third"));
         String responce = jsonMapper.writeValueAsString(chats);
 
 
-        stubFor(get(urlMatching("/get_chats\\?login=.*&page_number=\\d+"))
+        stubFor(get(urlMatching(GET_CHATS_LOGIN_PAGE_NUMBER_D))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -256,12 +292,12 @@ public class LoginFormTest extends BasedTest {
         ObjectMapper jsonMapper = new ObjectMapper();
 
         List<Chat> chats = Arrays.asList(new Chat(1L, "first"),
-                new Chat(2L, "first"),
+                new Chat(2L, "second"),
                 new Chat(3L, "third"));
         String responce = jsonMapper.writeValueAsString(chats);
 
 
-        stubFor(get(urlMatching("/get_chats\\?login=.*&page_number=\\d+"))
+        stubFor(get(urlMatching(GET_CHATS_LOGIN_PAGE_NUMBER_D))
                 .willReturn(aResponse()
                         .withStatus(401)
                         .withHeader("Content-Type", "application/json")
@@ -275,13 +311,13 @@ public class LoginFormTest extends BasedTest {
     }
 
     @Test
-    public void testOpenSecondFormViaRegister() throws JsonProcessingException {
+    public void testUserAlreadyExistWhenRegister() throws JsonProcessingException {
         wireMockServer = new WireMockServer(8080);
-        wireMockServer.start();//start server
+        wireMockServer.start();
         ObjectMapper jsonMapper = new ObjectMapper();
         String responce = jsonMapper.writeValueAsString(true);
 
-        stubFor(get(urlMatching("/is_user_present\\?login=.*"))
+        stubFor(get(urlMatching(IS_USER_PRESENT_LOGIN))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -294,29 +330,66 @@ public class LoginFormTest extends BasedTest {
         clickOn("#emailTextBox").write("olegoleg@gmail.com");
         clickOn("#registerButton");
         checkAlertHeaderText("AccountWithLoginExistsError");
+        wireMockServer.stop();
+    }
 
-        stubFor(get(urlMatching("/is_user_present\\?login=.*"))
+    @Test
+    public void testEmailAlreadyExists() throws JsonProcessingException {
+        wireMockServer = new WireMockServer(8080);
+        wireMockServer.start();//start server
+        ObjectMapper jsonMapper = new ObjectMapper();
+        String responce = jsonMapper.writeValueAsString(true);
+
+
+        clickOn("#regTab");
+        clickOn("#regLoginTextBox").write("olegoleg");
+
+        clickOn("#regPasswordTextBox").write("olegoleg");
+        clickOn("#emailTextBox").write("olegoleg@gmail.com");
+
+        stubFor(get(urlMatching(IS_USER_PRESENT_LOGIN))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBody(jsonMapper.writeValueAsString(false))));
 
-        stubFor(get(urlMatching("/is_email_used\\?email=.*"))
+        stubFor(get(urlMatching(IS_EMAIL_USED_EMAIL))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBody(jsonMapper.writeValueAsString(true))));
         clickOn("#registerButton");
-
         checkAlertHeaderText("EmailInAlreadyUsedError");
+        wireMockServer.stop();
+    }
 
-        stubFor(get(urlMatching("/is_email_used\\?email=.*"))
+    @Test
+    public void testOpenSecondFormViaRegister() throws JsonProcessingException {
+        wireMockServer = new WireMockServer(8080);
+        wireMockServer.start();//start server
+        ObjectMapper jsonMapper = new ObjectMapper();
+        String responce = jsonMapper.writeValueAsString(true);
+
+
+        clickOn("#regTab");
+        clickOn("#regLoginTextBox").write("olegoleg");
+
+        clickOn("#regPasswordTextBox").write("olegoleg");
+        clickOn("#emailTextBox").write("olegoleg@gmail.com");
+
+        stubFor(get(urlMatching(IS_USER_PRESENT_LOGIN))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBody(jsonMapper.writeValueAsString(false))));
 
-        stubFor(post(urlMatching("/register"))
+        stubFor(get(urlMatching(IS_EMAIL_USED_EMAIL))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(jsonMapper.writeValueAsString(false))));
+
+        stubFor(post(urlMatching(URL_REGEX))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -328,7 +401,7 @@ public class LoginFormTest extends BasedTest {
         responce = jsonMapper.writeValueAsString(chats);
 
 
-        stubFor(get(urlMatching("/get_chats\\?login=.*&page_number=\\d+"))
+        stubFor(get(urlMatching(GET_CHATS_LOGIN_PAGE_NUMBER_D))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")

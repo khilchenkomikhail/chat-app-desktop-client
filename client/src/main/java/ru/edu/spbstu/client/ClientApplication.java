@@ -19,22 +19,6 @@ public class ClientApplication extends Application {
     }
 
     private static Stage stage;
-    private void properties(String language)
-    {
-        try {
-            String Language = language;
-            Properties props = new Properties();
-            props.setProperty("Language", Language);
-            File f = new File("properties.prop");
-            OutputStream out = new FileOutputStream( f );
-            props.store(out, "User properties");
-            out.close();
-        }
-        catch (Exception e ) {
-
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -62,6 +46,7 @@ public class ClientApplication extends Application {
         Scene scene = new Scene(window);
         primaryStage.setScene(scene);
         boolean isSkipped =conC.skipLoginViaToken();
+        scene.setUserData(fmxlLoader);//сохраним fmlloader как userdata в сцену
         if(!isSkipped) {
             primaryStage.show();
         }

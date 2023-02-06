@@ -49,7 +49,7 @@ public class ConfigureChatFormController {
     private Chat chatToConfigure;
     private ChatFormController prevController;
     private ResourceBundle bundle;
-    Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), e -> loadAllChatMembers()));
+    public Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), e -> loadAllChatMembers()));
 
     private void loadAllChatMembers() {
 
@@ -136,6 +136,7 @@ public class ConfigureChatFormController {
         currStage.close();
     }
     void init() {
+        currStage.getScene().setUserData(this);
         AddUserButton.setDisable(true);
         List<ChatUser> userList= null;
         try {

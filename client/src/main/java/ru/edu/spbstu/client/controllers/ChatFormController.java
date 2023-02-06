@@ -574,6 +574,8 @@ public class ChatFormController {
         LanguageComboBox.getItems().add(bundle.getString("EngLangOption"));
         javafx.scene.control.MenuItem menuItem1 = new javafx.scene.control.MenuItem(bundle.getString("ExitChatButton"));
         javafx.scene.control.MenuItem menuItem2 = new javafx.scene.control.MenuItem(bundle.getString("ConfigChat"));
+        menuItem1.setId("ExitChatButton");
+        menuItem2.setId("ConfigChatButton");
         menuItem1.setOnAction(this::exitAction);
         menuItem2.setOnAction(this::configAction);
         contextMenu.getItems().add(menuItem1);
@@ -601,6 +603,10 @@ public class ChatFormController {
         javafx.scene.control.MenuItem menuItem22 = new javafx.scene.control.MenuItem(bundle.getString("DeleteMessageButton"));
         javafx.scene.control.MenuItem menuItem23 = new javafx.scene.control.MenuItem(bundle.getString("ForwardMessageButton"));
         javafx.scene.control.MenuItem menuItem24 = new javafx.scene.control.MenuItem(bundle.getString("AnswerMessageButton"));
+        menuItem21.setId("EditMessageButton");
+        menuItem22.setId("DeleteMessageButton");
+        menuItem23.setId("ForwardMessageButton");
+        menuItem24.setId("AnswerMessageButton");
         menuItem21.setOnAction(this::editMessageAction);
         menuItem22.setOnAction(this::deleteMessageAction);
         menuItem23.setOnAction(this::forwardMessageAction);
@@ -610,6 +616,8 @@ public class ChatFormController {
 
         javafx.scene.control.MenuItem menu31 = new javafx.scene.control.MenuItem(bundle.getString("ForwardMessageButton"));
         javafx.scene.control.MenuItem menu32 = new javafx.scene.control.MenuItem(bundle.getString("AnswerMessageButton"));
+        menu31 .setId("ForwardMessageButton");
+        menu32.setId("AnswerMessageButton");
         menu31.setOnAction(this::forwardMessageAction);
         menu32.setOnAction(this::replyMessageAction);
         messageMenu2.getItems().addAll(menu31, menu32);

@@ -156,7 +156,6 @@ public class ChatFormTest extends ApplicationTest {
     @Test
     public void testChatSelect() throws Exception {
 
-        System.out.println("1");
         ListView<Chat> chatLst= find("#chatsListView");
 
         clickOnItemInListView(chatLst,2,0);
@@ -169,7 +168,6 @@ public class ChatFormTest extends ApplicationTest {
     @Test
     public void testEditMode()
     {
-        System.out.println("1");
         ListView<Chat> chatLst= find("#chatsListView");
         clickOnItemInListView(chatLst,1,0);
 
@@ -202,13 +200,9 @@ public class ChatFormTest extends ApplicationTest {
     @Test
     public void testContextMenu()
     {
-        System.out.println("1");
         ListView<Chat> chatLst= find("#chatsListView");
-
         clickOnItemInListView(chatLst,1,1);
         clickOn("#ConfigChatButton");
-
-
         Scene currectScene = getWindows().get(0).getScene();
 
         ConfigureChatFormController controller = ((ConfigureChatFormController) currectScene.getUserData());
@@ -262,7 +256,6 @@ public class ChatFormTest extends ApplicationTest {
         FxToolkit.cleanupStages();
         wireMockServer.stop();
         wireMockServer.resetToDefaultMappings();
-        System.out.println("stop2");
     }
 
     private <T> void clickOnItemInListView(ListView<T>listView,int index,int type)

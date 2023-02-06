@@ -25,6 +25,7 @@ import org.testfx.framework.junit5.ApplicationTest;
 import org.testfx.matcher.base.NodeMatchers;
 import org.testfx.matcher.base.WindowMatchers;
 import org.testfx.service.query.EmptyNodeQueryException;
+import org.testfx.util.WaitForAsyncUtils;
 import ru.edu.spbstu.client.controllers.ChatFormController;
 import ru.edu.spbstu.client.controllers.ConfigureChatFormController;
 import ru.edu.spbstu.client.exception.InvalidDataException;
@@ -200,7 +201,11 @@ public class ChatFormTest extends ApplicationTest {
 
         ListView<Message> messageListView=find("#messagesListView");
         clickOnItemInListView(messageListView,1,1);
+        WaitForAsyncUtils.waitForFxEvents();
+
         clickOn("#EditMessageButton");
+
+
         Button sendButton=find("#sendMessageButton");
 
         Scene currectScene = getWindows().get(0).getScene();
@@ -208,6 +213,8 @@ public class ChatFormTest extends ApplicationTest {
         assertEquals(controller.getBundle().getString("editMessageButton") ,sendButton.getText());
         TextArea messageTexAread=find("#messageTextArea");
         var cell=getListCell(messageListView,1);
+
+
 
         assertEquals(cell.getItem().getContent() ,messageTexAread.getText());
         press(KeyCode.ESCAPE);
@@ -224,10 +231,12 @@ public class ChatFormTest extends ApplicationTest {
 
         ListView<Message> messageListView=find("#messagesListView");
         clickOnItemInListView(messageListView,1,1);
+        WaitForAsyncUtils.waitForFxEvents();
         clickOn("#AnswerMessageButton");
+
+
+
         Button sendButton=find("#sendMessageButton");
-
-
         Scene currectScene = getWindows().get(0).getScene();
         ChatFormController controller = ((ChatFormController) currectScene.getUserData());
         assertEquals(controller.getBundle().getString("AnswerMessageButton") ,sendButton.getText());
@@ -241,6 +250,7 @@ public class ChatFormTest extends ApplicationTest {
     {
         ListView<Chat> chatLst= find("#chatsListView");
         clickOnItemInListView(chatLst,1,1);
+        WaitForAsyncUtils.waitForFxEvents();
         clickOn("#ConfigChatButton");
         Scene currectScene = getWindows().get(0).getScene();
 

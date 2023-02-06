@@ -15,6 +15,10 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.apache.http.HttpResponse;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit5.ApplicationTest;
@@ -33,15 +37,16 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.internal.JavaVersionAdapter.getWindows;
 
-//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-//@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+
 public class ChatFormTest extends ApplicationTest {
     public static final String GET_CHATS_LOGIN_PAGE_NUMBER_D = "/get_chats\\?login=.*&page_number=\\d+";
     public static final String GET_MESSAGES="/get_messages\\?chat_id=\\d+&page_number=\\d+";
@@ -165,8 +170,30 @@ public class ChatFormTest extends ApplicationTest {
     {
         verifyThat("#sendMessageButton", NodeMatchers.isDisabled());
     }
+
     @Test
-    public void testEditMode()
+    public void  testTextInputWithNoChat()
+    {
+        clickOn("#messageTextArea").write("sampleMessage");
+        TextArea tx=find("#messageTextArea");
+        assertEquals("",tx.getText());
+    }
+    @Test
+    public void testSendMessage()
+    {
+        ListView<Chat> chatLst= find("#chatsListView");
+        clickOnItemInListView(chatLst,1,0);
+
+        ListView<Message> messageListView=find("#messagesListView");
+        clickOnItemInListView(messageListView,1,1);
+
+        Button sendButton=find("#sendMessageButton");
+        clickOn( "#messageTextArea").write("message");
+        clickOn(sendButton);
+
+    }
+    @Test
+    public void testExitEditMode()
     {
         ListView<Chat> chatLst= find("#chatsListView");
         clickOnItemInListView(chatLst,1,0);
@@ -176,27 +203,39 @@ public class ChatFormTest extends ApplicationTest {
         clickOn("#EditMessageButton");
         Button sendButton=find("#sendMessageButton");
 
-
         Scene currectScene = getWindows().get(0).getScene();
         ChatFormController controller = ((ChatFormController) currectScene.getUserData());
         assertEquals(controller.getBundle().getString("editMessageButton") ,sendButton.getText());
-
-
         TextArea messageTexAread=find("#messageTextArea");
         var cell=getListCell(messageListView,1);
 
         assertEquals(cell.getItem().getContent() ,messageTexAread.getText());
-
         press(KeyCode.ESCAPE);
         release(KeyCode.ESCAPE);
-
-
         assertEquals(controller.getBundle().getString("SendMessageButton") ,sendButton.getText());
-
         assertEquals("",messageTexAread.getText());
-
-
     }
+
+
+    @Test
+    public void testExitReplyMode(){
+        ListView<Chat> chatLst= find("#chatsListView");
+        clickOnItemInListView(chatLst,1,0);
+
+        ListView<Message> messageListView=find("#messagesListView");
+        clickOnItemInListView(messageListView,1,1);
+        clickOn("#AnswerMessageButton");
+        Button sendButton=find("#sendMessageButton");
+
+
+        Scene currectScene = getWindows().get(0).getScene();
+        ChatFormController controller = ((ChatFormController) currectScene.getUserData());
+        assertEquals(controller.getBundle().getString("AnswerMessageButton") ,sendButton.getText());
+        press(KeyCode.ESCAPE);
+        release(KeyCode.ESCAPE);
+        assertEquals(controller.getBundle().getString("SendMessageButton") ,sendButton.getText());
+    }
+
     @Test
     public void testContextMenu()
     {

@@ -91,7 +91,7 @@ public class ChatFormTest extends ApplicationTest {
     @BeforeAll
     public static void initServer() throws Exception
     {
-        ApplicationTest.launch(ClientApplication.class);
+        //ApplicationTest.launch(ClientApplication.class);
         System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out), true, "UTF-8"));
         System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.err), true, "UTF-8"));
         wireMockServer = new WireMockServer(8080);
@@ -141,6 +141,11 @@ public class ChatFormTest extends ApplicationTest {
 
 
     }
+    @Override
+    public void start(Stage stage) throws Exception {
+        new ClientApplication().start(stage);
+       // stage.show();
+    }
     public <T extends Node> T find(final String query)
     {
         return (T)lookup(query).queryAll().iterator().next();
@@ -154,10 +159,7 @@ public class ChatFormTest extends ApplicationTest {
         b.setDisable(false);
         clickOn("#logInButton");
     }
-    @Override
-    public void start(Stage stage) throws Exception {
-        stage.show();
-    }
+
     @Test
     public void testChatSelect() throws Exception {
 

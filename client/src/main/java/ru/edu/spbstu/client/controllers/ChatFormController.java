@@ -162,8 +162,6 @@ public class ChatFormController {
                     RowConstraints row1 = new RowConstraints();
                     row1.setMaxHeight(-Double.MAX_VALUE);
                     row1.setValignment(VPos.TOP);
-                    // row1.setMinHeight(50);
-                    //row1.setPrefHeight(50);//Todo перепроверить
                     row1.setVgrow(Priority.SOMETIMES);
 
                     RowConstraints row2 = new RowConstraints();
@@ -322,6 +320,7 @@ public class ChatFormController {
             Scene scene = new Scene(window);
 
             forwardMessageFormController.setLogin(service.getLogin());
+            scene.setUserData(forwardMessageFormController);
             Stage nstage = new Stage();
             nstage.setScene(scene);
             nstage.setTitle(bundle.getString("forwardTitle"));
@@ -355,6 +354,7 @@ public class ChatFormController {
         Long chatId = chatsListView.getSelectionModel().getSelectedItem().getId();
         String login = service.getLogin();
         List<ChatUser> userlist;
+        chatsListView.getSelectionModel().select(-1);
         try {
             userlist = service.getChatMembers(chat);
         } catch (IOException e) {
@@ -703,17 +703,6 @@ public class ChatFormController {
 
     }
 
-    @Deprecated
-    void update() {
-        try {
-            chatList = service.getChats(1);
-        } catch (IOException e) {
-            bundle.getString("InternalErrorText");
-            return;
-        }
-
-        chatsListView.setItems(FXCollections.observableArrayList(chatList));
-    }
 
     void loadMessagePage(Long chat_id, boolean scroll) {
         try {
@@ -775,11 +764,6 @@ public class ChatFormController {
                 }
             }
             messagesListView.getSelectionModel().select(mindex+diff);
-            /*if(!Nlist.equals(messagesListView.getItems()))
-            {
-                messagesListView.setItems(Nlist);
-                messagesListView.getSelectionModel().select(mindex+diff);
-            }*/
         }
     }
 
@@ -899,12 +883,20 @@ public class ChatFormController {
                 this.currStage.close();
                 this.primaryStage.close();
             });*/
-            alert.showAndWait().ifPresent(rs -> {
+            final Button btnFoo = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
+            btnFoo.setOnAction( event -> {
+                this.currStage.close();
+                this.primaryStage.close();
+                event.consume();
+            } );
+
+            alert.show();
+            /*alert.showAndWait().ifPresent(rs -> {
                 if (rs == ButtonType.OK) {
                     this.currStage.close();
                     this.primaryStage.close();
                 }
-            });
+            });*/
         }
     }
 

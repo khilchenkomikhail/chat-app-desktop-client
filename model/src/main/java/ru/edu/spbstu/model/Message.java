@@ -2,12 +2,7 @@ package ru.edu.spbstu.model;
 
 import java.util.Date;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @Setter
@@ -15,6 +10,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @EqualsAndHashCode
+@Builder(toBuilder = true)
 public class Message {
     private Long id;
     private String sender_login;

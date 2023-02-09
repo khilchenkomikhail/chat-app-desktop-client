@@ -42,12 +42,12 @@ public class ForwardMessageFormController {
 
     private ResourceBundle bundle;
 
-    Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), e -> loadAllChatPages()));
+    public Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), e -> loadAllChatPages()));
 
     private void loadAllChatPages() {
         int temp=(findMode)?chatsFindPage:chatsPage;
         int index=chatsListView.getSelectionModel().getSelectedIndex();
-        findChatsEvent();;
+        findChatsEvent();
         for (int i=1;i<temp;i++)
         {
             loadChatPage();

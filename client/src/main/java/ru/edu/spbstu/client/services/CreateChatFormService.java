@@ -48,24 +48,14 @@ public class CreateChatFormService {
             throw new HttpResponseException(reqStatusCreateChat,"Error while addChat");
         }
     }
-    public void addChat(String chatName, Language language) throws IOException {
+    /*public void addChat(String chatName, Language language) throws IOException {
         int reqStatusCreateChat = createChat(chatName, Collections.emptyList(), login, language);
         if (reqStatusCreateChat != 200) {
             throw new HttpResponseException(reqStatusCreateChat,"Error while addChat");
         }
-    }
+    }*/
 
-    private  static List<Chat> getAllChats(CredentialsProvider provider, String login, Integer page) throws IOException {
 
-        String getChatsUrlBlueprint = "http://localhost:8080/get_chats?login=%s&page_number=%d";
-
-        HttpClient client = HttpClientFactory.getInstance().getHttpClient();
-        HttpGet httpGet = new HttpGet(String.format(getChatsUrlBlueprint, login, page));
-        HttpResponse re = client.execute(httpGet);
-        HttpClientFactory.tryUpdateRememberMe(re);
-        String json = EntityUtils.toString(re.getEntity());
-        return jsonMapper.readValue(json, new TypeReference<>() {});
-    }
 
     private static int createChat(String chatName, List<String> users, String admin, Language language) throws IOException {
         CreateChatRequest request = new CreateChatRequest();
@@ -83,11 +73,7 @@ public class CreateChatFormService {
         return re.getStatusLine().getStatusCode();
     }
 
-    public boolean checkUser(String username) {
-        return true;
-    }
-
-    public ArrayList<Image> getImageList(List<ChatUser> userList) {
+    /*public ArrayList<Image> getImageList(List<ChatUser> userList) {
         int size=userList.size();
         ArrayList<Image> images= new ArrayList<Image>();
         for (int i=0;i<size;i++) {
@@ -100,18 +86,8 @@ public class CreateChatFormService {
             }
             images.set(i,temp);
         }
-        /*int size=userList.size();
-        ArrayList<Image> images= new ArrayList<Image>();
-        for (int i=0;i<size;i++)
-        {
-            var resourse=getClass().getResource("/images/dAvatar.bmp");
-            var res=(getClass().getResource("/images/dAvatar.bmp")).getPath().replaceFirst("/","");
-            Image temp=new Image(res);
-            images.add(temp);
-            //images.set(i,temp);
-        }*/
         return  images;
-    }
+    }*/
     public Image getImage(String userLogin) throws IOException {
 
         return new Image(new ByteArrayInputStream(getProfilePicture(userLogin)),40,40,false,false);

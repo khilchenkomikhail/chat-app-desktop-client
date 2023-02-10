@@ -456,16 +456,15 @@ public class ChatFormController {
         List<Message> temp;
         try {
             service.forwardMessage(selectedMessage.getId(), service.getLogin(), chatToForward.getId());
-            temp = service.getMessages(chatToForward.getId(), 1);//получим первую страницу сообщений
+            temp = service.getMessages(chatToForward.getId(), 1);
         } catch (IOException e) {
 
             showError(bundle.getString("InternalErrorText"));
             return;
         }
-        resetMessages();//очистим все сообщения(сбросим номер страницы)
-        messageList = temp;//заберём страницу сообщений
+        resetMessages();
+        messageList = temp;
         messagesListView.setItems(FXCollections.observableList(messageList));
-        //переместим чат навер в списке
         chatList.remove(chatToForward);
         chatList.add(0, chatToForward);
         chatsListView.setItems(FXCollections.observableList(chatList));
@@ -818,11 +817,13 @@ public class ChatFormController {
         var conC = fmxlLoader.<CreateChatFormController>getController();
         conC.setBundle(bundle);
         Scene scene = new Scene(window, 700, 500);
+        scene.setUserData(conC);
         conC.setLogin(this.service.getLogin());
 
         Stage nstage = new Stage();
         nstage.setScene(scene);
         nstage.setTitle(bundle.getString("ChatCreationForm"));
+
         conC.setCurrStage(nstage);
         conC.setPrevController(this);
         conC.setPrimaryStage(this.currStage);

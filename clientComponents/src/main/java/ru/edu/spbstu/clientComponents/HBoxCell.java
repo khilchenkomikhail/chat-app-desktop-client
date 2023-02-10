@@ -30,6 +30,11 @@ public class HBoxCell<T> extends HBox {
     }
     ImageView imageView;
     protected Label label;
+
+    public MyButton getButton() {
+        return button;
+    }
+
     protected MyButton button;
     public HBoxCell()
     {

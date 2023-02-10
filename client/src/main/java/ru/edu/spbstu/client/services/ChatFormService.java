@@ -74,21 +74,7 @@ public class ChatFormService {
         return jsonMapper.readValue(json, new TypeReference<>() {
         });
     }
-    @Deprecated
-    public Message makeMessage(Long idMessage,Long chatId, String messageContent)
-    {
-        Message message = new Message();
-        message.setId(idMessage);
-        message.setDate(new Date());
-        message.setChat_id(chatId);
-        message.setAuthor_login(login);
-        message.setSender_login(login);
-        message.setContent(messageContent);
-        message.setIs_deleted(false);
-        message.setIs_edited(false);
-        message.setIs_forwarded(false);
-        return  message;
-    }
+
     public void sendMessage(Long chatId,String message) throws IOException {
         int reqStatusCreateChat ;
         SendMessageRequest request=new SendMessageRequest(login,login,chatId,message);
@@ -244,7 +230,7 @@ public class ChatFormService {
     }
 
 
-    public ArrayList<Image> getImageList(List<String> userList) {
+    /*public ArrayList<Image> getImageList(List<String> userList) {
         int size=userList.size();
         ArrayList<Image> images= new ArrayList<Image>();
         for (int i=0;i<size;i++)
@@ -254,7 +240,7 @@ public class ChatFormService {
             images.add(temp);
         }
         return  images;
-    }
+    }*/
 
   
     public Image getImage(String userLogin) throws IOException {
@@ -277,9 +263,6 @@ public class ChatFormService {
             String json = EntityUtils.toString(entity);
             return Base64.getDecoder().decode(json);
         }
-
-//      String imageString = jsonMapper.readValue(json, new TypeReference<>() {});
-        // TODO for debugging, remove later
     }
 
 

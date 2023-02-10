@@ -43,6 +43,11 @@ public class CreateChatFormController {
 
     private CreateChatFormService service=new CreateChatFormService();
     private Stage primaryStage;
+
+    public Stage getCurrStage() {
+        return currStage;
+    }
+
     private Stage currStage;
     private List<ChatUser> userList;
     private ChatFormController prevController;
@@ -104,13 +109,14 @@ public class CreateChatFormController {
         countryToEnum.put("UK",Language.ENGLISH);
     }
 
-    private void update()
+    /*private void update()
     {
 
         int size=userList.size();
         ArrayList<Image> images= service.getImageList(userList);
         usersToAddListView.resetList(userList,images);
-    }
+    }*/
+
 
     public void AddUserButtonClick(ActionEvent actionEvent) {
         String username= loginTextField.getText();

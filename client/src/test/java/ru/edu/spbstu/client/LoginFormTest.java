@@ -235,7 +235,8 @@ public class LoginFormTest extends BasedTest {
         clickOn("#loginTextBox").write("olegoleg");
         clickOn("#forgetPasswordButton");
         checkAlertHeaderText("NoAccountForLoginError");
-        wireMockServer.stop();
+        //wireMockServer.stop();
+        wireMockServer.shutdown();
     }
 
     @Test
@@ -258,7 +259,8 @@ public class LoginFormTest extends BasedTest {
         } catch (EmptyNodeQueryException ex) {
             throw new InvalidDataException("Expected behaviour: forgot password form opens. Resulting behaviour: forgot password form is not opened");
         }
-        wireMockServer.stop();
+        //wireMockServer.stop();
+        wireMockServer.shutdown();
     }
 
     @Test
@@ -292,7 +294,8 @@ public class LoginFormTest extends BasedTest {
 
         ChatFormController controller = ((ChatFormController) currectScene.getUserData());
         controller.timeline.stop();
-        wireMockServer.stop();
+        //wireMockServer.stop();
+        wireMockServer.shutdown();
     }
 
     @Test
@@ -317,7 +320,8 @@ public class LoginFormTest extends BasedTest {
         clickOn("#passwordTextBox").write("olegoleg");
         clickOn("#logInButton");
         checkAlertHeaderText("InvalidLogPasswordError");
-        wireMockServer.stop();
+        //wireMockServer.stop();
+        wireMockServer.shutdown();
     }
 
     @Test
@@ -340,7 +344,8 @@ public class LoginFormTest extends BasedTest {
         clickOn("#emailTextBox").write("olegoleg@gmail.com");
         clickOn("#registerButton");
         checkAlertHeaderText("AccountWithLoginExistsError");
-        wireMockServer.stop();
+        //wireMockServer.stop();
+        wireMockServer.shutdown();
     }
 
     @Test
@@ -370,7 +375,8 @@ public class LoginFormTest extends BasedTest {
                         .withBody(jsonMapper.writeValueAsString(true))));
         clickOn("#registerButton");
         checkAlertHeaderText("EmailInAlreadyUsedError");
-        wireMockServer.stop();
+        //wireMockServer.stop();
+        wireMockServer.shutdown();
     }
 
     @Test
@@ -431,7 +437,8 @@ public class LoginFormTest extends BasedTest {
         ChatFormController controller = ((ChatFormController) currectScene.getUserData());
         controller.timeline.stop();
 
-        wireMockServer.stop();
+        //wireMockServer.stop();
+        wireMockServer.shutdown();
     }
 
 

@@ -124,11 +124,11 @@ public class ChatFormTest extends ApplicationTest {
     }
     //add new chat func
     //forward func
-    private static void stubSuccessful(String url, String type, String responceBody)
+    static void stubSuccessful(String url, String type, String responceBody)
     {
         stub(url,type,200,responceBody);
     }
-    private static void stub(String url,String type,int code, String responceBody)
+    static void stub(String url, String type, int code, String responceBody)
     {
         switch (type)
         {
@@ -594,10 +594,10 @@ public class ChatFormTest extends ApplicationTest {
         ListView<Chat> chatLst= find(chatListViewStr);
         clickOnItemInListView(chatLst,1,1);
         clickOn("#ConfigChatButton");
-        Scene currectScene = getWindows().get(0).getScene();
+        //Scene currectScene = getWindows().get(0).getScene();
 
-        ConfigureChatFormController controller = ((ConfigureChatFormController) currectScene.getUserData());
-        controller.timeline.stop();
+       // ConfigureChatFormController controller = ((ConfigureChatFormController) currectScene.getUserData());
+        //controller.timeline.stop();
     }
 
 
@@ -678,7 +678,8 @@ public class ChatFormTest extends ApplicationTest {
             }
         }
         FxToolkit.cleanupStages();
-        wireMockServer.stop();
+        //wireMockServer.stop();
+        wireMockServer.shutdown();
         wireMockServer.resetToDefaultMappings();
     }
 

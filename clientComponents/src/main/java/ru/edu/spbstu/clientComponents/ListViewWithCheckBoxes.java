@@ -37,7 +37,7 @@ public class ListViewWithCheckBoxes extends ListView<HboxCellWithCheckboxes> {
     {
         return new ArrayList<>(lst);
     }
-    public void resetList(List<ChatUser> arr,List<Image> avatars)
+    public void resetList(List<ChatUser> arr,List<Image> avatars,boolean type)
     {
         var prev=this.getItems();
         this.setFixedCellSize(50);
@@ -47,7 +47,6 @@ public class ListViewWithCheckBoxes extends ListView<HboxCellWithCheckboxes> {
         {
 
             ChatUser current_item=lst.get(i);
-
             HboxCellWithCheckboxes temp=new HboxCellWithCheckboxes(current_item.getLogin(),i,avatars.get(i));
 
             temp.adminCB.setOnAction(handler);
@@ -57,11 +56,11 @@ public class ListViewWithCheckBoxes extends ListView<HboxCellWithCheckboxes> {
                 temp.adminCB.setDisable(true);
                 temp.deleteCB.setDisable(true);
             }
-            for (int j=0;j<prev.size();j++)
-            {
-                if(prev.get(j).label.getText().equals(current_item.getLogin()))
-                {
-                    temp=prev.get(j);
+            if(!type) {
+                for (int j = 0; j < prev.size(); j++) {
+                    if (prev.get(j).label.getText().equals(current_item.getLogin())) {
+                        temp = prev.get(j);
+                    }
                 }
             }
             list.add(temp);

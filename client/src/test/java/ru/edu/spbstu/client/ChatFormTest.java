@@ -391,14 +391,13 @@ public class ChatFormTest extends ApplicationTest {
         String currLang=((ChatFormController)getWindows().get(0).getScene().getUserData()).getBundle().getLocale().getCountry();
 
 
-       // clickOn();
         int cbIndex=1;
         interact(() -> {
             cb.getSelectionModel().select(cbIndex);
         });
         String res=ClientProperties.getProperties().getProperty("Language");
         assertEquals(res,"EN");
-        //clickOn("OK");
+
     }
     @Test
     public void testButtonsStateDuringStartup()
@@ -688,7 +687,7 @@ public class ChatFormTest extends ApplicationTest {
         VirtualFlow<ListCell<T>> virtualFlow = (VirtualFlow)listView.lookup("#virtual-flow");
         ListCell<T> cell = virtualFlow.getCell(index);
         if(type>0)
-        rightClickOn(cell);
+            rightClickOn(cell);
         else
         {
             clickOn(cell);

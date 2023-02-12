@@ -59,7 +59,7 @@ public class ConfigureChatFormService {
         return jsonMapper.readValue(json, new TypeReference<>() {});
     }
 
-    public void deleteChatUsers(Chat chatToConfigure,List<String>logins) throws IOException {
+    public void deleteChatUsers(Chat chatToConfigure, List<String> logins, boolean type) throws IOException {
         ChatUpdateRequest request=new ChatUpdateRequest(chatToConfigure.getId(),logins);
 
         HttpClient client = HttpClientFactory.getInstance().getHttpClient();
@@ -67,12 +67,14 @@ public class ConfigureChatFormService {
         HttpPatch post = new HttpPatch("http://localhost:8080/delete_users_from_chat");
         post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request), "UTF-8"));
         post.addHeader("content-type", "application/json");
-        HttpResponse re = client.execute(post);
-        HttpClientFactory.tryUpdateRememberMe(re);
-        code=re.getStatusLine().getStatusCode();
+        if(!type) {
+            HttpResponse re = client.execute(post);
+            HttpClientFactory.tryUpdateRememberMe(re);
+            code = re.getStatusLine().getStatusCode();
+        }
     }
 
-    public void setChatUsersAdmins(Chat chatToConfigure,List<String>logins) throws IOException {
+    public void setChatUsersAdmins(Chat chatToConfigure, List<String> logins, boolean type) throws IOException {
         ChatUpdateRequest request=new ChatUpdateRequest(chatToConfigure.getId(),logins);
         int code=0;
 
@@ -80,9 +82,12 @@ public class ConfigureChatFormService {
         HttpPatch post = new HttpPatch("http://localhost:8080/make_users_admins");
         post.setEntity(new StringEntity(jsonMapper.writeValueAsString(request), "UTF-8"));
         post.addHeader("content-type", "application/json");
-        HttpResponse re = client.execute(post);
-        HttpClientFactory.tryUpdateRememberMe(re);
-        code = re.getStatusLine().getStatusCode();
+
+        if(!type) {
+            HttpResponse re = client.execute(post);
+            HttpClientFactory.tryUpdateRememberMe(re);
+            code = re.getStatusLine().getStatusCode();
+        }
     }
     public void addUsersToChat(Chat chatToConfigure,List<String>logins) throws IOException {
 

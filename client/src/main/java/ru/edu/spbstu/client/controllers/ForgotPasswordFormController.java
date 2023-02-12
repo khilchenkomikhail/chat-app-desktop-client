@@ -32,7 +32,7 @@ public class ForgotPasswordFormController {
     private  String login;
     @FXML
     private Button changePasswordButton;
-    public TextField emailTextBox;
+    public TextField emailTextBox2;
     private ResourceBundle bundle;
     private HashMap<String,Language> countryToEnum;
 
@@ -68,7 +68,7 @@ public class ForgotPasswordFormController {
 
     public void changePasswordButtonClick(MouseEvent mouseEvent) {
         try {
-            checkEmail(emailTextBox.getText());
+            checkEmail(emailTextBox2.getText());
         }
         catch (InvalidDataException ex)
         {
@@ -77,7 +77,7 @@ public class ForgotPasswordFormController {
         }
 
         boolean isValid;
-        String email=emailTextBox.getText();
+        String email= emailTextBox2.getText();
         CheckEmailRequest signUpRequest = new CheckEmailRequest(login,email);
 
         try (CloseableHttpClient client = HttpClients.createDefault()) {
@@ -86,6 +86,10 @@ public class ForgotPasswordFormController {
             signUpReq.setEntity(new StringEntity(jsonMapper.writeValueAsString(signUpRequest), "UTF-8"));
             var temp=client.execute(signUpReq);
             int code=temp.getStatusLine().getStatusCode();
+            if(code !=200)
+            {
+                throw  new IOException("");
+            }
             String json = EntityUtils.toString(temp.getEntity());
             isValid=jsonMapper.readValue(json, new TypeReference<>() {});
         }
@@ -96,28 +100,26 @@ public class ForgotPasswordFormController {
         }
         if(isValid) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            forgotAction();
-            alert.setTitle(bundle.getString("InformationHeader"));
-            alert.setHeaderText(bundle.getString("MessageSendSuccess"));
-            alert.showAndWait().ifPresent(rs -> {
-                if (rs == ButtonType.OK) {
-                    Stage stage = (Stage) changePasswordButton.getScene().getWindow();
-                    stage.close();
-                }
-            });
+            if(forgotAction()) {
+                alert.setTitle(bundle.getString("InformationHeader"));
+                alert.setHeaderText(bundle.getString("MessageSendSuccess"));
+                alert.showAndWait().ifPresent(rs -> {
+                    if (rs == ButtonType.OK) {
+                        Stage stage = (Stage) changePasswordButton.getScene().getWindow();
+                        stage.close();
+                    }
+                });
+            }
         }
         else
         {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle(bundle.getString("Error"));
-            alert.setContentText(bundle.getString("BadEmailErrorText"));
-            alert.show();
+            showError(bundle.getString("BadEmailErrorText"));
         }
     }
 
     private static final ObjectMapper jsonMapper = new ObjectMapper();
 
-    private void forgotAction() {
+    private boolean forgotAction() {
 
         int sendStatus;
 
@@ -132,13 +134,15 @@ public class ForgotPasswordFormController {
             signUpReq.setEntity(new StringEntity(jsonMapper.writeValueAsString(sendTemporaryPasswordRequest), "UTF-8"));
             sendStatus= client.execute(signUpReq).getStatusLine().getStatusCode();
             if (sendStatus != 200) {
-                throw new HttpResponseException(sendStatus,"Error while register");
+                throw new HttpResponseException(sendStatus,"Error while sendtmppass");
             }
             HttpClientFactory.getInstance().invalidateToken();
+            return true;
         }
         catch (IOException e)
         {
             showError( bundle.getString("MessageErrorText"));
+            return false;
         }
     }
 

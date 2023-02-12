@@ -49,6 +49,7 @@ public class ConfigureChatFormController {
     private Chat chatToConfigure;
     private ChatFormController prevController;
     private ResourceBundle bundle;
+    public boolean test=false;
     public Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), e -> loadAllChatMembers()));
 
     private void loadAllChatMembers() {
@@ -73,7 +74,7 @@ public class ConfigureChatFormController {
         }
         if(temp.equals(new ChatUser()))
         {
-            showInfo(bundle.getString("ExcludedFromChat"));
+            showError(bundle.getString("ExcludedFromChat"));
             closeStage();
             return;
         }
@@ -96,7 +97,7 @@ public class ConfigureChatFormController {
             userList.remove(user);
         }
         ArrayList<Image> images=service.getImageList(userList);
-        chatMembersConfigurationLV.resetList(userList,images);
+        chatMembersConfigurationLV.resetList(userList,images,false);
 
     }
 
@@ -170,7 +171,7 @@ public class ConfigureChatFormController {
         }
 
         ArrayList<Image> images=service.getImageList(userList);
-        chatMembersConfigurationLV.resetList(userList,images);
+        chatMembersConfigurationLV.resetList(userList,images,false);
 
         currStage.setOnCloseRequest(e -> {
             closeStage();
@@ -215,14 +216,13 @@ public class ConfigureChatFormController {
             userList.remove(user);
         }
         ArrayList<Image> images=service.getImageList(userList);
-        chatMembersConfigurationLV.resetList(userList,images);
+        chatMembersConfigurationLV.resetList(userList,images,true);
     }
 
     public void confirmSettingsButtonPress() {
         try {
-
-            service.deleteChatUsers(chatToConfigure, chatMembersConfigurationLV.getUsersToDelete());
-            service.setChatUsersAdmins(chatToConfigure, chatMembersConfigurationLV.getUsersToMakeAdmins());
+            service.deleteChatUsers(chatToConfigure, chatMembersConfigurationLV.getUsersToDelete(),test);
+            service.setChatUsersAdmins(chatToConfigure, chatMembersConfigurationLV.getUsersToMakeAdmins(),test);
             update();
         }
         catch (IOException e)
@@ -294,12 +294,7 @@ public class ConfigureChatFormController {
         alert.show();
     }
 
-    private void showInfo(String s) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(bundle.getString("InformationHeader"));
-        alert.setHeaderText(s);
-        alert.show();
-    }
+
 
 
     public void setPrevController(ChatFormController prevController) {
@@ -309,5 +304,9 @@ public class ConfigureChatFormController {
 
     public void userLoginTextTypedAction(KeyEvent keyEvent) {
         AddUserButton.setDisable(loginTextField.getText().length()==0);
+    }
+
+    public Stage getCurrStage() {
+        return currStage;
     }
 }

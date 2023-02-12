@@ -22,15 +22,20 @@ public class HboxCellWithCheckboxes extends HBox {
         {
             super();
         }
-        MyCheckBox(int num)
-        {
-            super();
-            structNum=num;
-        }
+
 
     }
     ImageView  imageView;
     Label label;
+
+    public MyCheckBox getDeleteCB() {
+        return deleteCB;
+    }
+
+    public MyCheckBox getAdminCB() {
+        return adminCB;
+    }
+
     MyCheckBox deleteCB;
     MyCheckBox adminCB;
 

@@ -4,10 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javafx.application.Platform;
-import org.testfx.framework.junit5.ApplicationAdapter;
-import com.google.common.base.Strings;
-import com.sun.javafx.stage.StageHelper;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -15,34 +11,31 @@ import javafx.scene.control.*;
 import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
-import javafx.scene.robot.Robot;
-import javafx.scene.text.TextBoundsType;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import lombok.Value;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit5.ApplicationTest;
 import org.testfx.matcher.base.NodeMatchers;
 import ru.edu.spbstu.client.controllers.*;
-import ru.edu.spbstu.client.exception.InvalidDataException;
 import ru.edu.spbstu.client.utils.ClientProperties;
 import ru.edu.spbstu.clientComponents.HBoxCell;
 import ru.edu.spbstu.clientComponents.ListViewWithButtons;
 import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.model.ChatUser;
-import ru.edu.spbstu.model.Message;
 import ru.edu.spbstu.model.User;
 
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -58,88 +51,67 @@ import static ru.edu.spbstu.client.ChatFormTest.*;
 
 public class CreateChatFormTest extends ApplicationTest {
     public static final String GET_CHATS_LOGIN_PAGE_NUMBER_D = "/get_chats\\?login=.*&page_number=\\d+";
-    public static final String GET_MESSAGES="/get_messages\\?chat_id=\\d+&page_number=\\d+";
-    public static final String GET_IMAGE="/get_profile_photo\\?login=.+";
-    public static final String GET_MEMBERS="/get_chat_members\\?chat_id=\\d+";
-    public static final String DELETE_USERS="/delete_users_from_chat";
-    public static final String MAKE_ADMINS="/make_users_admins";
-    public static final String SEND_MESSAGE="/send_message";
-    public static final String FORWARD_MESSAGE="/forward_message\\?message_id=\\d+&sender_login=.*&chat_id=\\d+";
-    public static final String GET_EMAIL="/get_user\\?login=.*";
-    public static final String EDIT_MESSAGE="/edit_message";
-    public static final String DELETE_MESSAGE="/delete_message\\?message_id=\\d+";
-    public static final String FIND_CHATS="/get_chats_by_search\\?login=.*&begin=.*&page_number=\\d+";
-    public static final String IS_USER_PRESENT="/is_user_present\\?login=.*";
-    public static final String CREATE_CHAT="/create_chat";
+    public static final String GET_IMAGE = "/get_profile_photo\\?login=.+";
+    public static final String MAKE_ADMINS = "/make_users_admins";
+    public static final String GET_EMAIL = "/get_user\\?login=.*";
+    public static final String FIND_CHATS = "/get_chats_by_search\\?login=.*&begin=.*&page_number=\\d+";
+    public static final String IS_USER_PRESENT = "/is_user_present\\?login=.*";
+    public static final String CREATE_CHAT = "/create_chat";
 
 
-
-
-
-    private static final String ADD_USER_BUTTON="#AddUserButton";
-    public static final String USER_LOGIN_TF="#loginTextField";
-    private static final String CREATE_CHAT_BUTTON="#createChatButton";
-    private static final String CREATE_CHAT_TEXTBOX="#chatNameTextBox";
+    private static final String ADD_USER_BUTTON = "#AddUserButton";
+    public static final String USER_LOGIN_TF = "#loginTextField";
+    private static final String CREATE_CHAT_BUTTON = "#createChatButton";
+    private static final String CREATE_CHAT_TEXTBOX = "#chatNameTextBox";
     private static final String USERS_TO_ADD_LIST_VIEW = "#usersToAddListView";
     private static WireMockServer wireMockServer;
-    private static  ObjectMapper jsonMapper = new ObjectMapper();
+    private static ObjectMapper jsonMapper = new ObjectMapper();
     LoginFormController concC;
     private static List<Chat> chats = new ArrayList<>(Arrays.asList(new Chat(1L, "first"),
             new Chat(2L, "second"),
             new Chat(3L, "third")));
 
-    private static ArrayList<Message> messages = new ArrayList<>(Arrays.asList(messageGenerator(1L,1L,"login1","login1","message1", ChatFormTest.MessageType.SIMPLE),
-            messageGenerator(2L,1L,"olegoleg","olegoleg","message21", ChatFormTest.MessageType.SIMPLE),
-            messageGenerator(3L,1L,"olegoleg","olegoleg","message22", ChatFormTest.MessageType.SIMPLE)));
-    private final String MESSAGE_LIST_VIEW = "#messagesListView";
-
-
-    //check chat field checks
-    //check add users
 
     private static void reset_to_defaults() throws JsonProcessingException {
         wireMockServer.resetToDefaultMappings();
         String responce = jsonMapper.writeValueAsString(chats);
 
         //to open 2 form
-        stubSuccessful(GET_CHATS_LOGIN_PAGE_NUMBER_D,"get",responce);
+        stubSuccessful(GET_CHATS_LOGIN_PAGE_NUMBER_D, "get", responce);
 
-        stubSuccessful(GET_IMAGE,"get", String.valueOf((byte[]) null));
-        List<ChatUser> usserlist=Arrays.asList(new ChatUser("login1",false),
-                new ChatUser("olegoleg",true),
-                new ChatUser("olegoleg2",false));
+        stubSuccessful(GET_IMAGE, "get", String.valueOf((byte[]) null));
+        List<ChatUser> usserlist = Arrays.asList(new ChatUser("login1", false),
+                new ChatUser("olegoleg", true),
+                new ChatUser("olegoleg2", false));
 
-        stubSuccessful(MAKE_ADMINS,"patch", jsonMapper.writeValueAsString(usserlist));
+        stubSuccessful(MAKE_ADMINS, "patch", jsonMapper.writeValueAsString(usserlist));
 
-        stubSuccessful(GET_EMAIL,"get", jsonMapper.writeValueAsString(new User("olegoleg","olegoleg","olegoleg@gmail.com")));
-        stubSuccessful(IS_USER_PRESENT,"get",jsonMapper.writeValueAsString(true));
-        stubSuccessful(CREATE_CHAT,"post",jsonMapper.writeValueAsString(true));
+        stubSuccessful(GET_EMAIL, "get", jsonMapper.writeValueAsString(new User("olegoleg", "olegoleg", "olegoleg@gmail.com")));
+        stubSuccessful(IS_USER_PRESENT, "get", jsonMapper.writeValueAsString(true));
+        stubSuccessful(CREATE_CHAT, "post", jsonMapper.writeValueAsString(true));
     }
+
     @BeforeAll
-    public static void initServer() throws Exception
-    {
+    public static void initServer() throws Exception {
         ClientProperties.setProperties("RU");
         ApplicationTest.launch(ClientApplication.class);
-        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out), true, "UTF-8"));
-        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.err), true, "UTF-8"));
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out), true, StandardCharsets.UTF_8));
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.err), true, StandardCharsets.UTF_8));
         wireMockServer = new WireMockServer(8080);
         wireMockServer.start();//start server
 
 
         reset_to_defaults();
-       }
-
-
+    }
 
 
     @BeforeEach
-    public void initSecondStage()
-    {
-        concC=((FXMLLoader) find("#forgetPasswordButton").getScene().getUserData()).getController();
+    public void initSecondStage() {
+        concC = ((FXMLLoader) find("#forgetPasswordButton").getScene().getUserData()).getController();
 
-        ((TextField)find("#loginTextBox")).setText("olegoleg");
-        ((TextField)find("#passwordTextBox")).setText("olegoleg");
-        Button b=find("#logInButton");
+        ((TextField) find("#loginTextBox")).setText("olegoleg");
+        ((TextField) find("#passwordTextBox")).setText("olegoleg");
+        Button b = find("#logInButton");
         b.setDisable(false);
         clickOn("#logInButton");
         clickOn("#addChatButton");
@@ -148,115 +120,101 @@ public class CreateChatFormTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) throws Exception {
-       stage.show();
-    }
-    private static Long getLastMessageId()
-    {
-        return messages.get(messages.size()-1).getId();
-    }
-    public <T extends Node> T find(final String query)
-    {
-        return (T)lookup(query).queryAll().iterator().next();
+        stage.show();
     }
 
-
+    public <T extends Node> T find(final String query) {
+        return (T) lookup(query).queryAll().iterator().next();
+    }
 
 
     @Test
-    public void testButtonsInit()
-    {
-        verifyThat(ADD_USER_BUTTON,NodeMatchers.isDisabled());
-        verifyThat(CREATE_CHAT_BUTTON,NodeMatchers.isDisabled());
+    public void testButtonsInit() {
+        verifyThat(ADD_USER_BUTTON, NodeMatchers.isDisabled());
+        verifyThat(CREATE_CHAT_BUTTON, NodeMatchers.isDisabled());
     }
 
     @Test
-    public void testUserAdd()
-    {
-        String login="sampleLogin";
-        TextField loginTF=find(USER_LOGIN_TF);
-        String temp =login.substring(0,login.length()-1);
+    public void testUserAdd() {
+        String login = "sampleLogin";
+        TextField loginTF = find(USER_LOGIN_TF);
+        String temp = login.substring(0, login.length() - 1);
         loginTF.setText(temp);
         clickOn(loginTF).write(login.charAt(login.length() - 1));
         clickOn(ADD_USER_BUTTON);
 
-        ListViewWithButtons<ChatUser>ch=find(USERS_TO_ADD_LIST_VIEW);
-        ListCell<HBoxCell<ChatUser>> cell=getListCell(ch,0);
-        assertEquals(login,cell.getItem().getLoginLabelText());
+        ListViewWithButtons<ChatUser> ch = find(USERS_TO_ADD_LIST_VIEW);
+        ListCell<HBoxCell<ChatUser>> cell = getListCell(ch, 0);
+        assertEquals(login, cell.getItem().getLoginLabelText());
     }
 
     @Test
-    public void testSameUserAdd()
-    {
-        String login="sampleLogin";
-        TextField loginTF=find(USER_LOGIN_TF);
-        String temp =login.substring(0,login.length()-1);
+    public void testSameUserAdd() {
+        String login = "sampleLogin";
+        TextField loginTF = find(USER_LOGIN_TF);
+        String temp = login.substring(0, login.length() - 1);
         loginTF.setText(temp);
         clickOn(loginTF).write(login.charAt(login.length() - 1));
         clickOn(ADD_USER_BUTTON);
         clickOn(ADD_USER_BUTTON);
-        checkAlertHeaderText( "UserAlreadyInAddListError");
+        checkAlertHeaderText("UserAlreadyInAddListError");
     }
 
     @Test
-    public void testUsersDelete()
-    {
-        TextField loginTF=find(USER_LOGIN_TF);
-        for (Integer i=0;i<6;i++)
-        {
-            String login="chatUser"+i.toString();
-            String temp =login.substring(0,login.length()-1);
+    public void testUsersDelete() {
+        TextField loginTF = find(USER_LOGIN_TF);
+        for (int i = 0; i < 6; i++) {
+            String login = "chatUser" + i;
+            String temp = login.substring(0, login.length() - 1);
             loginTF.setText(temp);
             clickOn(loginTF).write(login.charAt(login.length() - 1));
             clickOn(ADD_USER_BUTTON);
         }
-        int delIndex=3;
-        ListViewWithButtons<ChatUser>ch=find(USERS_TO_ADD_LIST_VIEW);
-        ListCell<HBoxCell<ChatUser>> cell=getListCell(ch,delIndex);
-        String delName=new String(cell.getItem().getLabelText());
+        int delIndex = 3;
+        ListViewWithButtons<ChatUser> ch = find(USERS_TO_ADD_LIST_VIEW);
+        ListCell<HBoxCell<ChatUser>> cell = getListCell(ch, delIndex);
+        String delName = cell.getItem().getLabelText();
         clickOn(cell.getItem().getButton());
         assertFalse(ch.getList().stream().anyMatch(user -> user.getLogin().equals(delName)));
-        //assertEquals(login,cell.getItem().getLoginLabelText());
     }
 
     @Test
     public void testCreateChat() throws JsonProcessingException {
-        TextField loginTF=find(USER_LOGIN_TF);
-        for (Integer i=0;i<4;i++)
-        {
-            String login="chatUser"+i.toString();
-            String temp =login.substring(0,login.length()-1);
+        TextField loginTF = find(USER_LOGIN_TF);
+        for (int i = 0; i < 4; i++) {
+            String login = "chatUser" + i;
+            String temp = login.substring(0, login.length() - 1);
             loginTF.setText(temp);
             clickOn(loginTF).write(login.charAt(login.length() - 1));
             clickOn(ADD_USER_BUTTON);
         }
-        String chatName="chatName";
+        String chatName = "chatName";
         clickOn(CREATE_CHAT_TEXTBOX).write(chatName);
-        stubSuccessful(FIND_CHATS,"get",jsonMapper.writeValueAsString(Arrays.asList(new Chat(4L,chatName))));
+        stubSuccessful(FIND_CHATS, "get", jsonMapper.writeValueAsString(Collections.singletonList(new Chat(4L, chatName))));
         clickOn(CREATE_CHAT_BUTTON);
-        ListView<Chat> chatListView=find("#chatsListView");
-        Chat chat=getListCell(chatListView,0).getItem();
-        assertEquals(chatName,chat.getName());
+        ListView<Chat> chatListView = find("#chatsListView");
+        Chat chat = getListCell(chatListView, 0).getItem();
+        assertEquals(chatName, chat.getName());
     }
 
     @Test
-    public void testCreateChat2() throws JsonProcessingException, TimeoutException {
-        String chatName="chatName";
-        stubSuccessful(FIND_CHATS,"get",jsonMapper.writeValueAsString(Arrays.asList(new Chat(4L,chatName))));
-        TextField loginTF=find(USER_LOGIN_TF);
-        CreateChatFormController cf= (CreateChatFormController) getWindows().get(0).getScene().getUserData();
+    public void testCreateChatDuringFind() throws JsonProcessingException, TimeoutException {
+        String chatName = "chatName";
+        stubSuccessful(FIND_CHATS, "get", jsonMapper.writeValueAsString(Collections.singletonList(new Chat(4L, chatName))));
+        TextField loginTF;
+        CreateChatFormController cf = (CreateChatFormController) getWindows().get(0).getScene().getUserData();
 
-        Stage st=cf.getCurrStage();
+        Stage st = cf.getCurrStage();
 
 
         Platform.runLater(() -> st.fireEvent(new WindowEvent(st, WindowEvent.WINDOW_CLOSE_REQUEST)));
         sleep(100);
         clickOn("#findChatTextBox").write("s");
         clickOn("#addChatButton");
-        loginTF=find(USER_LOGIN_TF);
-        for (Integer i=0;i<4;i++)
-        {
-            String login="chatUser"+i.toString();
-            String temp =login.substring(0,login.length()-1);
+        loginTF = find(USER_LOGIN_TF);
+        for (int i = 0; i < 4; i++) {
+            String login = "chatUser" + i;
+            String temp = login.substring(0, login.length() - 1);
             loginTF.setText(temp);
             clickOn(loginTF).write(login.charAt(login.length() - 1));
             clickOn(ADD_USER_BUTTON);
@@ -264,27 +222,26 @@ public class CreateChatFormTest extends ApplicationTest {
 
         clickOn(CREATE_CHAT_TEXTBOX).write(chatName);
         clickOn(CREATE_CHAT_BUTTON);
-        ListView<Chat> chatListView=find("#chatsListView");
-        Chat chat=getListCell(chatListView,0).getItem();
-        assertEquals(chatName,chat.getName());
+        ListView<Chat> chatListView = find("#chatsListView");
+        Chat chat = getListCell(chatListView, 0).getItem();
+        assertEquals(chatName, chat.getName());
     }
 
     private static Stream<Arguments> testAddUserFixture() {
         return Stream.of(
-                arguments(200,"NoUserWithSuchLoginError","sampleLogin",false),
-                arguments(200,"NoNeedToAddCreatorError","olegoleg",true),
-                arguments(404,"InternalErrorText","sampleLogin",false )
+                arguments(200, "NoUserWithSuchLoginError", "sampleLogin", false),
+                arguments(200, "NoNeedToAddCreatorError", "olegoleg", true),
+                arguments(404, "InternalErrorText", "sampleLogin", false)
 
         );
     }
 
     @ParameterizedTest
     @MethodSource("testAddUserFixture")
-    public void testAddUserThatDoesNotExist(int code, String bundleMessage,String login,Boolean status) throws JsonProcessingException {
-        if(code==200) {
+    public void testAddUserThatDoesNotExist(int code, String bundleMessage, String login, Boolean status) throws JsonProcessingException {
+        if (code == 200) {
             stub(IS_USER_PRESENT, "get", code, jsonMapper.writeValueAsString(status));
-        }
-        else {
+        } else {
             stubFor(get(urlMatching(IS_USER_PRESENT))
                     .willReturn(aResponse()
                             .withStatus(code)
@@ -293,28 +250,29 @@ public class CreateChatFormTest extends ApplicationTest {
         }
         //stubSuccessful(IS_USER_PRESENT,"get",jsonMapper.writeValueAsString(false));
         //String login="sampleLogin";
-        TextField loginTF=find(USER_LOGIN_TF);
-        String temp =login.substring(0,login.length()-1);
+        TextField loginTF = find(USER_LOGIN_TF);
+        String temp = login.substring(0, login.length() - 1);
         loginTF.setText(temp);
         clickOn(loginTF).write(login.charAt(login.length() - 1));
         clickOn(ADD_USER_BUTTON);
 
         checkAlertHeaderText(bundleMessage);
-        stubSuccessful(IS_USER_PRESENT,"get",jsonMapper.writeValueAsString(true));
+        stubSuccessful(IS_USER_PRESENT, "get", jsonMapper.writeValueAsString(true));
     }
+
     private static Stream<Arguments> testInvalidChatNameFixture() {
         return Stream.of(
-                arguments("<$ef","InvalidChatFormatError"),
-                arguments("ooooooooooooooooooooooooooooooooooooooooooooooooooo","InvalidChatSizeError" )
+                arguments("<$ef", "InvalidChatFormatError"),
+                arguments("ooooooooooooooooooooooooooooooooooooooooooooooooooo", "InvalidChatSizeError")
 
         );
     }
+
     @ParameterizedTest
     @MethodSource("testInvalidChatNameFixture")
-    public void testInvalidChatNameFormat(String chatName,String bundleMessage)
-    {
-        TextField chatNameTb=find(CREATE_CHAT_TEXTBOX);
-        String temp =chatName.substring(0,chatName.length()-1);
+    public void testInvalidChatNameFormat(String chatName, String bundleMessage) {
+        TextField chatNameTb = find(CREATE_CHAT_TEXTBOX);
+        String temp = chatName.substring(0, chatName.length() - 1);
         chatNameTb.setText(temp);
         clickOn(chatNameTb).write(chatName.charAt(chatName.length() - 1));
         clickOn("#createChatButton");
@@ -324,17 +282,17 @@ public class CreateChatFormTest extends ApplicationTest {
 
     private static Stream<Arguments> testInvalidUserLoginFixture() {
         return Stream.of(
-                arguments("<$ef","BadFormatLoginErrorText"),
-                arguments("ooooooooooooooooooooooooooooooooooooooooooooooooooo","InvalidLoginSizeError" )
+                arguments("<$ef", "BadFormatLoginErrorText"),
+                arguments("ooooooooooooooooooooooooooooooooooooooooooooooooooo", "InvalidLoginSizeError")
 
         );
     }
+
     @ParameterizedTest
     @MethodSource("testInvalidUserLoginFixture")
-    public void testInvalidUserLoginFormat(String login,String bundleMessage)
-    {
-        TextField loginTF=find(USER_LOGIN_TF);
-        String temp =login.substring(0,login.length()-1);
+    public void testInvalidUserLoginFormat(String login, String bundleMessage) {
+        TextField loginTF = find(USER_LOGIN_TF);
+        String temp = login.substring(0, login.length() - 1);
         loginTF.setText(temp);
         clickOn(loginTF).write(login.charAt(login.length() - 1));
         clickOn(ADD_USER_BUTTON);
@@ -344,32 +302,25 @@ public class CreateChatFormTest extends ApplicationTest {
 
     @AfterEach
     public void HideStages() throws TimeoutException {
-        if(getWindows().size()>0) {
-            for(int i=0;i<getWindows().size();i++) {
+        if (getWindows().size() > 0) {
+            for (int i = 0; i < getWindows().size(); i++) {
                 Scene currectScene = getWindows().get(i).getScene();
-                if(currectScene.getUserData()==null)
-                {
+                if (currectScene.getUserData() == null) {
                     continue;
                 }
 
                 try {
                     ChatFormController controller = ((ChatFormController) currectScene.getUserData());
                     controller.timeline.stop();
-                }
-                catch (ClassCastException ex)
-                {
+                } catch (ClassCastException ex) {
                     try {
                         ConfigureChatFormController controller = ((ConfigureChatFormController) currectScene.getUserData());
                         controller.timeline.stop();
-                    }
-                    catch (ClassCastException ex2)
-                    {
+                    } catch (ClassCastException ex2) {
                         try {
                             ForwardMessageFormController controller = ((ForwardMessageFormController) currectScene.getUserData());
                             controller.timeline.stop();
-                        }
-                        catch (ClassCastException ex3)
-                        {
+                        } catch (ClassCastException ex3) {
 
                         }
                     }
@@ -379,8 +330,8 @@ public class CreateChatFormTest extends ApplicationTest {
 
         }
         FxToolkit.hideStage();
-         release(new KeyCode[]{});
-         release(new MouseButton[]{});
+        release(new KeyCode[]{});
+        release(new MouseButton[]{});
 
     }
 
@@ -388,28 +339,23 @@ public class CreateChatFormTest extends ApplicationTest {
     @AfterAll
     public static void destroy() throws TimeoutException {
 
-        if(getWindows().size()>0) {
-            for (int i=0;i<getWindows().size();i++) {
+        if (getWindows().size() > 0) {
+            for (int i = 0; i < getWindows().size(); i++) {
 
                 Scene currectScene = getWindows().get(i).getScene();
 
-                if(currectScene.getUserData()==null)
-                {
+                if (currectScene.getUserData() == null) {
                     continue;
                 }
 
                 try {
                     ChatFormController controller = ((ChatFormController) currectScene.getUserData());
                     controller.timeline.stop();
-                }
-                catch (ClassCastException ex)
-                {
+                } catch (ClassCastException ex) {
                     try {
                         ConfigureChatFormController controller = ((ConfigureChatFormController) currectScene.getUserData());
                         controller.timeline.stop();
-                    }
-                    catch (ClassCastException ex2)
-                    {
+                    } catch (ClassCastException ex2) {
                         ForwardMessageFormController controller = ((ForwardMessageFormController) currectScene.getUserData());
                         controller.timeline.stop();
                     }
@@ -431,7 +377,7 @@ public class CreateChatFormTest extends ApplicationTest {
         if (lst.size() < 1) {
             throw new NoAlertFoundException();
         }
-        dialog = lst.get(lst.size()-1);
+        dialog = lst.get(lst.size() - 1);
         //dialog = (DialogPane) lookup(".alert").queryAll().iterator().next();
 
         String alertTitle = dialog.getHeaderText();
@@ -446,21 +392,9 @@ public class CreateChatFormTest extends ApplicationTest {
         }
     }
 
-    private <T> void clickOnItemInListView(ListView<T>listView,int index,int type)
-    {
-        VirtualFlow<ListCell<T>> virtualFlow = (VirtualFlow)listView.lookup("#virtual-flow");
-        ListCell<T> cell = virtualFlow.getCell(index);
-        if(type>0)
-        rightClickOn(cell);
-        else
-        {
-            clickOn(cell);
-        }
-    }
 
-    private <T>  ListCell<T> getListCell(ListView<T>listView,int index)
-    {
-        VirtualFlow<ListCell<T>> virtualFlow = (VirtualFlow)listView.lookup("#virtual-flow");
+    private <T> ListCell<T> getListCell(ListView<T> listView, int index) {
+        VirtualFlow<ListCell<T>> virtualFlow = (VirtualFlow) listView.lookup("#virtual-flow");
         return virtualFlow.getCell(index);
     }
 

@@ -7,12 +7,17 @@ import com.google.common.base.Strings;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.testfx.api.FxToolkit;
+import org.testfx.framework.junit5.ApplicationTest;
 import org.testfx.matcher.base.NodeMatchers;
 import org.testfx.service.query.EmptyNodeQueryException;
 import ru.edu.spbstu.client.controllers.ChatFormController;
@@ -20,21 +25,51 @@ import ru.edu.spbstu.client.controllers.LoginFormController;
 import ru.edu.spbstu.client.exception.InvalidDataException;
 import ru.edu.spbstu.model.Chat;
 
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static java.sql.DriverManager.getDriver;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.internal.JavaVersionAdapter.getWindows;
 
-public class LoginFormTest extends BasedTest {
+public class LoginFormTest extends ApplicationTest {
 
     public static final String IS_USER_PRESENT_LOGIN = "/is_user_present\\?login=.*";
     public static final String IS_EMAIL_USED_EMAIL = "/is_email_used\\?email=.*";
     public static final String URL_REGEX = "/register";
     public static final String GET_CHATS_LOGIN_PAGE_NUMBER_D = "/get_chats\\?login=.*&page_number=\\d+";
+
+
+    @BeforeEach
+    public void setUpClass() throws Exception {
+        ApplicationTest.launch(ClientApplication.class);
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out), true, StandardCharsets.UTF_8));
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.err), true, StandardCharsets.UTF_8));
+    }
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        stage.show();
+    }
+
+    @AfterEach
+    public void afterEachTest() throws TimeoutException {
+
+        FxToolkit.hideStage();
+        release(new KeyCode[]{});
+        release(new MouseButton[]{});
+    }
+
+    public <T extends Node> T find(final String query) {
+        return (T) lookup(query).queryAll().iterator().next();
+    }
+
 
     @Test
     public void testButtonActivation() {
@@ -95,12 +130,11 @@ public class LoginFormTest extends BasedTest {
     }
 
     @Test
-    public void testRegLoginTooLong()
-    {
+    public void testRegLoginTooLong() {
         clickOn("#regTab");
         clickOn("#regPasswordTextBox").write("olegoleg");
         clickOn("#emailTextBox").write("olegoleg@gmail.com");
-        TextField tx=find("#regLoginTextBox");
+        TextField tx = find("#regLoginTextBox");
         tx.clear();
         tx.setText(Strings.repeat("o", 50));
         clickOn("#regLoginTextBox").write("o");
@@ -141,7 +175,7 @@ public class LoginFormTest extends BasedTest {
         clickOn("#regLoginTextBox").write("olegoleg");
         clickOn("#emailTextBox").write("olegoleg@gmail.com");
         clickOn("#registerButton");
-        TextField tx=find("#regPasswordTextBox");
+        TextField tx = find("#regPasswordTextBox");
         tx.setText(Strings.repeat("o", 128));
         clickOn("#regPasswordTextBox").write("o");
         clickOn("#registerButton");
@@ -160,6 +194,7 @@ public class LoginFormTest extends BasedTest {
         checkAlertHeaderText("InvalidEmailSizeError");
 
     }
+
     @Test
     public void testEmailTooLong() {
 
@@ -167,7 +202,7 @@ public class LoginFormTest extends BasedTest {
         clickOn("#regLoginTextBox").write("olegoleg");
         clickOn("#regPasswordTextBox").write("olegoleg");
 
-        TextField tx=find("#emailTextBox");
+        TextField tx = find("#emailTextBox");
         tx.clear();
         tx.setText(Strings.repeat("o", 128));
         clickOn("#emailTextBox").write("o");
@@ -175,9 +210,9 @@ public class LoginFormTest extends BasedTest {
 
         checkAlertHeaderText("InvalidEmailSizeError");
     }
+
     @Test
-    public void testInvalidEmailFormat()
-    {
+    public void testInvalidEmailFormat() {
         clickOn("#regTab");
         clickOn("#regLoginTextBox").write("olegoleg");
         clickOn("#regPasswordTextBox").write("olegoleg");
@@ -185,9 +220,9 @@ public class LoginFormTest extends BasedTest {
         clickOn("#registerButton");
         checkAlertHeaderText("BadFormatEmailErrorText");
     }
+
     @Test
-    public void testRegisterWithoutServer()
-    {
+    public void testRegisterWithoutServer() {
         clickOn("#regTab");
         clickOn("#regLoginTextBox").write("olegoleg");
         clickOn("#regPasswordTextBox").write("olegoleg");
@@ -197,7 +232,7 @@ public class LoginFormTest extends BasedTest {
     }
 
     @Test
-    public void testOpenForgotPasswordFormWithoutServer(){
+    public void testOpenForgotPasswordFormWithoutServer() {
         clickOn("#loginTextBox").write("olegoleg");
         //verifyThat("#forgetPasswordButton", NodeMatchers.isEnabled());
         clickOn("#forgetPasswordButton");
@@ -206,7 +241,7 @@ public class LoginFormTest extends BasedTest {
 
 
     @Test
-    public void testOpenNewFormWithNoServer(){
+    public void testOpenNewFormWithNoServer() {
         clickOn("#loginTextBox").write("olegoleg");
         verifyThat("#forgetPasswordButton", NodeMatchers.isEnabled());
         clickOn("#passwordTextBox").write("olegoleg");
@@ -353,7 +388,6 @@ public class LoginFormTest extends BasedTest {
         wireMockServer = new WireMockServer(8080);
         wireMockServer.start();//start server
         ObjectMapper jsonMapper = new ObjectMapper();
-        String responce = jsonMapper.writeValueAsString(true);
 
 
         clickOn("#regTab");
@@ -384,7 +418,7 @@ public class LoginFormTest extends BasedTest {
         wireMockServer = new WireMockServer(8080);
         wireMockServer.start();//start server
         ObjectMapper jsonMapper = new ObjectMapper();
-        String responce = jsonMapper.writeValueAsString(true);
+        String responce;
 
 
         clickOn("#regTab");
@@ -451,7 +485,7 @@ public class LoginFormTest extends BasedTest {
         if (lst.size() < 1) {
             throw new NoAlertFoundException();
         }
-        dialog = lst.get(lst.size()-1);
+        dialog = lst.get(lst.size() - 1);
         //dialog = (DialogPane) lookup(".alert").queryAll().iterator().next();
 
         String alertTitle = dialog.getHeaderText();

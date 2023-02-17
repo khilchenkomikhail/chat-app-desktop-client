@@ -33,12 +33,8 @@ public class LoginService {
     }
 
     public boolean checkUserEmail(CheckEmailRequest request) {
-        UserJpa user=userRepository.getByLogin(request.getLogin())
+        UserJpa user = userRepository.getByLogin(request.getLogin())
                 .orElseThrow(() -> new ResourceNotFound("User with login '" + (request.getLogin() + "' was not found")));
-       /* if(!user.getEmail().equals(request.getEmail()))
-        {
-            throw new ResourceNotFound("Invalid email");
-        }*/
         return user.getEmail().equals(request.getEmail());
     }
 
@@ -61,7 +57,6 @@ public class LoginService {
         Optional<UserJpa> userJpaOptional = userRepository.getByLogin(login);
         return userJpaOptional.isPresent();
     }
-
 
     public Boolean isEmailUsed(String email) {
         Optional<UserJpa> userJpaOptional = userRepository.getByEmail(email);

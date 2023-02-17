@@ -248,6 +248,20 @@ class ProfileServiceTest {
 
     @Test
     void getProfilePhoto() {
+        String login = "login";
+        String image = "image";
+        UserJpa userJpa = new UserJpa(
+                1L,
+                login,
+                "pass",
+                "email@mail.com",
+                image);
+
+        given(userRepository.getByLogin(login)).willReturn(Optional.of(userJpa));
+
+        Assertions.assertEquals(image, profileService.getProfilePhoto(login));
+
+        verify(userRepository, times(1)).getByLogin(login);
     }
 
     @Test

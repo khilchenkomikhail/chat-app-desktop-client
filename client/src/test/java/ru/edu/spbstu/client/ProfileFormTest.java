@@ -118,7 +118,6 @@ public class ProfileFormTest extends ApplicationTest {
 
     @AfterAll
     public static void cleanup() throws TimeoutException {
-//        FxToolkit.cleanupStages();
         wireMockServer.shutdown();
         wireMockServer.resetToDefaultMappings();
     }
@@ -129,7 +128,7 @@ public class ProfileFormTest extends ApplicationTest {
     }
 
     @Test
-    void testProfileDefaults() {
+    public void testProfileDefaults() {
         TextField emailTextField = find("#emailTextField");
         Assertions.assertTrue(emailTextField.isDisabled());
         Assertions.assertFalse(emailTextField.isEditable());
@@ -167,7 +166,7 @@ public class ProfileFormTest extends ApplicationTest {
     }
 
     @Test
-    void passwordButtonDisabled() {
+    public void passwordButtonDisabled() {
         Button changePasswordButton = find("#changePasswordButton");
         String samplePassword = "12";
         final int ALL_ONES = 0b111;
@@ -188,7 +187,7 @@ public class ProfileFormTest extends ApplicationTest {
 
 
     @Test
-    void invalidPasswordLength() {
+    public void invalidPasswordLength() {
         List<Integer> invalidLengths = List.of(1, 3, 7, 129, 135);
         spedUpWrite("#oldPasswordTextField", OLD_PASSWORD);
         for (Integer length : invalidLengths) {
@@ -201,7 +200,7 @@ public class ProfileFormTest extends ApplicationTest {
     }
 
     @Test
-    void differentPasswords() {
+    public void differentPasswords() {
         spedUpWrite("#oldPasswordTextField", OLD_PASSWORD);
         spedUpWrite("#newPasswordTextField", "firstPassword");
         spedUpWrite("#repeatPasswordTextField", "secondPassword");
@@ -211,7 +210,7 @@ public class ProfileFormTest extends ApplicationTest {
     }
 
     @Test
-    void updatePassword() {
+    public void updatePassword() {
         stubSuccessful(UPDATE_PASSWORD, "post", null);
         String newPassword = "newPassword";
         spedUpWrite("#oldPasswordTextField", OLD_PASSWORD);
@@ -223,7 +222,7 @@ public class ProfileFormTest extends ApplicationTest {
     }
 
     @Test
-    void wrongOldPassword() {
+    public void wrongOldPassword() {
         stub(UPDATE_PASSWORD, "post", HttpStatus.SC_BAD_REQUEST, null);
         String newPassword = "newPassword";
         spedUpWrite("#oldPasswordTextField", "wrong");
@@ -253,14 +252,14 @@ public class ProfileFormTest extends ApplicationTest {
 
     @ParameterizedTest
     @MethodSource("invalidEmailArguments")
-    void invalidEmail(String email, String bundleError) throws JsonProcessingException {
+    public void invalidEmail(String email, String bundleError) throws JsonProcessingException {
         spedUpWrite("#newEmailTextField", email);
         clickOn("#changeEmailButton");
         checkAlertHeaderText(bundleError);
     }
 
     @Test
-    void changeEmail() {
+    public void changeEmail() {
         stubSuccessful(UPDATE_EMAIL, "post", null);
         String newEmail = "new@gmail.com";
         spedUpWrite("#newEmailTextField", newEmail);

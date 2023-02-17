@@ -111,8 +111,8 @@ public class ChatFormTest extends ApplicationTest {
 
     //add new chat func
     //forward func
-    static void stubSuccessful(String url, String type, String responceBody) {
-        stub(url, type, 200, responceBody);
+    static void stubSuccessful(String url, String type, String responseBody) {
+        stub(url, type, 200, responseBody);
     }
 
     static void stub(String url, String type, int code, String responceBody) {

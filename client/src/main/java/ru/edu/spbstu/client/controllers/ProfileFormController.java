@@ -147,8 +147,9 @@ public class ProfileFormController {
         }
         try {
             profileFormService.changeEmail(newEmailTextField.getText());
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, bundle.getString("emailChangedInfo"));
-            alert.setTitle(bundle.getString("emailChangedTitle"));
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle(bundle.getString("Message"));
+            alert.setHeaderText(bundle.getString("emailChangedInfo"));
             alert.show();
             emailTextField.setText(newEmailTextField.getText());
             newEmailTextField.setText("");
@@ -193,8 +194,9 @@ public class ProfileFormController {
         try {
             int code = profileFormService.changePassword(oldPasswordTextField.getText(), newPasswordTextField.getText());
             if (code == HttpStatus.SC_OK) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, bundle.getString("passwordChangedInfo"));
-                alert.setTitle(bundle.getString("passwordChangedTitle"));
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle(bundle.getString("Message"));
+                alert.setHeaderText(bundle.getString("passwordChangedInfo"));
                 alert.show();
                 oldPasswordTextField.setText("");
                 newPasswordTextField.setText("");

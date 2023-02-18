@@ -209,6 +209,35 @@ public class ForwardMessageFormTest  extends ApplicationTest {
         verifyThat("#forwardButton", Node::isDisabled);
     }
 
+    @Test
+    public void checkForwarding() throws JsonProcessingException {
+        String response = jsonMapper.writeValueAsString(chats);
+        stubSuccessful(GET_CHATS_LOGIN_PAGE_NUMBER_D, "get", response);
+        ListView<Chat> chatsListView = find("#chatsListView");
+        Chat chosenChat = chatsListView.getItems().get(1);
+        clickOnItemInListView(chatsListView, 1, 0);
+
+//        Message forwardedMessage = new Message(4L, "olegoleg", originalMessage.getAuthor_login(),
+//                chosenChat.getId(), new Date(), originalMessage.getContent(), false, false, true);
+
+        response = jsonMapper.writeValueAsString(messages);
+        stubSuccessful(GET_MESSAGES_1, "get", response);
+//        response = jsonMapper.writeValueAsString(List.of(forwardedMessage));
+//        stubSuccessful(GET_MESSAGES_2, "get", response);
+
+        clickOn("#forwardButton");
+        // check that the chat form has been reached
+        assertThrows(NoSuchElementException.class, () -> find("#forwardButton"));
+        try {
+            find("#messageTextArea");
+        } catch (NoSuchElementException ex) {
+            throw new NoSuchElementException("Expected behaviour: forward message form closes, chat form opens. "
+                    + "Result: forward message form is not closed");
+        }
+        chatsListView = find("#chatsListView");
+//        clickOnItemInListView(chatsListView, 0, 0);
+    }
+
 
     @AfterEach
     public void afterEachTest() throws TimeoutException {

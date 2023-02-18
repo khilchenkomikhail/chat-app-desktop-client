@@ -5,14 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelFormat;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import org.apache.http.HttpStatus;
-import org.assertj.core.internal.LongArrays;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -20,8 +23,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit5.ApplicationTest;
 import org.testfx.matcher.base.NodeMatchers;
-import ru.edu.spbstu.client.controllers.LoginFormController;
-import ru.edu.spbstu.client.controllers.ProfileFormController;
+import ru.edu.spbstu.client.controllers.*;
 import ru.edu.spbstu.client.utils.ClientProperties;
 import ru.edu.spbstu.model.Chat;
 import ru.edu.spbstu.model.User;
@@ -29,20 +31,17 @@ import ru.edu.spbstu.model.User;
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.BitSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Stream.generate;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.testfx.api.FxAssert.verifyThat;
+import static org.testfx.internal.JavaVersionAdapter.getWindows;
 import static ru.edu.spbstu.client.ChatFormTest.stub;
 import static ru.edu.spbstu.client.ChatFormTest.stubSuccessful;
 
@@ -52,7 +51,7 @@ public class ProfileFormTest extends ApplicationTest {
     private static final String OLD_PASSWORD = "olegoleg";
     private static final String GET_CHATS_LOGIN_PAGE_NUMBER_D = "/get_chats\\?login=.*&page_number=\\d+";
 
-    private static final String GET_PROFILE_PICTURE = "/get_profile_photo\\?login=.*";
+    private static final String GET_PROFILE_PICTURE = "/get_profile_photo\\?login=.+";
     private static final String UPDATE_PASSWORD = "/update_password";
     private static final String UPDATE_EMAIL = "/update_email";
     private static final String EMAIL = "olegoleg@gmail.com";
@@ -75,7 +74,6 @@ public class ProfileFormTest extends ApplicationTest {
         wireMockServer.start();//start server
 
         reset_to_defaults();
-
 
     }
 
@@ -111,6 +109,20 @@ public class ProfileFormTest extends ApplicationTest {
 
     @AfterEach
     public void afterEachTest() throws TimeoutException {
+        if (getWindows().size() > 0) {
+            for (int i = 0; i < getWindows().size(); i++) {
+                Scene currectScene = getWindows().get(i).getScene();
+                if (currectScene.getUserData() == null) {
+                    continue;
+                }
+
+                try {
+                    ChatFormController controller = ((ChatFormController) currectScene.getUserData());
+                    controller.timeline.stop();
+                } catch (ClassCastException ex) {
+                }
+            }
+        }
         FxToolkit.hideStage();
         release(new KeyCode[]{});
         release(new MouseButton[]{});
@@ -139,7 +151,7 @@ public class ProfileFormTest extends ApplicationTest {
         Assertions.assertFalse(newEmailTextField.isDisabled());
         Assertions.assertEquals(newEmailTextField.getText(), "");
 
-        for (String query: PASSWORD_FIELD_QUERIES) {
+        for (String query : PASSWORD_FIELD_QUERIES) {
             TextField passwordField = find(query);
             Assertions.assertFalse(passwordField.isDisabled());
             Assertions.assertEquals(passwordField.getText(), "");
@@ -162,8 +174,27 @@ public class ProfileFormTest extends ApplicationTest {
 //        Image profileImage = profilePictureImageView.getImage();
 //        Image correctImage = new Image((getClass().getResource("/images/dAvatar.bmp"))
 //                .getPath().replaceFirst("/", ""));
-//        Assertions.assertEquals(correctImage, profileImage);
+//        byte[] ciBytes = getImageContents(correctImage);
+//        byte[] pBytes = getImageContents(profileImage);
+//        Assertions.assertEquals(ciBytes, pBytes);
     }
+
+//    private static byte[] getImageContents(Image image) {
+//        int width = (int) image.getWidth();
+//        int height = (int) image.getHeight();
+//        byte[] buffer = new byte[width * height * 4];
+//        image.getPixelReader().getPixels(
+//                0,
+//                0,
+//                width,
+//                height,
+//                PixelFormat.getByteBgraInstance(),
+//                buffer,
+//                0,
+//                width * 4
+//        );
+//        return buffer;
+//    }
 
     @Test
     public void passwordButtonDisabled() {
@@ -267,6 +298,18 @@ public class ProfileFormTest extends ApplicationTest {
         checkAlertHeaderText("emailChangedInfo");
         Assertions.assertEquals(newEmail,
                 ((TextField) find("#emailTextField")).getText());
+    }
+
+    @Test
+    public void closeForm() {
+        clickOn("#backToChatsButton");
+        Assertions.assertThrows(NoSuchElementException.class, () -> find("#newEmailTextField"));
+        try {
+            find("#messageTextArea");
+        } catch (NoSuchElementException ex) {
+            throw new NoSuchElementException("Expected behaviour: profile form closes, chat form opens. Result: "
+                    + "profile form is not closed");
+        }
     }
 
     private void spedUpWrite(String query, String text) {

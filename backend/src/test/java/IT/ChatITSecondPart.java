@@ -10,11 +10,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.LinkedMultiValueMap;
 import ru.edu.spbstu.Application;
 import ru.edu.spbstu.dao.ChatRepository;
 import ru.edu.spbstu.dao.UserChatDetailsRepository;
 import ru.edu.spbstu.dao.UserRepository;
+import ru.edu.spbstu.exception.ResourceNotFound;
 import ru.edu.spbstu.model.ChatRole;
 import ru.edu.spbstu.model.Language;
 import ru.edu.spbstu.model.jpa.ChatJpa;
@@ -34,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         classes = Application.class
 )
 @AutoConfigureMockMvc(addFilters = false)
-public class ChatIT {
+public class ChatITSecondPart {
     @Autowired
     private MockMvc mvc;
 
@@ -94,12 +96,16 @@ public class ChatIT {
 
         Assertions.assertEquals(0, chatRepository.findAllByName(chatName).size());
 
-        mvc.perform(post("/create_chat")
+        MvcResult result = mvc.perform(post("/create_chat")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound()).andReturn();
 
         Assertions.assertEquals(0, chatRepository.findAllByName(chatName).size());
+
+        ResourceNotFound notFoundException = (ResourceNotFound) result.getResolvedException();
+        Assertions.assertNotNull(notFoundException);
+        Assertions.assertEquals("User with login '" + userLogin + "' was not found", notFoundException.getMessage());
     }
 
     @Test
@@ -131,11 +137,15 @@ public class ChatIT {
 
         LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("chat_id", chatId.toString());
-        mvc.perform(delete("/delete_chat").params(params)
+        MvcResult result = mvc.perform(delete("/delete_chat").params(params)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound()).andReturn();
 
         Assertions.assertTrue(chatRepository.findByIdIs(chatId).isEmpty());
+
+        ResourceNotFound notFoundException = (ResourceNotFound) result.getResolvedException();
+        Assertions.assertNotNull(notFoundException);
+        Assertions.assertEquals("Chat with id '" + chatId + "' was not found", notFoundException.getMessage());
     }
 
     @Test
@@ -179,12 +189,16 @@ public class ChatIT {
         ChatUpdateRequest request = new ChatUpdateRequest();
         request.setChat_id(chatId);
 
-        mvc.perform(patch("/delete_users_from_chat")
+        MvcResult result = mvc.perform(patch("/delete_users_from_chat")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound()).andReturn();
 
         Assertions.assertTrue(chatRepository.findByIdIs(chatId).isEmpty());
+
+        ResourceNotFound notFoundException = (ResourceNotFound) result.getResolvedException();
+        Assertions.assertNotNull(notFoundException);
+        Assertions.assertEquals("Chat with id '" + chatId + "' was not found", notFoundException.getMessage());
     }
 
     @Test
@@ -204,16 +218,20 @@ public class ChatIT {
         Assertions.assertEquals(1, userChatDetailsJpaList.size());
         Assertions.assertEquals(admin.getId(), userChatDetailsJpaList.get(0).getUser().getId());
 
-        mvc.perform(patch("/delete_users_from_chat")
+        MvcResult result = mvc.perform(patch("/delete_users_from_chat")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound()).andReturn();
 
         Assertions.assertFalse(chatRepository.findByIdIs(chat.getId()).isEmpty());
 
         userChatDetailsJpaList = userChatDetailsRepository.getChatMembers(chat.getId());
         Assertions.assertEquals(1, userChatDetailsJpaList.size());
         Assertions.assertEquals(admin.getId(), userChatDetailsJpaList.get(0).getUser().getId());
+
+        ResourceNotFound notFoundException = (ResourceNotFound) result.getResolvedException();
+        Assertions.assertNotNull(notFoundException);
+        Assertions.assertEquals("User with login '" + userLogin + "' was not found", notFoundException.getMessage());
     }
 
     @Test
@@ -255,12 +273,16 @@ public class ChatIT {
         ChatUpdateRequest request = new ChatUpdateRequest();
         request.setChat_id(chatId);
 
-        mvc.perform(patch("/add_users_to_chat")
+        MvcResult result = mvc.perform(patch("/add_users_to_chat")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound()).andReturn();
 
         Assertions.assertTrue(chatRepository.findByIdIs(chatId).isEmpty());
+
+        ResourceNotFound notFoundException = (ResourceNotFound) result.getResolvedException();
+        Assertions.assertNotNull(notFoundException);
+        Assertions.assertEquals("Chat with id '" + chatId + "' was not found", notFoundException.getMessage());
     }
 
     @Test
@@ -280,16 +302,20 @@ public class ChatIT {
         Assertions.assertEquals(1, userChatDetailsJpaList.size());
         Assertions.assertEquals(admin.getId(), userChatDetailsJpaList.get(0).getUser().getId());
 
-        mvc.perform(patch("/add_users_to_chat")
+        MvcResult result = mvc.perform(patch("/add_users_to_chat")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound()).andReturn();
 
         Assertions.assertFalse(chatRepository.findByIdIs(chat.getId()).isEmpty());
 
         userChatDetailsJpaList = userChatDetailsRepository.getChatMembers(chat.getId());
         Assertions.assertEquals(1, userChatDetailsJpaList.size());
         Assertions.assertEquals(admin.getId(), userChatDetailsJpaList.get(0).getUser().getId());
+
+        ResourceNotFound notFoundException = (ResourceNotFound) result.getResolvedException();
+        Assertions.assertNotNull(notFoundException);
+        Assertions.assertEquals("User with login '" + userLogin + "' was not found", notFoundException.getMessage());
     }
 
     private UserJpa saveUser(String login) {

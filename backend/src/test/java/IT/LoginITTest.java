@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         classes = Application.class
 )
 @AutoConfigureMockMvc
-public class LoginTestIT
+public class LoginITTest
 {
     private static final String MAIN_TEST_LOGIN = "main-login-test-login";
     private static final String MAIN_TEST_PASSWORD = "main-login-test-password";

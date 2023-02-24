@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         classes = Application.class
 )
 @AutoConfigureMockMvc(addFilters = false)
-public class ChatSecondPartTestIT {
+public class ChatSecondPartITTest {
     @Autowired
     private MockMvc mvc;
 

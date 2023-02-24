@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         classes = Application.class
 )
 @AutoConfigureMockMvc
-public class ChatITFirstPart {
+public class ChatFirstPartTestIT {
     private static final String MAIN_BASIC_AUTH_HEADER_KEY = "Authorization";
     private static final String MAIN_TEST_LOGIN = "main-chat-test-login";
     private static final String MAIN_TEST_PASSWORD = "main-chat-test-password";

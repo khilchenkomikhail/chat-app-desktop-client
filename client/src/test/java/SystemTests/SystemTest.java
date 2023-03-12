@@ -88,7 +88,7 @@ public class SystemTest extends ApplicationTest {
         ApplicationTest.launch(ClientApplication.class);
         System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out), true, StandardCharsets.UTF_8));
         System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.err), true, StandardCharsets.UTF_8));
-       //todo где-то здесь нужно врубить сервак и подождать
+       //todo init spring server here
         SystemTest ch=new SystemTest();
         ch.func();
 
@@ -179,7 +179,6 @@ public class SystemTest extends ApplicationTest {
         addChat("AllInChat", temp1);
 
         for (int i = 1; i < 10; i++) {
-            //temp1=loggins.subList(1,loggins.size()-i);
             addChat("chat" + i, temp1);
         }
         addChat(replyChat, loggins.subList(1, loggins.size()));

@@ -72,7 +72,7 @@
                   </Label>
                   <Label text="%changePasswordLabel" GridPane.columnSpan="2">
                      <font>
-                        <Font name="System Bold" size="14.0" />
+                        <Font name="SystemTests Bold" size="14.0" />
                      </font>
                      <GridPane.margin>
                         <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />

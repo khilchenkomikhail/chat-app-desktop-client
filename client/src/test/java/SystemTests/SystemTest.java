@@ -646,6 +646,7 @@ public class SystemTest extends ApplicationTest {
             }
         }
         FxToolkit.cleanupStages();
+        //Todo kill server
     }
 
     private <T> void clickOnItemInListView(ListView<T> listView, int index, int type) {

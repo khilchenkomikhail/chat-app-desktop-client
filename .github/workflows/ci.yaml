@@ -15,7 +15,8 @@ jobs:
           cache: 'maven'
       - name: Build/test with Maven
         run: |
-          mvn package -P no-client-tests
+          mvn install
+          mvn test -P no-client-tests
 
   client-chat-form:
     runs-on: ubuntu-latest
@@ -35,7 +36,8 @@ jobs:
         run: |
           Xvfb :99 &
           export DISPLAY=:99
-          mvn package -Dtest="ChatFormTest" -pl client
+          mvn install -DskipTests 
+          mvn test -Dtest="ChatFormTest" -pl client
 
   client-configure-chat-form:
     runs-on: ubuntu-latest
@@ -55,7 +57,8 @@ jobs:
         run: |
           Xvfb :99 &
           export DISPLAY=:99
-          mvn package -Dtest="ConfigureChatFormTest" -pl client
+          mvn install -DskipTests 
+          mvn test -Dtest="ConfigureChatFormTest" -pl client
 
   client-create-chat-form:
     runs-on: ubuntu-latest
@@ -75,7 +78,8 @@ jobs:
         run: |
           Xvfb :99 &
           export DISPLAY=:99
-          mvn package -Dtest="CreateChatFormTest" -pl client
+          mvn install -DskipTests 
+          mvn test -Dtest="CreateChatFormTest" -pl client
 
   client-forgot-password-form:
     runs-on: ubuntu-latest
@@ -95,7 +99,8 @@ jobs:
         run: |
           Xvfb :99 &
           export DISPLAY=:99
-          mvn package -Dtest="ForgotPasswordFormTest" -pl client
+          mvn install -DskipTests 
+          mvn test -Dtest="ForgotPasswordFormTest" -pl client
 
   client-forward-message-form:
     runs-on: ubuntu-latest
@@ -115,7 +120,8 @@ jobs:
         run: |
           Xvfb :99 &
           export DISPLAY=:99
-          mvn package -Dtest="ForwardMessageFormTest" -pl client
+          mvn install -DskipTests 
+          mvn test -Dtest="ForwardMessageFormTest" -pl client
 
   client-login-form:
     runs-on: ubuntu-latest
@@ -135,7 +141,8 @@ jobs:
         run: |
           Xvfb :99 &
           export DISPLAY=:99
-          mvn package -Dtest="LoginFormTest" -pl client
+          mvn install -DskipTests 
+          mvn test -Dtest="LoginFormTest" -pl client
 
   client-profile-form:
     runs-on: ubuntu-latest
@@ -155,7 +162,8 @@ jobs:
         run: |
           Xvfb :99 &
           export DISPLAY=:99
-          mvn package -Dtest="ProfileFormTest" -pl client
+          mvn install -DskipTests 
+          mvn test -Dtest="ProfileFormTest" -pl client
 
   client-properties:
     runs-on: ubuntu-latest
@@ -175,7 +183,8 @@ jobs:
         run: |
           Xvfb :99 &
           export DISPLAY=:99
-          mvn package -Dtest="PropertiesTest" -pl client
+          mvn install -DskipTests 
+          mvn test -Dtest="PropertiesTest" -pl client
 
   system:
     runs-on: ubuntu-latest
@@ -195,4 +204,5 @@ jobs:
         run: |
           Xvfb :99 &
           export DISPLAY=:99
-          mvn package test -P system
+          mvn install -DskipTests 
+          mvn test -P system

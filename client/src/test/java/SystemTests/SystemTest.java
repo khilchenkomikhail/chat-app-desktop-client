@@ -454,7 +454,7 @@ public class SystemTest extends ApplicationTest {
         ConfigureChatFormController cf = (ConfigureChatFormController) getWindows().get(0).getScene().getUserData();
         Stage st = cf.getCurrStage();
         Platform.runLater(() -> st.fireEvent(new WindowEvent(st, WindowEvent.WINDOW_CLOSE_REQUEST)));
-        sleep(5000);
+        sleep(60000);
 
         clickOn(Exit_Button);
 

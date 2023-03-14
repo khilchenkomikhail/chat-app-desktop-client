@@ -45,6 +45,9 @@
                 <exclude.tests>**/ru/edu/spbstu/**</exclude.tests>
             </properties>
         </profile>
+        <profile>
+            <id>no-client-tests</id>
+        </profile>
     </profiles>
 
     <build>

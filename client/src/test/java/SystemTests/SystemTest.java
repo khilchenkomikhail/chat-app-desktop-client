@@ -25,13 +25,12 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.BeforeClass;
+import org.junit.jupiter.api.*;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit5.ApplicationTest;
 import org.testfx.service.query.EmptyNodeQueryException;
+import org.testfx.util.WaitForAsyncUtils;
 import ru.edu.spbstu.client.ClientApplication;
 import ru.edu.spbstu.client.NoAlertFoundException;
 import ru.edu.spbstu.client.controllers.*;
@@ -82,23 +81,97 @@ public class SystemTest extends ApplicationTest {
 
     public static final String SEND_MESSAGE_BUTTON = "#sendMessageButton";
 
+
+    final String replyChat = "chatreply";
+    final String adminChat = "adminChat";
+    final String exitChat = "exitChat";
+    final String exitChat2 = "exitChat2";
+    final String messagechat = "messagechat";
+
+    @BeforeClass
+    public static void setUpdHeadless()
+    {
+
+    }
     @BeforeAll
     public static void initServer() throws Exception {
+        System.out.println("start");
         ClientProperties.setProperties("RU");
         ApplicationTest.launch(ClientApplication.class);
         System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out), true, StandardCharsets.UTF_8));
         System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.err), true, StandardCharsets.UTF_8));
-       //todo init spring server here
         SystemTest ch=new SystemTest();
         ch.func();
 
     }
 
-
-
     @Override
     public void start(Stage stage) throws Exception {
         stage.show();
+    }
+    @AfterEach
+    public void HideStages() throws TimeoutException {
+        if (getWindows().size() > 0) {
+            for (int i = 0; i < getWindows().size(); i++) {
+                Scene currectScene = getWindows().get(i).getScene();
+                if (currectScene.getUserData() == null) {
+                    continue;
+                }
+
+                try {
+                    ChatFormController controller = ((ChatFormController) currectScene.getUserData());
+                    controller.timeline.stop();
+                } catch (ClassCastException ex) {
+                    try {
+                        ConfigureChatFormController controller = ((ConfigureChatFormController) currectScene.getUserData());
+                        controller.timeline.stop();
+                    } catch (ClassCastException ex2) {
+                        try {
+                            ForwardMessageFormController controller = ((ForwardMessageFormController) currectScene.getUserData());
+                            controller.timeline.stop();
+                        } catch (ClassCastException ex3) {
+
+                        }
+                    }
+                }
+            }
+
+
+        }
+        FxToolkit.hideStage();
+        release(new KeyCode[]{});
+        release(new MouseButton[]{});
+
+    }
+
+
+    @AfterAll
+    public static void destroy() throws TimeoutException {
+
+        if (getWindows().size() > 0) {
+            for (int i = 0; i < getWindows().size(); i++) {
+
+                Scene currectScene = getWindows().get(i).getScene();
+
+                if (currectScene.getUserData() == null) {
+                    continue;
+                }
+
+                try {
+                    ChatFormController controller = ((ChatFormController) currectScene.getUserData());
+                    controller.timeline.stop();
+                } catch (ClassCastException ex) {
+                    try {
+                        ConfigureChatFormController controller = ((ConfigureChatFormController) currectScene.getUserData());
+                        controller.timeline.stop();
+                    } catch (ClassCastException ex2) {
+                        ForwardMessageFormController controller = ((ForwardMessageFormController) currectScene.getUserData());
+                        controller.timeline.stop();
+                    }
+                }
+            }
+        }
+        FxToolkit.cleanupStages();
     }
 
     public void register(String login, String password, String email) throws IOException {
@@ -162,15 +235,11 @@ public class SystemTest extends ApplicationTest {
         return (T) lookup(query).queryAll().iterator().next();
     }
 
-    public void func() throws IOException {
-        ArrayList<String> emails = new ArrayList<>(0);
-
-        for (var elem : loggins) {
-            emails.add(elem + "@gmail.com");
-        }
+    public  void func() throws IOException {
+        sleep(10000);
         for (int i = 0; i < loggins.size(); i++) {
             try {
-                register(loggins.get(i), paswwords.get(i), emails.get(i));
+                register(loggins.get(i), paswwords.get(i), loggins.get(i)+"@gmail.com");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -195,11 +264,6 @@ public class SystemTest extends ApplicationTest {
         }
     }
 
-    final String replyChat = "chatreply";
-    final String adminChat = "adminChat";
-    final String exitChat = "exitChat";
-    final String exitChat2 = "exitChat2";
-    final String messagechat = "messagechat";
 
     public void addChat(String chatName, List<String> users) throws IOException {
 
@@ -226,21 +290,6 @@ public class SystemTest extends ApplicationTest {
         }
     }
 
-
-    @Test
-    public void testExistingUserRegister() {
-
-        // clean();
-        concC = ((FXMLLoader) find("#forgetPasswordButton").getScene().getUserData()).getController();
-
-        clickOn("#regTab");
-        clickOn("#regLoginTextBox").write(loggins.get(0));
-
-        clickOn("#regPasswordTextBox").write(paswwords.get(0));
-        clickOn("#emailTextBox").write("olegoleg2@gmail.com");
-        clickOn("#registerButton");
-        checkAlertHeaderText("AccountWithLoginExistsError");
-    }
 
 
     private static int getChatIndex(List<Chat> list, String chatName) {
@@ -277,6 +326,67 @@ public class SystemTest extends ApplicationTest {
         textFieldFastFill(t1, login);
         textFieldFastFill(t2, password);
         clickOn("#logInButton");
+    }
+
+
+    private void checkAlertHeaderText(String bundledMessageId) {
+        DialogPane dialog;
+        List<DialogPane> lst = lookup(".alert").queryAll().stream()
+                .map(node -> (DialogPane) node)
+                .toList();
+
+        if (lst.size() < 1) {
+            throw new NoAlertFoundException();
+        }
+        dialog = lst.get(lst.size() - 1);
+        //dialog = (DialogPane) lookup(".alert").queryAll().iterator().next();
+
+        String alertTitle = dialog.getHeaderText();
+        clickOn("OK");
+
+        //Interesting way to get loaclization for our application(via getting the fxmloader that was store previously)
+
+        String expectedMessage = (concC.getBundle().getString(bundledMessageId));
+        if (!expectedMessage.equals(alertTitle)) {
+            String errtext = (String.format("Expected alert with title \"%s\", got alert with header \"%s\"", expectedMessage, alertTitle));
+            throw new AssertionError(errtext);
+        }
+    }
+
+
+
+
+    private <T> void clickOnItemInListView(ListView<T> listView, int index, int type) {
+        VirtualFlow<ListCell<T>> virtualFlow = (VirtualFlow) listView.lookup("#virtual-flow");
+        ListCell<T> cell = virtualFlow.getCell(index);
+        if (type > 0)
+            rightClickOn(cell);
+        else {
+            clickOn(cell);
+        }
+    }
+
+    private <T> ListCell<T> getListCell(ListView<T> listView, int index) {
+        VirtualFlow<ListCell<T>> virtualFlow = (VirtualFlow) listView.lookup("#virtual-flow");
+        return virtualFlow.getCell(index);
+    }
+
+
+
+
+    @Test
+    public void testExistingUserRegister() {
+
+        // clean();
+        concC = ((FXMLLoader) find("#forgetPasswordButton").getScene().getUserData()).getController();
+
+        clickOn("#regTab");
+        clickOn("#regLoginTextBox").write(loggins.get(0));
+
+        clickOn("#regPasswordTextBox").write(paswwords.get(0));
+        clickOn("#emailTextBox").write("olegoleg2@gmail.com");
+        clickOn("#registerButton");
+        checkAlertHeaderText("AccountWithLoginExistsError");
     }
 
     @Test
@@ -454,7 +564,7 @@ public class SystemTest extends ApplicationTest {
         ConfigureChatFormController cf = (ConfigureChatFormController) getWindows().get(0).getScene().getUserData();
         Stage st = cf.getCurrStage();
         Platform.runLater(() -> st.fireEvent(new WindowEvent(st, WindowEvent.WINDOW_CLOSE_REQUEST)));
-        sleep(60000);
+        sleep(100);
 
         clickOn(Exit_Button);
 
@@ -558,110 +668,5 @@ public class SystemTest extends ApplicationTest {
     }
 
 
-    private void checkAlertHeaderText(String bundledMessageId) {
-        DialogPane dialog;
-        List<DialogPane> lst = lookup(".alert").queryAll().stream()
-                .map(node -> (DialogPane) node)
-                .toList();
-
-        if (lst.size() < 1) {
-            throw new NoAlertFoundException();
-        }
-        dialog = lst.get(lst.size() - 1);
-        //dialog = (DialogPane) lookup(".alert").queryAll().iterator().next();
-
-        String alertTitle = dialog.getHeaderText();
-        clickOn("OK");
-
-        //Interesting way to get loaclization for our application(via getting the fxmloader that was store previously)
-
-        String expectedMessage = (concC.getBundle().getString(bundledMessageId));
-        if (!expectedMessage.equals(alertTitle)) {
-            String errtext = (String.format("Expected alert with title \"%s\", got alert with header \"%s\"", expectedMessage, alertTitle));
-            throw new AssertionError(errtext);
-        }
-    }
-
-
-    @AfterEach
-    public void HideStages() throws TimeoutException {
-        if (getWindows().size() > 0) {
-            for (int i = 0; i < getWindows().size(); i++) {
-                Scene currectScene = getWindows().get(i).getScene();
-                if (currectScene.getUserData() == null) {
-                    continue;
-                }
-
-                try {
-                    ChatFormController controller = ((ChatFormController) currectScene.getUserData());
-                    controller.timeline.stop();
-                } catch (ClassCastException ex) {
-                    try {
-                        ConfigureChatFormController controller = ((ConfigureChatFormController) currectScene.getUserData());
-                        controller.timeline.stop();
-                    } catch (ClassCastException ex2) {
-                        try {
-                            ForwardMessageFormController controller = ((ForwardMessageFormController) currectScene.getUserData());
-                            controller.timeline.stop();
-                        } catch (ClassCastException ex3) {
-
-                        }
-                    }
-                }
-            }
-
-
-        }
-        FxToolkit.hideStage();
-        release(new KeyCode[]{});
-        release(new MouseButton[]{});
-
-    }
-
-
-    @AfterAll
-    public static void destroy() throws TimeoutException {
-
-        if (getWindows().size() > 0) {
-            for (int i = 0; i < getWindows().size(); i++) {
-
-                Scene currectScene = getWindows().get(i).getScene();
-
-                if (currectScene.getUserData() == null) {
-                    continue;
-                }
-
-                try {
-                    ChatFormController controller = ((ChatFormController) currectScene.getUserData());
-                    controller.timeline.stop();
-                } catch (ClassCastException ex) {
-                    try {
-                        ConfigureChatFormController controller = ((ConfigureChatFormController) currectScene.getUserData());
-                        controller.timeline.stop();
-                    } catch (ClassCastException ex2) {
-                        ForwardMessageFormController controller = ((ForwardMessageFormController) currectScene.getUserData());
-                        controller.timeline.stop();
-                    }
-                }
-            }
-        }
-        FxToolkit.cleanupStages();
-        //Todo kill server
-    }
-
-    private <T> void clickOnItemInListView(ListView<T> listView, int index, int type) {
-        VirtualFlow<ListCell<T>> virtualFlow = (VirtualFlow) listView.lookup("#virtual-flow");
-        ListCell<T> cell = virtualFlow.getCell(index);
-        if (type > 0)
-            rightClickOn(cell);
-        else {
-            clickOn(cell);
-        }
-    }
-
-    private <T> ListCell<T> getListCell(ListView<T> listView, int index) {
-        VirtualFlow<ListCell<T>> virtualFlow = (VirtualFlow) listView.lookup("#virtual-flow");
-        return virtualFlow.getCell(index);
-    }
 
 }

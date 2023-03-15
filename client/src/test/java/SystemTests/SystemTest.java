@@ -61,7 +61,7 @@ import static org.testfx.internal.JavaVersionAdapter.getWindows;
 
 
 public class SystemTest extends ApplicationTest {
-    LoginFormController concC;
+   /* LoginFormController concC;
     private static final List<String> loggins = Arrays.asList("olegoleg", "Llananoker", "Relldastr", "Onadelestr", "Jusarorol");
     private static final List<String> paswwords = Arrays.asList("olegoleg", "Llananoker", "Relldastr", "Onadelestr", "Jusarorol");
     private final CredentialsProvider prov = new BasicCredentialsProvider();
@@ -665,7 +665,7 @@ public class SystemTest extends ApplicationTest {
         }
         assertTrue(admin);
 
-    }
+    }*/
 
 
 

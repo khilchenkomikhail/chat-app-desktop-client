@@ -37,7 +37,7 @@ public class TestChatFind extends SystemTestBase{
     }
     @Override
     public  void func() throws IOException {
-        //sleep(10000);
+        sleep(10000);
         for (int i = 0; i < loggins.size(); i++) {
             try {
                 register(loggins.get(i), paswwords.get(i), loggins.get(i)+"@gmail.com");

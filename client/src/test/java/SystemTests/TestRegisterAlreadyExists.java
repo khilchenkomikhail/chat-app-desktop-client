@@ -29,7 +29,7 @@ public class TestRegisterAlreadyExists extends SystemTestBase{
     }
     @Override
     public  void func() throws IOException {
-        //sleep(10000);
+        sleep(10000);
         String email=loggins.get(0)+"@gmail.com";
         register(loggins.get(0), paswwords.get(0), email);
     }

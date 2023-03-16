@@ -1,6 +1,5 @@
 package SystemTests;
 
-import javafx.fxml.FXMLLoader;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testfx.framework.junit5.ApplicationTest;
@@ -15,7 +14,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
-public class TestSucessfulRegister extends SystemTestBase{
+public class TestSuccessfulRegister extends SystemTestBase{
 
     @BeforeAll
     @Override
@@ -24,7 +23,7 @@ public class TestSucessfulRegister extends SystemTestBase{
         ApplicationTest.launch(ClientApplication.class);
         System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out), true, StandardCharsets.UTF_8));
         System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.err), true, StandardCharsets.UTF_8));
-        TestSucessfulRegister ch=new TestSucessfulRegister();
+        TestSuccessfulRegister ch=new TestSuccessfulRegister();
         ch.func();
 
     }

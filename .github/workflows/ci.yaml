@@ -186,7 +186,7 @@ jobs:
           mvn install -DskipTests 
           mvn test -Dtest="PropertiesTest" -pl client
 
-  system:
+  system-chat-find:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -204,4 +204,184 @@ jobs:
         run: |
           Xvfb :99 &
           export DISPLAY=:99
-          mvn clean package -P system
+          mvn clean package -Psystem -DfailIfNoTests=false -Dtest="TestChatFind" -am
+
+  system-create-chat:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '19'
+          distribution: 'corretto'
+          cache: 'maven'
+      - name: Set up Xvfbc
+        run: |
+          sudo apt-get update
+          sudo apt-get install xvfb
+          sudo apt-get install at-spi2-core
+      - name: Build/test with Maven
+        run: |
+          Xvfb :99 &
+          export DISPLAY=:99
+          mvn clean package -Psystem -DfailIfNoTests=false -Dtest="TestCreateChat" -am
+
+  system-exit-user:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '19'
+          distribution: 'corretto'
+          cache: 'maven'
+      - name: Set up Xvfbc
+        run: |
+          sudo apt-get update
+          sudo apt-get install xvfb
+          sudo apt-get install at-spi2-core
+      - name: Build/test with Maven
+        run: |
+          Xvfb :99 &
+          export DISPLAY=:99
+          mvn clean package -Psystem -DfailIfNoTests=false -Dtest="TestExitUser" -am
+
+  system-message-forward:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '19'
+          distribution: 'corretto'
+          cache: 'maven'
+      - name: Set up Xvfbc
+        run: |
+          sudo apt-get update
+          sudo apt-get install xvfb
+          sudo apt-get install at-spi2-core
+      - name: Build/test with Maven
+        run: |
+          Xvfb :99 &
+          export DISPLAY=:99
+          mvn clean package -Psystem -DfailIfNoTests=false -Dtest="TestMessageForward" -am
+
+  system-non-existing-user-add:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '19'
+          distribution: 'corretto'
+          cache: 'maven'
+      - name: Set up Xvfbc
+        run: |
+          sudo apt-get update
+          sudo apt-get install xvfb
+          sudo apt-get install at-spi2-core
+      - name: Build/test with Maven
+        run: |
+          Xvfb :99 &
+          export DISPLAY=:99
+          mvn clean package -Psystem -DfailIfNoTests=false -Dtest="TestNonExistingUserAdd" -am
+
+  system-register-already-exists:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '19'
+          distribution: 'corretto'
+          cache: 'maven'
+      - name: Set up Xvfbc
+        run: |
+          sudo apt-get update
+          sudo apt-get install xvfb
+          sudo apt-get install at-spi2-core
+      - name: Build/test with Maven
+        run: |
+          Xvfb :99 &
+          export DISPLAY=:99
+          mvn clean package -Psystem -DfailIfNoTests=false -Dtest="TestRegisterAlreadyExists" -am
+
+  system-send-message:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '19'
+          distribution: 'corretto'
+          cache: 'maven'
+      - name: Set up Xvfbc
+        run: |
+          sudo apt-get update
+          sudo apt-get install xvfb
+          sudo apt-get install at-spi2-core
+      - name: Build/test with Maven
+        run: |
+          Xvfb :99 &
+          export DISPLAY=:99
+          mvn clean package -Psystem -DfailIfNoTests=false -Dtest="TestSendMessage" -am
+
+  system-set-admin-after-exit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '19'
+          distribution: 'corretto'
+          cache: 'maven'
+      - name: Set up Xvfbc
+        run: |
+          sudo apt-get update
+          sudo apt-get install xvfb
+          sudo apt-get install at-spi2-core
+      - name: Build/test with Maven
+        run: |
+          Xvfb :99 &
+          export DISPLAY=:99
+          mvn clean package -Psystem -DfailIfNoTests=false -Dtest="TestSetAdminAfterExit" -am
+
+  system-set-user-admin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '19'
+          distribution: 'corretto'
+          cache: 'maven'
+      - name: Set up Xvfbc
+        run: |
+          sudo apt-get update
+          sudo apt-get install xvfb
+          sudo apt-get install at-spi2-core
+      - name: Build/test with Maven
+        run: |
+          Xvfb :99 &
+          export DISPLAY=:99
+          mvn clean package -Psystem -DfailIfNoTests=false -Dtest="TestSetUserAdmin" -am
+
+  system-successful-register:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '19'
+          distribution: 'corretto'
+          cache: 'maven'
+      - name: Set up Xvfbc
+        run: |
+          sudo apt-get update
+          sudo apt-get install xvfb
+          sudo apt-get install at-spi2-core
+      - name: Build/test with Maven
+        run: |
+          Xvfb :99 &
+          export DISPLAY=:99
+          mvn clean package -Psystem -DfailIfNoTests=false -Dtest="TestSuccessfulRegister" -am

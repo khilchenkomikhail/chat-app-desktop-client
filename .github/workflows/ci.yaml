@@ -31,6 +31,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install xvfb sawfish
+          sudo apt-get install at-spi2-core
       - name: Build/test with Maven
         run: |
           Xvfb :42 -screen 0 1920x1200x24 &

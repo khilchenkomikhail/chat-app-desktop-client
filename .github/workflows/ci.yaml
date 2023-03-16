@@ -30,12 +30,13 @@ jobs:
       - name: Set up Xvfbc
         run: |
           sudo apt-get update
-          sudo apt-get install xvfb
-          sudo apt-get install at-spi2-core
+          sudo apt-get install xvfb sawfish
       - name: Build/test with Maven
         run: |
-          Xvfb :99 & >/dev/null &
-          export DISPLAY=:99
+          Xvfb :42 -screen 0 1920x1200x24 &
+          export DISPLAY=:42
+          sleep 5
+          sawfish --display=:42.0 &
           mvn install -DskipTests 
           mvn test -Dtest="ChatFormTest" -pl client
 

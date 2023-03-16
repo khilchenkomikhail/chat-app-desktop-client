@@ -34,7 +34,7 @@ jobs:
           sudo apt-get install at-spi2-core
       - name: Build/test with Maven
         run: |
-          Xvfb :99 &
+          Xvfb :99 & >/dev/null &
           export DISPLAY=:99
           mvn install -DskipTests 
           mvn test -Dtest="ChatFormTest" -pl client

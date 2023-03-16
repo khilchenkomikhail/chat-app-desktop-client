@@ -45,10 +45,6 @@
                 <version>0.0.8</version>
                 <configuration>
                     <mainClass>ru.edu.spbstu.client.ClientApplication</mainClass>
-                    <systemPropertyVariables>
-                        <glass.platform>Monocle</glass.platform>
-                        <monocle.platform>Headless</monocle.platform>
-                    </systemPropertyVariables>
                 </configuration>
             </plugin>
             <plugin>

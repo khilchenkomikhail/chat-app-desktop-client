@@ -281,6 +281,8 @@ jobs:
           sudo apt-get install xvfb
           sudo apt-get install at-spi2-core
       - name: Build/test with Maven
+        env:
+          JAVA_OPTS: "-Djava.awt.headless=true -Dtestfx.robot=glass -Dtestfx.headless=true -Dprism.order=sw -Dprism.verbose=true"
         run: |
           Xvfb :99 &
           export DISPLAY=:99
@@ -321,6 +323,8 @@ jobs:
           sudo apt-get install xvfb
           sudo apt-get install at-spi2-core
       - name: Build/test with Maven
+        env:
+          JAVA_OPTS: "-Djava.awt.headless=true -Dtestfx.robot=glass -Dtestfx.headless=true -Dprism.order=sw"
         run: |
           Xvfb :99 &
           export DISPLAY=:99
@@ -341,6 +345,8 @@ jobs:
           sudo apt-get install xvfb
           sudo apt-get install at-spi2-core
       - name: Build/test with Maven
+        env:
+          JAVA_OPTS: "-Dtestfx.robot=glass -Dglass.gtk.uiScale=2.0"
         run: |
           Xvfb :99 &
           export DISPLAY=:99
@@ -361,6 +367,8 @@ jobs:
           sudo apt-get install xvfb
           sudo apt-get install at-spi2-core
       - name: Build/test with Maven
+        env:
+          JAVA_OPTS: "-Dtestfx.robot=awt"
         run: |
           Xvfb :99 &
           export DISPLAY=:99

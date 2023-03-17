@@ -32,6 +32,7 @@ jobs:
           ls -l /usr/bin/java
           ls -l /etc/alternatives/java
           ls -l /usr/lib/jvm/temurin-11-jdk-amd64/bin/java
+          ls -l /usr/lib/jvm
 
   client-chat-form:
     runs-on: ubuntu-latest

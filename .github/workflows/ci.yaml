@@ -32,6 +32,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install xvfb sawfish
           sudo apt-get install at-spi2-core
+      - name: Check for jre
+        run: |
           ls -l /usr/bin/java
       - name: Build/test with Maven
         run: |

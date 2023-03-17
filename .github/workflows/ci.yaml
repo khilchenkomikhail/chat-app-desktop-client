@@ -31,7 +31,7 @@ jobs:
         run: |
           ls -l /etc/alternatives/java
           ls -l /usr/lib/jvm
-          find /opt/hostedtoolcache/Java_Corretto_jdk/19.0.2.7.1/x64 -type d -name "jre"
+          find /opt/hostedtoolcache/Java_Corretto_jdk -type d -name "jre"
 
   client-chat-form:
     runs-on: ubuntu-latest

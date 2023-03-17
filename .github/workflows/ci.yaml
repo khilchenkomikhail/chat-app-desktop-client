@@ -31,8 +31,8 @@ jobs:
         run: |
           ls -l /usr/bin/java
           ls -l /etc/alternatives/java
-          ls -l /usr/lib/jvm/temurin-11-jdk-amd64/bin/java
           ls -l /usr/lib/jvm
+          ls -l /opt/hostedtoolcache/Java_Corretto_jdk/19.0.2.7.1/ 
 
   client-chat-form:
     runs-on: ubuntu-latest

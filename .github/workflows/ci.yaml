@@ -18,7 +18,7 @@ jobs:
           mvn install -DskipTests
           mvn test -P no-client-tests
 
-  client-chat-form:
+  jre-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -31,6 +31,17 @@ jobs:
         run: |
           ls -l /usr/bin/java
           ls -l /etc/alternatives/java
+          ls -l /usr/lib/jvm/temurin-11-jdk-amd64/bin/java
+
+  client-chat-form:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '19'
+          distribution: 'corretto'
+          cache: 'maven'
       - name: Set up Xvfbc
         run: |
           sudo apt-get update

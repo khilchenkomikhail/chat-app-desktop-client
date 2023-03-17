@@ -32,12 +32,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install xvfb sawfish
           sudo apt-get install at-spi2-core
+          ls -l /usr/bin/java
       - name: Build/test with Maven
         run: |
-          Xvfb :42 -screen 0 1920x1200x24 &
-          export DISPLAY=:42
+          Xvfb :99 -screen 0 1920x1200x24 &
+          export DISPLAY=:99
           sleep 5
-          sawfish --display=:42.0 &
+          sawfish --display=:99.0 &
           mvn install -DskipTests 
           mvn test -Dtest="ChatFormTest" -pl client
 
@@ -137,14 +138,17 @@ jobs:
       - name: Set up Xvfbc
         run: |
           sudo apt-get update
-          sudo apt-get install xvfb
+          sudo apt-get install xvfb sawfish
           sudo apt-get install at-spi2-core
       - name: Build/test with Maven
         run: |
-          Xvfb :99 &
+          Xvfb :99 -screen 0 1920x1200x24 &
           export DISPLAY=:99
+          sleep 5
+          sawfish --display=:99.0 &
           mvn install -DskipTests 
           mvn test -Dtest="LoginFormTest" -pl client
+      - name: Set up Xvfbc
 
   client-profile-form:
     runs-on: ubuntu-latest

@@ -27,14 +27,15 @@ jobs:
           java-version: '19'
           distribution: 'corretto'
           cache: 'maven'
+      - name: Check for jre
+        run: |
+          ls -l /usr/bin/java
+          ls -l /etc/alternatives/java
       - name: Set up Xvfbc
         run: |
           sudo apt-get update
           sudo apt-get install xvfb sawfish
           sudo apt-get install at-spi2-core
-      - name: Check for jre
-        run: |
-          ls -l /usr/bin/java
       - name: Build/test with Maven
         run: |
           Xvfb :99 -screen 0 1920x1200x24 &
